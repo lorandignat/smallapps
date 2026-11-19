@@ -2,8 +2,8 @@
 id: TASK-008
 title: Export the diagnostic log to a file
 feature: FEAT-001
-status: proposed
-attempts: 0
+status: blocked
+attempts: 1
 owner: null
 depends_on: [TASK-007]
 estimate: small

@@ -30,7 +30,7 @@ struct PlayTwoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(status: appState.status)
+            ContentView(status: appState.status, eventLog: appState.eventLog)
         }
         .onChange(of: scenePhase) { phase in
             appState.handleScenePhase(phase)
