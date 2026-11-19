@@ -2,7 +2,7 @@
 # Create a new project skeleton inside the apps workspace.
 #
 #   ./scripts/new-project.sh audiobooks
-#   ./scripts/new-project.sh airplay-2 "AirPlay 2 Receiver"
+#   ./scripts/new-project.sh audiobooks "Audiobooks"
 #
 # It copies templates/project/ to <slug>/ and fills in {{PROJECT}}, {{TITLE}} and
 # {{DATE}}. It does not touch git and does not add the registry row: the BA does

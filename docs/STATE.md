@@ -4,7 +4,7 @@
 > which one is active and what the workspace itself needs. Keep it under 40 lines.
 
 **Updated:** 2026-11-15
-**Active project:** `airplay-2-receiver`
+**Active project:** `play-two`
 **Mode:** build — paused on the Mac
 **Shared toolchain:** git under `.tooling/`
 
@@ -24,7 +24,7 @@ configured. Everything else is paused behind it deliberately.
 ## Open questions
 
 Workspace `docs/QUESTIONS.md` QQ-002 (Mac reachability). Project questions in
-`airplay-2-receiver/docs/QUESTIONS.md` (QQ-003, QQ-005).
+`play-two/docs/QUESTIONS.md` (QQ-003, QQ-005).
 
 ## Blockers
 

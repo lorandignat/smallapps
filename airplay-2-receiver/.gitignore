@@ -1,5 +1,0 @@
-# XcodeGen output: project.yml is the source of truth (docs/STACK.md)
-*.xcodeproj/
-
-# xcodebuild output; mac-build.sh builds with -derivedDataPath build
-build/

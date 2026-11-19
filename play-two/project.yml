@@ -1,0 +1,66 @@
+# XcodeGen spec — the source of truth for PlayTwo.xcodeproj.
+# The generated project is gitignored. After editing this file, regenerate on
+# the Mac (see FEAT-001 Notes):
+#   ./scripts/mac-build.sh run 'cd /Users/lorand.ignat/Projects/Nagarro/SmallApps/apps-build/play-two && xcodegen generate'
+#
+# No third-party dependencies, no signing team: the team is machine-specific and
+# lives in a gitignored Signing.xcconfig when TASK-009 needs it.
+
+name: PlayTwo
+
+options:
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+
+targets:
+  PlayTwo:
+    type: application
+    platform: iOS
+    sources: [src]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lorand.playtwo
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    info:
+      # Written by `xcodegen generate` from this file; never committed.
+      path: src/Info.plist
+      properties:
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+
+  PlayTwoTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [test]
+    dependencies:
+      - target: PlayTwo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lorand.playtwo.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/PlayTwo.app/PlayTwo"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    info:
+      # Written by `xcodegen generate` from this file; never committed.
+      path: test/Info.plist
+      properties: {}
+
+schemes:
+  PlayTwo:
+    build:
+      targets:
+        PlayTwo: all
+        PlayTwoTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - PlayTwoTests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

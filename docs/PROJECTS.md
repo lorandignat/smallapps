@@ -5,7 +5,7 @@ true; the project's own `docs/STATE.md` has the detail.
 
 | Project | What it is | Phase | Stack | v1 status | Last worked |
 | --- | --- | --- | --- | --- | --- |
-| `airplay-2-receiver` | iPhone 6s as an AirPlay 2 receiver for an Apple TV, out to Bluetooth | breakdown | Swift / iOS 15 | G1 passed; increment 1 being broken down | 2026-11-15 |
+| `play-two` | iPhone 6s as an AirPlay 2 receiver for an Apple TV, out to Bluetooth | build | Swift / iOS 15 | TASK-001 done; rename the code to PlayTwo next | 2026-11-15 |
 
 **Counts:** 1 active · 0 in build · 0 shipped · 0 paused
 
