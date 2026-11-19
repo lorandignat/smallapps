@@ -178,3 +178,77 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
   something playing to show. Advertising at launch means the first thing a new
   user sees is the phone already offered to the Apple TV, so the state screen must
   say so plainly, and any failure to advertise must be visible rather than silent.
+
+## DEC-010 — Port-7000 tests run on the iPhone, not the simulator
+
+- date: 2026-11-17
+- status: superseded by `DEC-011`
+- owner: ba (human decision)
+- context: TASK-003 binds TCP 7000 because that is where an AirPlay 2 receiver
+  is looked for. On the simulator the listener shares the Mac's network
+  namespace, and macOS keeps 7000 for its own AirPlay Receiver: `lsof -nP
+  -iTCP:7000 -sTCP:LISTEN` names ControlCenter, and `NWListener` fails with
+  `bind … [48: Address already in use]`. The developer proved all four
+  behaviours by running the same suite on a free port, so the code is right and
+  the destination is wrong.
+- decision: tests that need the real port 7000 run on the reference iPhone 6s
+  (`xcodebuild test -destination 'id=<udid>'`, routed through the Mac's GUI
+  session like every device build). Simulator tests stay for everything that
+  does not bind a fixed port. The Mac's AirPlay Receiver is neither disabled nor
+  part of the test setup.
+- consequences: a port-7000 test cycle needs the phone connected, trusted and
+  signed, and takes longer than a simulator run; the seven-day profile applies
+  to it. Port-7000 evidence becomes device evidence, which is stronger than a
+  simulator claim. `qa/TEST-PLAN.md` keeps the simulator for the general suite
+  and names the device wherever port 7000 is the subject.
+
+## DEC-011 — The listener port is injectable; 7000 is the default
+
+- date: 2026-11-17
+- status: accepted
+- owner: ba (human decision)
+- context: `DEC-010` moved the fixed-port tests to the phone because macOS owns
+  TCP 7000. That does not work either: Xcode 26.6 refuses to plan any unit test
+  on a physical device — `Cannot test target "PlayTwoTests" … Logic Testing
+  Unavailable` — so the suite could only run on the simulator, where it is red
+  by construction, which takes `R2` down with it for every later task. A second
+  blocker is independent of the toolchain: nothing calls the listener until
+  TASK-004, so a network check against the phone could not pass in TASK-003 no
+  matter where the tests ran.
+- decision: `ReceiverListener` takes `port: NWEndpoint.Port = .init(rawValue:
+  7000)!`; the app always passes nothing and therefore uses 7000. Unit tests bind
+  a free ephemeral port and assert every behaviour there, plus one assertion that
+  the default initialiser's port is 7000. The real port 7000 is proven on the
+  phone when the listener has a caller (TASK-004 wiring, feature close), not
+  before.
+- consequences: the simulator suite stays the evidence for unit behaviour and
+  `R2` can be green again; the AirPlay port itself moves to an app-level
+  observation on the device. No second Xcode is installed and `DEC-010`'s
+  device-test path is dropped. Tests must still prove the reply byte for byte,
+  two sequential connections, the port-in-use failure and the refusal after
+  `stop()` — on a free port, which is the same code path.
+
+## DEC-012 — Discovery is proven on the 6s, not on the simulator
+
+- date: 2026-11-18
+- status: accepted
+- owner: ba (human decision)
+- context: TASK-004 registers the `_airplay._tcp` service on the listener's port,
+  7000. On the simulator that port is already held by macOS ControlCenter, so the
+  listener never becomes ready, the registration never appears, and a `dns-sd`
+  browse run on the Mac shows nothing — the same collision that blocked TASK-003
+  attempt 1. The alternatives were to switch the Mac's AirPlay Receiver off before
+  every run, or to advertise on a random port under a debug flag, which would prove
+  a registration the Apple TV never uses.
+- decision: the discovery criterion runs against the signed app on the iPhone 6s,
+  with the Mac browsing `_airplay._tcp` on the same LAN. The simulator suite stays
+  the unit evidence: it proves the service descriptor (type, name, TXT values) and
+  the failure path without needing port 7000. The app-level 7000 check on the
+  simulator is dropped, not deferred.
+- consequences: TASK-004 needs the device path the bridge already provides
+  (`build … iphoneos`, `install`, `ios-deploy --justlaunch`), and the app must be
+  in the foreground and the phone unlocked while the browse runs. The free-Apple-ID
+  profile expires 2026-11-23, so the check must happen while it is valid; after
+  that the app has to be rebuilt. This makes discovery the first thing observed on
+  the real hardware, which is S1b, and it remains a human observation for the Apple
+  TV's own speaker list.

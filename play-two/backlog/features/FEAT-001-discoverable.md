@@ -84,15 +84,15 @@ supersedes `DEC-006`) depends only on TASK-001 and runs first among the
 | ID | Title | Status |
 | --- | --- | --- |
 | TASK-001 | Scaffold the XcodeGen app with one unit test | done |
-| TASK-010 | Rename the Xcode project to PlayTwo | approved |
-| TASK-002 | Build the AirPlay TXT record from a stable device id | proposed |
-| TASK-003 | Answer TCP connections on port 7000 | proposed |
-| TASK-004 | Publish the `_airplay._tcp` service | proposed |
+| TASK-010 | Rename the Xcode project to PlayTwo | done |
+| TASK-002 | Build the AirPlay TXT record from a stable device id | done |
+| TASK-003 | Answer TCP connections on port 7000 | done |
+| TASK-004 | Publish the `_airplay._tcp` service | approved |
 | TASK-005 | Show the receiver state on the main screen | proposed |
 | TASK-006 | Withdraw the advertisement when the app leaves the foreground | proposed |
 | TASK-007 | Record advertisement events in a diagnostic log | proposed |
 | TASK-008 | Export the diagnostic log to a file | proposed |
-| TASK-009 | Install a signed build on the device | blocked (QQ-008) |
+| TASK-009 | Install a signed build on the device | approved |
 
 ## Notes
 

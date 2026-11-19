@@ -2,9 +2,9 @@
 id: TASK-004
 title: Publish the _airplay._tcp service
 feature: FEAT-001
-status: proposed
+status: approved
 attempts: 0
-owner: null
+owner: developer
 depends_on: [TASK-002, TASK-003]
 estimate: small
 ---
@@ -24,13 +24,19 @@ TASK-002 — the thing the Apple TV browses for.
   `ReceiverListener` and its fixed response (TASK-003), `AppInfo.displayName`
   (TASK-001). You may add a `service` property to `ReceiverListener`; you may not
   change its response bytes.
-- Files in scope (2): the source above plus `test/ServiceAdvertiserTests.swift`
+- Files in scope (3): the source above, `src/PlayTwoApp.swift` and
+  `test/ServiceAdvertiserTests.swift`
+- `src/PlayTwoApp.swift` is in scope for **one** purpose: construct the advertiser
+  once at launch and start it, holding it for the app's lifetime, so the app
+  process actually publishes. Displaying its state is TASK-005 (which owns
+  `ContentView`); foreground/background transitions are TASK-006. Build neither
+  here.
 - One `NWListener` carries both the service registration and the TCP port
   (`docs/STACK.md`: `Network.framework`, no dependencies). No `NetService`, no
   multicast socket code.
 - Explicitly **do not** touch: `project.yml`, `src/AirPlay/`,
-  `src/PlayTwoApp.swift`, `src/ContentView.swift`, `docs/`, `qa/`,
-  `journal/`, `scripts/`, `.opencode/`.
+  `src/ContentView.swift`, `docs/`, `qa/`, journals other than `journal/<role>.md`,
+  `scripts/`, `.opencode/`.
 
 ## Acceptance criteria
 
@@ -42,9 +48,10 @@ TASK-002 — the thing the Apple TV browses for.
 3. [ ] Given a name longer than 63 UTF-8 bytes, when the advertiser starts, then
        it reports `.failed` with a message containing `63` and publishes nothing
        truncated.
-4. [ ] Given the app is running on the simulator and the Mac is reachable, when
+4. [ ] Given the signed app has been installed and launched on the iPhone 6s by
+       the commands below and the Mac is on the same network, when
        `dns-sd -B _airplay._tcp .` runs for 5 seconds on the Mac, then it prints
-       one instance named `PlayTwo`, not zero and not two.
+       exactly one instance named `PlayTwo`, not zero and not two (`DEC-012`).
 5. [ ] `ServiceAdvertiserTests` passes: `Executed 3 tests, with 0 failures`.
 
 ## Verification commands
@@ -53,6 +60,7 @@ TASK-002 — the thing the Apple TV browses for.
 # on this host
 ls play-two/src/Net
 grep -n '_airplay._tcp' play-two/src/Net/ServiceAdvertiser.swift
+grep -n 'ServiceAdvertiser' play-two/src/PlayTwoApp.swift
 
 # on the Mac
 rsync -a <project> <build-host>:<build-dir>/
@@ -60,13 +68,26 @@ xcodegen generate
 xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e' | tee /tmp/opencode/task-004-test.log
 grep -E "Test Suite 'ServiceAdvertiserTests' (passed|failed)" /tmp/opencode/task-004-test.log
 
-# on the Mac, with the app running in the simulator: criterion 4
+# on the Mac: criterion 4 — signed build, install on the 6s, launch, browse, count
+# (the simulator cannot bind 7000: macOS ControlCenter holds it, DEC-012)
+xcodebuild build -scheme PlayTwo -sdk iphoneos
+ios-deploy --bundle PlayTwo --id <udid>
+export PATH=/opt/homebrew/bin:$PATH; ios-deploy --id <udid> --justlaunch
+sleep 5   # the phone must be unlocked and the app in the foreground
 dns-sd -B _airplay._tcp . > /tmp/ap2-browse.txt & BP=$!; sleep 5; kill $BP; cat /tmp/ap2-browse.txt
+grep "_airplay\._tcp\." /tmp/ap2-browse.txt | grep -c "PlayTwo"
 ```
 
-**Expected today:** `QQ-005` is resolved, so every build line runs. An
-empty browse is **not** a `PASS` for criterion 4 and **not** a `FAIL` of the code:
-it is `BLOCKED` with the reason recorded.
+**Expected today:** the Mac bridge is proven (`QQ-005`, closed), so every
+build line runs and the suite is green. Criterion 4 runs on the phone
+(`DEC-012`), because the simulator cannot bind 7000 — macOS ControlCenter keeps
+it. A green run is one `Add` line for `_airplay._tcp.` whose instance name is
+`PlayTwo`, and the count command prints `1`. An empty browse is **not** a `PASS`
+and **not** a `FAIL` of the code: it is `BLOCKED` with the reason recorded —
+signing expired, the phone locked, the app backgrounded, or the Mac and phone on
+different networks are all reasons, and they belong in the review, not fixed
+here. The verification path is only as good as the profile: it expires
+2026-11-23.
 
 ## Definition of done
 
@@ -85,10 +106,10 @@ it is `BLOCKED` with the reason recorded.
 ## Notes
 
 - Criterion 4 is the increment-1 kill-switch in its cheapest form: it proves the
-  service reaches the LAN without needing the Apple TV. If Bonjour registration
-  does not work from the simulator, say so in the review as `BLOCKED` with the
-  error; the device check (S1b) is the fallback and belongs to the BA, not to
-  this task — installing on the 6s needs signing (`QQ-005`).
+  service reaches the LAN without needing the Apple TV. It runs on the 6s
+  (`DEC-012`), because the simulator cannot bind 7000. Device signing is the
+  human's free Apple ID (`DEC-008`, `QQ-008`); if the profile has expired, say so
+  as `BLOCKED` and the BA rebuilds rather than the developer working around it.
 - Do not add `NWListener` parameters for interface scoping or Bonjour domains in
   this task. Default `.any` interface, default domain, one instance.
 - TASK-006 owns stopping this advertiser; do not wire SwiftUI lifecycle here.

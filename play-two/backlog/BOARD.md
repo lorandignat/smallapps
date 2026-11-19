@@ -3,8 +3,8 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-16 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** TASK-003 next
+**Updated:** 2026-11-18 · **Phase:** build · **Active feature:** FEAT-001
+(approved, G2/G3) · **Active task:** TASK-004 (approved)
 
 ## Features
 
@@ -22,8 +22,8 @@ They are specified only after increment 1 is demonstrated.
 | TASK-001 | FEAT-001 | Scaffold the XcodeGen app with one unit test | done | 1 | PASS 2026-11-16 |
 | TASK-010 | FEAT-001 | Rename the Xcode project to PlayTwo | done | 1 | PASS 2026-11-16 |
 | TASK-002 | FEAT-001 | Build the AirPlay TXT record from a stable device id | done | 2 | PASS 2026-11-16 |
-| TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | approved | 0 | — |
-| TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | proposed | 0 | — |
+| TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | done | 3 | PASS 2026-11-18 (6/6, 2 MINOR); attempts 1-2 BLOCKED |
+| TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | approved | 0 | — |
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | proposed | 0 | — |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | proposed | 0 | — |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
@@ -32,11 +32,18 @@ They are specified only after increment 1 is demonstrated.
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
-first among them because every later command names the `PlayTwo` scheme, and
-TASK-002 is next. TASK-009 is last because it needs the whole tree and the
+first among them because every later command names the `PlayTwo` scheme, then
+TASK-002 (`done`, `PASS` 2026-11-16), and TASK-003 is `done` (`PASS` 2026-11-18).
+TASK-004 is next and is the first task with a visible outcome. TASK-009 is
+last because it needs the whole tree and the
 exported log for the S5 observation.
 
 ## Blockers
+
+- **TASK-003 is re-cut, not blocked.** `DEC-011` makes the listener port
+  injectable (default 7000), so the unit tests bind a free port on the simulator
+  and the real 7000 becomes an app-level observation once TASK-004 gives the
+  listener a caller. Two `BLOCKED` runs changed no source.
 
 - `QQ-005` resolved 2026-11-16: the bridge builds and tests on the Mac
   (Xcode 26.6, iOS 26.5 SDK).
@@ -64,11 +71,19 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 3 done (TASK-001, TASK-002, TASK-010; `PASS` 2026-11-16) / 10 total
-- approved and next: 1 (TASK-003); TASK-009 is approved but ordered last
+- tasks: 4 done (TASK-001, TASK-002, TASK-003, TASK-010; `PASS` 2026-11-16 and
+  2026-11-18) / 10 total
+- approved and next: TASK-004; TASK-009 is approved but ordered last
 - blocked: 0 — `QQ-005` and `QQ-008` are resolved and the 6s is connected
 
 ## Recent changes
+
+- 2026-11-18 — TASK-003 `done` on attempt 3 (`PASS` 6/6, 2 MINOR), so FEAT-001
+  S1d stays open: nothing constructed the listener yet. TASK-004 is `approved`
+  and its scope now includes `src/PlayTwoApp.swift`, which starts the advertiser
+  once at launch — without a caller, criterion 4 (the `dns-sd` browse) could not
+  be reached, the same trap that blocked TASK-003 twice. Its journal exclusion is
+  narrowed to journals other than `journal/<role>.md` (`PROCESS.md` §5 step 10).
 
 - 2026-11-16 — TASK-002 `done` on attempt 2 (`PASS`, 5/5). The rework narrowed
   device-id validation to ASCII `0-9A-F`; the suite is 7 tests in

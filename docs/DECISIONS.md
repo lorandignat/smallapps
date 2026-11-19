@@ -108,3 +108,27 @@ Format:
 - decision: the repository is `smallapps`. Only the human adds the remote and
   pushes; agents keep the `git push` denial. What actually gets published is
   `DEC-009`.
+
+## DEC-009 — The public repository is a sanitised snapshot, not the history
+
+- date: 2026-11-17
+- status: accepted
+- owner: ba (human decision)
+- context: `DEC-008` assumed the whole history could be published as it stands.
+  It cannot: the history carries the build host's address and account, the Mac's
+  scratch paths and the role journals, which are working notes rather than
+  product. The human's rule is simple — the Mac path and the Mac address are
+  never committed, and the way the Mac is driven does not need to be public.
+- decision: `smallapps` is published from an orphan branch built by a script in
+  `.tooling/` (gitignored), from the current tree. The snapshot is the app source
+  plus the spec, backlog, QA plan and process documents. The build bridge, the
+  install log, the role journals, the per-task QA transcripts and every host,
+  device and account identifier are removed or replaced with a placeholder such
+  as `<build-host>`, `<udid>` and `<apple-id>`. The branch holds one commit with
+  no ancestors, so no earlier commit can carry what was removed. The private
+  repository stays the source of truth; agents never push; the human adds the
+  remote and pushes.
+- consequences: the public repository cannot reproduce the private workspace
+  exactly, because the bridge is not in it — that is intended. Republishing is a
+  re-run of the snapshot script, not a rebase. `DEC-008`'s "full history" and
+  "the Apple ID stays" no longer hold; its naming decision still does.
