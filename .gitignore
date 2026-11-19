@@ -1,0 +1,33 @@
+# .tooling/ is a user-local install area, not project source
+.tooling/
+.bin/
+
+# dependencies / caches
+node_modules/
+.pnp.*
+npm-debug.log*
+__pycache__/
+*.pyc
+.venv/
+vendor/
+
+# build output
+build/
+dist/
+out/
+coverage/
+*.ipa
+*.app
+*.dSYM/
+DerivedData/
+.dart_tool/
+.pub-cache/
+.flutter-plugins*
+
+# local state
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+*.local

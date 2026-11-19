@@ -1,0 +1,31 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Every agent in this project runs on the free DeepSeek model.
+  "model": "opencode/deepseek-v4.1-flash-free",
+
+  // The only agent the human talks to.
+  "default_agent": "ba",
+
+  // The process definition is loaded into every session, including subagents.
+  "instructions": ["docs/PROCESS.md"],
+
+  // Anything not explicitly permitted here is still governed by agent rules.
+  // Last matching rule wins.
+  "permissions": [
+    // Containment: nothing outside the project directory.
+    { "action": "external_directory", "resource": "*", "effect": "deny" },
+    { "action": "read", "resource": "/**", "effect": "deny" },
+    { "action": "read", "resource": "/homedir/agent/opencode/apps/**", "effect": "allow" },
+    { "action": "edit", "resource": "/**", "effect": "deny" },
+    { "action": "edit", "resource": "/homedir/agent/opencode/apps/**", "effect": "allow" },
+
+    // No privilege escalation, no remote publishing, no host damage.
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "su *", "effect": "deny" },
+    { "action": "shell", "resource": "git push*", "effect": "deny" },
+    { "action": "shell", "resource": "git remote*", "effect": "ask" },
+    { "action": "shell", "resource": "rm -rf /*", "effect": "deny" },
+    { "action": "shell", "resource": "history -c*", "effect": "deny" }
+  ]
+}
