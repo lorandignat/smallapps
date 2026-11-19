@@ -4,32 +4,36 @@
 > which one is active and what the workspace itself needs. Keep it under 40 lines.
 
 **Updated:** 2026-11-15
-**Active project:** none
-**Mode:** idle — waiting for the first project
-**Shared toolchain:** git only (see the local environment log)
+**Active project:** `airplay-2-receiver`
+**Mode:** intake — spec next
+**Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-Workspace restructured for multiple projects. Agents, skills and process are
-shared and smoke-tested. No project exists yet, so no spec, backlog or code.
+One project, past its spike: DEC-001 chooses a sideloaded iOS AirPlay 2 receiver
+and DEC-002 splits it into four kill-switch increments. The build problem is
+solved in principle — the build bridge drives the human's Mac over SSH
+(DEC-007) — but it is untested until local configuration exists and
+`xcodebuild -version` succeeds.
 
 ## Next action
 
-1. Human names the first project (or runs `/new-project <slug>`).
-2. Create it with `scripts/new-project.sh`, add the registry row, start intake.
-3. Settle the stack per `docs/PLATFORM.md` at the project's `docs/STACK.md`
-   before any task requires building an app.
+1. Human fills local configuration (host, user), installs the key on the Mac from
+   `ssh-copy-id <build-host>`, then `check` must print `xcodebuild -version`.
+2. Write `airplay-2-receiver/product/SPEC.md` for increment 1 and settle the
+   project stack; ask for G1.
 
 ## Open questions
 
-None. Workspace-level questions go in `docs/QUESTIONS.md`.
+Workspace `docs/QUESTIONS.md` QQ-002 (Mac reachability). Project questions in
+`airplay-2-receiver/docs/QUESTIONS.md` (QQ-003, QQ-005).
 
 ## Blockers
 
-None.
+None for planning. Device verification waits on QQ-002.
 
 ## Recent
 
 - 2026-11-15 — scaffolded the agent team (v1, single project).
-- 2026-11-15 — restructured into a multi-project workspace (v2): per-project
-  artifacts, shared process and agents, registry, project template and script.
+- 2026-11-15 — restructured into a multi-project workspace (v2).
+- 2026-11-15 — spike closed; iOS AP2 attempt accepted; Mac bridge built.

@@ -96,3 +96,4 @@ Format:
   repository.
 - consequences: the developer owns one file instead of N; a project moved to its
   own repository must copy its section with it.
+

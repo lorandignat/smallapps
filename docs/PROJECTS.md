@@ -5,9 +5,9 @@ true; the project's own `docs/STATE.md` has the detail.
 
 | Project | What it is | Phase | Stack | v1 status | Last worked |
 | --- | --- | --- | --- | --- | --- |
-| — | no projects yet | — | — | — | — |
+| `airplay-2-receiver` | iPhone 6s as an AirPlay 2 receiver for an Apple TV, out to Bluetooth | breakdown | Swift / iOS 15 | G1 passed; increment 1 being broken down | 2026-11-15 |
 
-**Counts:** 0 active · 0 in build · 0 shipped · 0 paused
+**Counts:** 1 active · 0 in build · 0 shipped · 0 paused
 
 ## Phases
 

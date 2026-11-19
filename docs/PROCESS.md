@@ -53,6 +53,21 @@ own `docs/STATE.md`:
 Then: add the row to `docs/PROJECTS.md`, fill `<project>/README.md`, and start
 intake. A project with no approved spec is not real work — do not staff it.
 
+### Spikes
+
+Some questions can only be answered by investigation: a protocol, a licensed
+capability, a platform limit. Those are spikes, not features, and they happen
+before G1.
+
+- One spike = one question, one file: `<project>/docs/SPIKE-###-<topic>.md`, from
+  `templates/spike.md`.
+- Timeboxed to two working sessions. It ends with a `DEC-###`, not with code.
+- No product code, no backlog tasks, no installation beyond what the spike needs.
+- A spike may conclude "cannot be answered on this host" — that is a valid,
+  useful result when it names what is missing.
+- Do not let a spike grow into the product. When it is answered, the decision
+  goes to the user and the work either becomes a spec or stops.
+
 ### Priorities across projects
 
 The human decides. When nothing is specified, the BA works the project with the

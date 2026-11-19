@@ -1,6 +1,7 @@
 # PLATFORM — where iOS apps get built
 
-Owner: `ba`. Status: **undecided** (`DEC-004`). This is a workspace-level
+Owner: `ba`. Status: **decided — option D, Swift on a remote Mac** (`DEC-007`).
+This is a workspace-level
 analysis, shared by every project. Each project records its own choice in
 `<project>/docs/STACK.md` during intake, before PM breaks the first feature into
 tasks, because the choice decides what the developer may install and what the
@@ -33,12 +34,13 @@ packaging, signing, TestFlight, App Store.
 
 Two workable shapes, either can be added later without changing the process:
 
-1. **SSH + wrapper script (simplest, recommended first).** Add
-   the build bridge that runs
-   `ssh mac 'xcodebuild -project ... -scheme ... -destination ...'` and copies
-   artifacts back. Requires a Mac on the network, an SSH key with no passphrase,
-   and `xcodebuild` on the Mac. Fits the existing developer/tester loop with no
-   new moving parts.
+1. **SSH + wrapper script (chosen).** A small script runs
+   `ssh mac 'xcodebuild -project ... -scheme ... -destination ...'`, syncs the
+   project over `rsync`, installs the app on the device, and logs everything to
+   a local directory. Requires a Mac on the network, an SSH key with no
+   passphrase, and `xcodebuild` on the Mac. It fits the developer/tester loop
+   with no new moving parts. The script and its notes are local to the build
+   machine and are not published.
 2. **MCP server on the Mac (richest).** Run an Xcode MCP server on the Mac that
    exposes build/test/simulator/screenshot tools, then point OpenCode at it:
 
