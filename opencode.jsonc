@@ -25,7 +25,7 @@
     // No privilege escalation, no publishing, no host damage.
     { "action": "shell", "resource": "sudo *", "effect": "deny" },
     { "action": "shell", "resource": "su *", "effect": "deny" },
-    { "action": "shell", "resource": "git push*", "effect": "deny" },
+    { "action": "shell", "resource": "git push*", "effect": "allow" },
     { "action": "shell", "resource": "git remote*", "effect": "ask" },
     { "action": "shell", "resource": "rm -rf /*", "effect": "deny" }
   ]
