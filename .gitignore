@@ -24,6 +24,18 @@ DerivedData/
 .pub-cache/
 .flutter-plugins*
 
+# Xcode and macOS local state — nothing here belongs in the repository
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcarchive
+*.mobileprovision
+*.provisionprofile
+.swiftpm/
+DerivedData/
+*.dSYM/
+
 # local state
 .DS_Store
 *.log

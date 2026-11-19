@@ -2,8 +2,8 @@
 id: TASK-002
 title: Build the AirPlay TXT record from a stable device id
 feature: FEAT-001
-status: proposed
-attempts: 0
+status: done
+attempts: 2
 owner: null
 depends_on: [TASK-001]
 estimate: small
@@ -76,7 +76,8 @@ substitute for a `PASS`.
 
 | Attempt | Date | Tester findings | Outcome |
 | --- | --- | --- | --- |
-| — | — | — | — |
+| 1 | 2026-11-16 | FAIL, 4/5 criteria. MAJOR: `DeviceIdentity.swift:65` accepts fullwidth Unicode hex, so a malformed id builds a record instead of returning `nil`. | Rework, attempt 2. |
+| 2 | 2026-11-16 | PASS, 5/5 criteria. Three minor findings: the fix sits in commit `aa0d12b` (BA's `git add -A`); the fullwidth-letters "whole group" literal at `AirPlayTXTRecordTests.swift:114` uses eight groups, so the shape check rejects it before the character guard does; QA doc paths drifted and were fixed in the same pass. | Done. |
 
 ## Notes
 

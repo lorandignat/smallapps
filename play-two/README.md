@@ -5,8 +5,8 @@ through a Bluetooth speaker. Personal, sideloaded, iOS 15 only.
 
 | | |
 | --- | --- |
-| **Status** | specified, awaiting G1 |
-| **Phase** | intake |
+| **Status** | increment 1 in progress (3 of 10 tasks done) |
+| **Phase** | build |
 | **Platform** | iOS 15.0, iPhone 6s — Swift (`docs/STACK.md`) |
 | **v1** | increment 4 of `DEC-002`: discoverable, pairable, audible, useful |
 
@@ -26,9 +26,10 @@ decision and its costs are `DEC-001` and `DEC-002` in `docs/DECISIONS.md`.
 
 ## Current state
 
-No code. Spec and stack are written and awaiting the G1 gate; the Mac build
-bridge (the build bridge in the workspace) is built but not yet tested
-against the real Mac. The authoritative status is `docs/STATE.md`.
+Increment 1 is in progress. FEAT-001 has ten tasks; the scaffold, the TXT record
+and the rename are done and PASSed, and the app builds, signs and installs on the
+reference iPhone 6s. The next task adds the RTSP listener on port 7000. The
+authoritative status is `docs/STATE.md`.
 
 ## Stack
 

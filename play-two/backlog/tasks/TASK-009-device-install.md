@@ -2,7 +2,7 @@
 id: TASK-009
 title: Install a signed build on the device
 feature: FEAT-001
-status: blocked
+status: approved
 attempts: 0
 owner: null
 depends_on: [TASK-008]
@@ -13,106 +13,108 @@ estimate: small
 
 ## Goal
 
-`xcodebuild build … iphoneos`, `install` and a launch put the app on the
-iPhone 6s, with the signing team supplied by a gitignored local file so that
-`project.yml` stays free of machine-specific values — this is what lets S1b, S1c
-and S5 be observed on the device at all.
+The device path is repeatable and written down: anyone can rebuild, install and
+launch PlayTwo on the iPhone 6s from the commands in `README.md`, and knows the
+profile expires on 2026-11-23. This is what lets S1b, S1c and S5 be observed on
+the device at all.
 
 ## Context for the developer
 
-- Where it lives: `project.yml` (XcodeGen project settings), a new
-  `Signing.xcconfig.example`, `.gitignore`, and the run instructions in
-  `README.md` ("Running it").
-- Interfaces it may touch: nothing in `src/` or `test/` — this task adds no
-  product code and no dependency.
-- Files in scope (4): `project.yml`, `Signing.xcconfig.example` (new),
-  `.gitignore`, `README.md`.
-- Shape: `project.yml` points its configurations at `Signing.xcconfig` (XcodeGen
-  `configFiles`, or an equivalent that the developer can justify in the commit
-  body); `Signing.xcconfig` is gitignored and holds the one line
-  `DEVELOPMENT_TEAM = <TEAM_ID>`; `Signing.xcconfig.example` is committed with the
-  placeholder only and the README says `cp Signing.xcconfig.example
-  Signing.xcconfig`, then edit that one line.
-- An empty `DEVELOPMENT_TEAM` must still build for `iphonesimulator`, so the
-  existing A2-A3 path (TASK-001) keeps working with the local file present but
-  unfilled. If XcodeGen cannot generate while `Signing.xcconfig` is absent, say so
-  in the README as step 0 (`cp` before `xcodegen generate`) — the copy step is
-  documented, not hidden.
-- Explicitly **do not** touch: `src/`, `test/`, `scripts/`, `docs/`, `product/`,
-  `qa/`, `journal/`, `.opencode/`, `../../docs/`, `../../templates/`, and never
-  the workspace `.gitignore` or the build bridge.
+- Where it lives: `play-two/README.md`, one new section
+  `## Running it on the iPhone`.
+- Files in scope (1): `play-two/README.md` only.
+- The path is already built and already proven by hand; this task documents it,
+  it does not design it. `DEC-008` is binding:
+  - the signing team lives only in local configuration and is never committed;
+    the build passes it to `xcodebuild` as `DEVELOPMENT_TEAM`;
+  - device builds and non-simulator tests must run in the Mac's Aqua login
+    session: an ssh session cannot reach the login keychain and fails with
+    `errSecInternalComponent`, so never tell the reader to run `xcodebuild`
+    directly over ssh;
+  - install and launch use `ios-deploy` (Homebrew on the Mac) because
+    `xcrun devicectl` needs iOS 17 and the 6s runs iOS 15.8.8;
+  - the profile `iOS Team Provisioning Profile: com.lorand.playtwo` expires
+    **2026-11-23**; the app stops launching after that and a rebuild is the fix.
+- The section must contain, in this order: prerequisites that are already true
+  (the free Apple ID account, the signing team set in Xcode, the team id in
+  local configuration), the commands that sync, build, install and launch the
+  app, the expiry date with what to do when it lapses, the device (its UDID,
+  name and iOS version), and the note that `devicectl` does not work for iOS 15
+  and `ios-deploy` does.
+- Explicitly **do not** touch: `src/`, `test/`, `project.yml`, `scripts/`,
+  `docs/`, `product/`, `qa/`, `backlog/`, `journal/`, `.opencode/`, and anything
+  outside `play-two/`. No `Signing.xcconfig` of any kind, no
+  `DEVELOPMENT_TEAM` in `project.yml`.
 
 ## Acceptance criteria
 
-1. [ ] Given the tree, when `grep -n 'Signing.xcconfig' project.yml` runs, then
-       it finds the configuration reference, and
-       `grep -c 'DEVELOPMENT_TEAM' project.yml` prints `0` — the team is read
-       only from the local file, so `qa/REGRESSION.md` R3 and TEST-PLAN A9 stay
-       green.
-2. [ ] Given only the committed files, when `cp Signing.xcconfig.example
-       Signing.xcconfig` runs (the team value may stay the placeholder — the
-       human's real id arrives with `QQ-008`), then
-       `git check-ignore -v play-two/Signing.xcconfig` names
-       `play-two/.gitignore`, `git status --porcelain` shows no
-       `Signing.xcconfig` line, and `git grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}' -- play-two`
-       prints nothing — no credentials in the repository.
-3. [ ] Given a `Signing.xcconfig` with a real team id, when
-       `xcodebuild build -scheme PlayTwo -sdk iphoneos`
-       runs, then it exits 0 and prints
-       `app bundle: …/build/Build/Products/Debug-iphoneos/PlayTwo.app`; a
-       signing failure (`no signing certificate`, `requires a development team`)
-       is a `FAIL` of this task, a missing Mac (`QQ-005`) is `BLOCKED`.
-4. [ ] Given that bundle and the UDID printed by
-       `xcrun devicectl list devices`, when
+1. [ ] Given `play-two/README.md`, when
+       `grep -n 'Running it on the iPhone' play-two/README.md` runs, then it
+       prints exactly one heading line, the section names `iphoneos`,
+       `ios-deploy`, `<udid>` and `2026-11-23`,
+       and for each of those four strings
+       `grep -c -- '<string>' play-two/README.md` prints a number greater than 0.
+2. [ ] Given the committed tree, when
+       `git -C play-two grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}'` and
+       `git -C /homedir/agent/opencode/apps grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}'`
+       run, then both print nothing (exit 1) and `git status --porcelain` stages
+       no such line — no team id, certificate id or profile UUID is committed.
+3. [ ] Given a synced, generated tree on the Mac and the Aqua session available,
+       when `xcodebuild build -scheme PlayTwo -sdk iphoneos` runs, then
+       it exits 0, prints `app bundle:` with
+       `build/Build/Products/Debug-iphoneos/PlayTwo.app`, and the build log
+       carries `Signing Identity: "Apple Development: <apple-id>`; a
+       signing error (including `errSecInternalComponent`,
+       `no signing certificate`, `requires a development team`) is a `FAIL`, an
+       unreachable Mac is `BLOCKED`.
+4. [ ] Given that bundle, when
        `ios-deploy --bundle build/Build/Products/Debug-iphoneos/PlayTwo.app --id <udid>`
-       runs, then it prints `ok — log:` and
-       `xcrun devicectl device info apps --device <udid>` lists `<bundle-id>`.
-5. [ ] Given the app is installed, when it is launched on the phone, then the app
-       is foregrounded (a pid, not a crash) and its only screen shows the
-       receiver status text, reported character for character — e.g.
-       `Advertising as PlayTwo`; a launch that crashes or shows no
-       status text is a `FAIL`.
+       runs, then it exits 0 and prints `Installed package`.
+5. [ ] Given the app is installed, when it is launched on the phone and the human
+       reads the screen, then the PlayTwo screen is visible with its receiver
+       status text, reported character for character in the TEST-PLAN O1 form; a
+       crash, a blank screen, or an app that does not come to the foreground is a
+       `FAIL`.
 
 ## Verification commands
 
 ```sh
-# on this host (static, works today once the files exist)
-grep -n 'Signing.xcconfig' play-two/project.yml
-grep -c 'DEVELOPMENT_TEAM' play-two/project.yml        # expected: 0
-ls play-two/Signing.xcconfig.example
-grep -n 'Signing.xcconfig' play-two/.gitignore
-grep -nE 'Signing\.xcconfig|install|devicectl' play-two/README.md
-git -C play-two grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}' -- . || echo 'no committed team id'
-git -C play-two check-ignore -v Signing.xcconfig || echo 'NOT ignored'
+# on this host (static, expected green as soon as README is written)
+grep -n 'Running it on the iPhone' play-two/README.md
+for t in iphoneos ios-deploy <udid> 2026-11-23; do
+  printf '%s: ' "$t"; grep -c -- "$t" play-two/README.md
+done                                                        # each: > 0
+git -C play-two grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}' || echo 'no committed team id'
+git -C /homedir/agent/opencode/apps grep -nE 'DEVELOPMENT_TEAM *= *[A-Z0-9]{10}' || echo 'no committed team id'
+git status --porcelain | grep -E 'DEVELOPMENT_TEAM' || echo 'nothing staged with a team id'
 
-# on the Mac (signing steps BLOCKED until QQ-008 resolves)
+# on the Mac, through the bridge (never xcodebuild over ssh)
 xcodebuild -version
 rsync -a <project> <build-host>:<build-dir>/
 xcodegen generate
-xcodebuild build -scheme PlayTwo -sdk iphoneos
-xcrun devicectl list devices
+xcodebuild build -scheme PlayTwo -sdk iphoneos | tee /tmp/opencode/task-009-build.log
+grep -E '\*\* BUILD SUCCEEDED \*\*' /tmp/opencode/task-009-build.log
+grep -E 'app bundle:' /tmp/opencode/task-009-build.log
+grep -E 'Signing Identity: "Apple Development: <apple-id>' /tmp/opencode/task-009-build.log
 ios-deploy --bundle build/Build/Products/Debug-iphoneos/PlayTwo.app --id <udid>
-xcrun devicectl device info apps --device <udid> | grep -i play-two
-xcrun devicectl device process launch --device <udid> <bundle-id>
+ios-deploy --justlaunch --id <udid> --bundle play-two/build/Build/Products/Debug-iphoneos/PlayTwo.app
 ```
 
-`<udid>` is copied from `devicectl list devices`; `<bundle-id>` is the identifier
-declared for the `PlayTwo` target in `project.yml` — read both, never
-guess. Criterion 5's screen text is the human's line, in the TEST-PLAN O1 form.
-
-**Expected today:** `QQ-005` is resolved, so the build lines up to
-`build … iphoneos` run; the signing-dependent ones are `BLOCKED` on `QQ-008` for
-the signing team. `BLOCKED` is recorded with the exact error line, never counted
-as `FAIL`.
+**Expected today:** every line runs. Device command names are by `DEC-008`: bundle
+id `com.lorand.playtwo`, device UDID `<udid>`.
+build picks `ios-deploy` itself when it is installed and falls back to
+`devicectl`, which cannot serve the 6s — if the log shows a `devicectl` error, the
+miss is a missing `ios-deploy` on the Mac, reported as `BLOCKED`, not a code
+defect.
 
 ## Definition of done
 
 - [ ] All criteria have evidence in `qa/reports/TASK-009-review.md`
 - [ ] `qa` verdict is `PASS`
-- [ ] Only the four files listed above changed
-- [ ] `Signing.xcconfig` is absent from `git status` and from the diff
-- [ ] Regression list still passes (R3, R5 in particular)
-- [ ] One commit `play-two/TASK-009: install a signed build on the device` exists
+- [ ] Only `play-two/README.md` changed
+- [ ] No team id, certificate id or profile UUID in the diff or in `git status`
+- [ ] Regression list still passes (R1, R3, R5 in particular)
+- [ ] One commit `play-two/TASK-009: document the device install path` exists
 
 ## Rework log
 
@@ -122,25 +124,31 @@ as `FAIL`.
 
 ## Notes
 
-- **BLOCKED until `QQ-008` is answered:** which Apple ID / development team signs
-  device builds, and whether it is the free (7-day) or paid (1-year) account. Do
-  not guess a team id and do not ask for credentials. The default if the question
-  stays unanswered is the free account: a 7-day profile and a re-sign routine;
-  when the answer arrives, record the profile's expiry date in `README.md` so the
-  re-sign step is a date, not a surprise.
-- Signing credentials are never committed: no team id in `project.yml`, `README.md`,
-  this task, a journal or a commit message. Only the placeholder in
-  `Signing.xcconfig.example`.
-- `sync` rsyncs the project directory minus `.git/`, `build/` and friends, so the
-  untracked `Signing.xcconfig` **does** reach the Mac. That is intended — do not
-  add an rsync exclusion for it, and do not edit the build bridge.
-- If the Mac cannot create the profile headlessly, the human's one-time Xcode step
-  (TEST-PLAN O1: open the generated project, pick the team, let Xcode create the
-  profile) is the documented fallback. Record it as `BLOCKED (QQ-008)`, not as a
-  code defect, and re-run `build`.
-- Scope: this task makes the device reachable; it does not touch the
-  advertisement, the listener or the UI. S1b/S1c/S5 themselves are the human's
-  observations (TEST-PLAN O1-O5), verified at feature close, not here.
-- Depends on TASK-008 only for build-loop ordering: the project is stable and the
-  log export is what the S5 observation attaches. Nothing in this task reads the
-  export code.
+- **The seven-day cliff is a date, not a surprise.** The free-account profile
+  expires 2026-11-23 (`DEC-008`). After that the app stops launching until it is
+  rebuilt and reinstalled; the README says so next to the commands, with the date,
+  so nobody debugs a signature failure that is really an expired profile.
+- **`sync` does not generate.** `rsync -a <project> <build-host>:<build-dir>/` rsyncs the tree; the
+  `.xcodeproj` is generated on the Mac and is gitignored. `xcodegen generate` must
+  follow every `sync` that changes `project.yml` — the README states this in the
+  command list rather than in a footnote.
+- **The team is not in the tree.** `DEC-008` puts it in local configuration as
+  `MAC_TEAM_ID`, outside the project and outside git. Do not add a
+  `DEVELOPMENT_TEAM` to `project.yml`, do not create `Signing.xcconfig` or
+  `Signing.xcconfig.example`, and do not write the team id, the certificate id or
+  the profile UUID into the README, this task or a commit message. The account
+  name and the expiry date are documentation, not credentials.
+- **Aqua session, not ssh.** build already routes `iphoneos` builds and
+  non-simulator tests through the GUI-session runner; an ssh `codesign` fails
+  with `errSecInternalComponent`. The README must not offer an ssh `xcodebuild`
+  alternative, and this task does not edit `scripts/`.
+- **`devicectl` is not the tool for this phone.** It requires iOS 17; the 6s runs
+  iOS 15.8.8, so install and launch go through `ios-deploy`. The README says which
+  one works and why, or the next person will follow Apple's current
+  documentation and conclude the phone is unsupported.
+- **Scope.** This task documents the path that has already been proven end to end
+  (`** BUILD SUCCEEDED **`, `Installed package`, launch success). It adds no
+  product code and no dependency. S1b, S1c and S5 remain the human's observations
+  at feature close (TEST-PLAN O1-O5), not criteria of this task.
+- Depends on TASK-008 only for build-loop ordering: the log export is what the S5
+  observation attaches. Nothing here reads that code.

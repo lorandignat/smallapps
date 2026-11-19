@@ -1,7 +1,7 @@
 # XcodeGen spec — the source of truth for PlayTwo.xcodeproj.
 # The generated project is gitignored. After editing this file, regenerate on
 # the Mac (see FEAT-001 Notes):
-#   ./scripts/mac-build.sh run 'cd /Users/lorand.ignat/Projects/Nagarro/SmallApps/apps-build/play-two && xcodegen generate'
+#   xcodegen generate           (project.yml is the source of truth)
 #
 # No third-party dependencies, no signing team: the team is machine-specific and
 # lives in a gitignored Signing.xcconfig when TASK-009 needs it.

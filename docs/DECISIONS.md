@@ -97,3 +97,14 @@ Format:
 - consequences: the developer owns one file instead of N; a project moved to its
   own repository must copy its section with it.
 
+## DEC-008 — The repository is published as `smallapps`
+
+- date: 2026-11-16
+- status: superseded by `DEC-009`
+- owner: ba (human decision)
+- context: the workspace was built local-only on purpose (`git push` is denied to
+  every agent). The human wants it on GitHub under a name that fits what it is: a
+  monorepo of small apps, one of which is PlayTwo.
+- decision: the repository is `smallapps`. Only the human adds the remote and
+  pushes; agents keep the `git push` denial. What actually gets published is
+  `DEC-009`.

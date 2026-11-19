@@ -139,3 +139,42 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
 - consequences: same mechanical rename as DEC-006, applied once. TASK-010 does
   the code and manifest half. The name avoids Apple's "AirPlay" trademark while
   still reading as AirPlay 2 to anyone who knows the protocol.
+
+## DEC-008 — Device builds use a free Apple ID
+
+- date: 2026-11-16
+- status: accepted
+- owner: ba (human decision)
+- context: device builds need a signing team. The free tier was chosen over the
+  paid programme because this is a personal receiver on one phone, and the cost
+  of the free tier — a seven-day profile and a periodic re-sign — is acceptable.
+- decision: device builds are signed with a free Apple ID's personal team. The
+  account and the team identifier live in local configuration and are not part of
+  this repository; nothing about signing is committed.
+- consequences: profiles expire weekly, so the app must be rebuilt and reinstalled
+  about once a week. The free tier allows three devices and ten app ids per week,
+  which is enough here.
+
+## DEC-009 — Default title, glass treatment and auto-advertise
+
+- date: 2026-11-16
+- status: accepted
+- owner: ba (human decision)
+- context: the human's post-G1 requests (see `product/IDEA.md`) needed three
+  answers before SPEC v1.1 could be drafted: what the Apple TV shows before
+  anyone edits it, whether an approximation of the requested glass look is
+  acceptable on iOS 15, and whether advertising is a switch that must be turned
+  on or a state the app enters by itself.
+- decision: the default advertised title is the phone's own name
+  (`UIDevice.current.name`, which reads `<device>` on this device),
+  editable in the app (increment 2). The human chose the device name over a
+  hardcoded literal because it is simpler and follows the phone if it is
+  renamed. The UI may use `ultraThinMaterial` / vibrancy for the glass
+  treatment — an approximation, understood as such, not Liquid Glass. The
+  receiver advertises as soon as it launches; the on/off control turns it off,
+  the default is on.
+- consequences: increment 2 carries the title setting, the on/off control and the
+  idle-timer work; increment 3 carries the visual treatment, because it needs
+  something playing to show. Advertising at launch means the first thing a new
+  user sees is the phone already offered to the Apple TV, so the state screen must
+  say so plainly, and any failure to advertise must be visible rather than silent.

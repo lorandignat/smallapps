@@ -37,3 +37,33 @@ distribute; whether AirPlay 1 is an acceptable v1; whether the phone may be
 jailbroken or sideloaded.
 
 **Rejected / out of scope:** none yet.
+
+## Requests added after G1 — 2026-11-16
+
+Stated by the human while increment 1 was in the build loop. Not in the approved
+SPEC v1.0; these become its next revision, and none of them changes increment 1.
+
+- **Configurable advertised title.** The name the Apple TV shows should be
+  editable in the app, not fixed to the product name or the phone's name.
+- **A real control surface, still quiet.** Receiver on/off, what is playing, and
+  where the audio is going. Minimal text, album art when the stream carries it,
+  and a translucent "glass" treatment rather than a settings form.
+- **Output picker.** Bluetooth speaker *or* the 3.5 mm jack — the 6s has one, so
+  wired output is a first-class choice, not a fallback. Built-in speaker too.
+- **Screen stays awake.** The receiver has to keep advertising and streaming, so
+  the app may not let the display sleep while it is receiving.
+- **App icon.** One recognisable icon; it is the only thing visible on the home
+  screen of a phone that spends its life as a receiver.
+- **AirPlay 2 must be the real thing.** Explicitly: "make sure we can make
+  airplay 2 work with or like shairport-sync". shairport-sync's AirPlay 2 mode is
+  the reference implementation to follow, not an approximation of it.
+
+Constraints these run into, recorded so the next revision is honest:
+
+| Request | Constraint |
+| --- | --- |
+| Glass UI | The 6s runs iOS 15.8.8. Apple's Liquid Glass is an iOS 26 design language and its APIs do not exist there. Translucency can be approximated with `ultraThinMaterial` / `UIVisualEffectView`, not reproduced. |
+| Output picker | Route selection is system-owned. `AVRoutePickerView` is the sanctioned picker and works on iOS 15; enumerating and switching routes programmatically is limited. Bluetooth pairing itself stays in Settings. |
+| Album art | Artwork arrives in the stream's metadata (increment 3+), not from the phone's library; it is absent for some senders and must degrade to a placeholder. |
+| Screen awake | `UIApplication.shared.isIdleTimerDisabled` — small, but it belongs to the receiver's lifecycle, so it is specified with increment 2, not bolted on. |
+| AirPlay 2 via shairport-sync | SPIKE-001 already accepted the reverse-engineered route. Following shairport-sync means its RTSP, HAP pairing and buffered-audio flow, which is increment 2's largest risk and deserves a second spike before any UI work. |

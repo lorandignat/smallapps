@@ -119,7 +119,7 @@ xcodegen generate
 ```
 
 Without it, `build` and `test` fail with `no .xcworkspace or .xcodeproj in
-<workspace>play-two`.
+play-two`.
 
 **Open questions for the BA.** Recorded here because PM may not write
 `docs/QUESTIONS.md`:

@@ -116,7 +116,7 @@ rsync -a <project> <build-host>:<build-dir>/
 xcodegen generate
 ls -d PlayTwo.xcodeproj && xcodebuild -list -project PlayTwo.xcodeproj
 xcodebuild build -scheme PlayTwo -sdk iphonesimulator
-/usr/libexec/PlistBuddy -c "Print :CFBundleName" <workspace>play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist; /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" <workspace>play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist; /usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" <workspace>play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist || echo "no CFBundleDisplayName key"
+/usr/libexec/PlistBuddy -c "Print :CFBundleName" play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist; /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist; /usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app/Info.plist || echo "no CFBundleDisplayName key"
 xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e' | tee /tmp/opencode/task-010-test.log
 grep -E "Test Case '-\[PlayTwoTests\.AppInfoTests" /tmp/opencode/task-010-test.log
 grep -E "Executed 1 test, with 0 failures" /tmp/opencode/task-010-test.log

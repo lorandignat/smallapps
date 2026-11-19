@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-16 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** TASK-010 next (TASK-001 done)
+(approved, G2/G3) · **Active task:** TASK-003 next
 
 ## Features
 
@@ -21,30 +21,33 @@ They are specified only after increment 1 is demonstrated.
 | --- | --- | --- | --- | --- | --- |
 | TASK-001 | FEAT-001 | Scaffold the XcodeGen app with one unit test | done | 1 | PASS 2026-11-16 |
 | TASK-010 | FEAT-001 | Rename the Xcode project to PlayTwo | done | 1 | PASS 2026-11-16 |
-| TASK-002 | FEAT-001 | Build the AirPlay TXT record from a stable device id | proposed | 0 | — |
-| TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | proposed | 0 | — |
+| TASK-002 | FEAT-001 | Build the AirPlay TXT record from a stable device id | done | 2 | PASS 2026-11-16 |
+| TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | approved | 0 | — |
 | TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | proposed | 0 | — |
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | proposed | 0 | — |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | proposed | 0 | — |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | proposed | 0 | — |
-| TASK-009 | FEAT-001 | Install a signed build on the device | blocked | 0 | — |
+| TASK-009 | FEAT-001 | Install a signed build on the device | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
-007 → 008 → 009. Tasks 002, 003 and 010 all depend only on 001; TASK-010 is first
-among them because every later command names the `PlayTwo` scheme. TASK-009 is last
-because it needs the whole tree and the exported log for the S5 observation.
+007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
+first among them because every later command names the `PlayTwo` scheme, and
+TASK-002 is next. TASK-009 is last because it needs the whole tree and the
+exported log for the S5 observation.
 
 ## Blockers
 
 - `QQ-005` resolved 2026-11-16: the bridge builds and tests on the Mac
-  (Xcode 26.6, iOS 26.5 SDK). QQ-008 (signing team) still blocks TASK-009.
-- The iPhone 6s is not connected to the Mac, so S1b/S1c/S5 stay unverifiable.
-- `QQ-008` — no signing team named, so no team id may be written anywhere. TASK-009
-  (signed `iphoneos` build, install, launch on the 6s) is `blocked` until the
-  human answers which Apple ID / development team signs and whether it is the free
-  7-day or paid 1-year account. Without it S1b, S1c and S5 cannot be observed.
-  Default if unanswered: free account, 7-day profile, re-sign routine.
+  (Xcode 26.6, iOS 26.5 SDK).
+- `QQ-008` resolved by `DEC-008` (2026-11-16): the free Apple ID
+  `<apple-id>` (team in local configuration as `MAC_TEAM_ID`, never
+  committed) signs device builds; profile expires 2026-11-23. TASK-009 is no
+  longer blocked.
+- The iPhone 6s **is** connected: "<device>", iOS 15.8.8, UDID
+  `<udid>`. Build, install and launch were
+  proven by hand on 2026-11-16; S1b/S1c/S5 stay the human's observations at
+  feature close, not a blocker.
 - `QQ-006` resolved by `DEC-003`: increment 1 uses the default name, the rename
   UI is increment-2 work.
 - `QQ-007` resolved by `DEC-004`: verify graceful withdrawal; post-kill expiry is
@@ -61,13 +64,26 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 1 done (TASK-001, `PASS` 2026-11-16) / 10 total
-- approved and next: 1 (TASK-010)
-- blocked: 1 (TASK-009, `QQ-008`); QQ-005 is resolved, so no other task is blocked
-  on the Mac
+- tasks: 3 done (TASK-001, TASK-002, TASK-010; `PASS` 2026-11-16) / 10 total
+- approved and next: 1 (TASK-003); TASK-009 is approved but ordered last
+- blocked: 0 — `QQ-005` and `QQ-008` are resolved and the 6s is connected
 
 ## Recent changes
 
+- 2026-11-16 — TASK-002 `done` on attempt 2 (`PASS`, 5/5). The rework narrowed
+  device-id validation to ASCII `0-9A-F`; the suite is 7 tests in
+  `AirPlayTXTRecordTests` and 8 overall. Known minor, unscheduled: the
+  fullwidth-letters case at `AirPlayTXTRecordTests.swift:114` is rejected by the
+  shape check rather than by the character guard, so it does not pin the guard
+  on its own.
+
+- 2026-11-16 — `DEC-008` applied: `QQ-008` answered, so TASK-009 is rewritten as
+  one `small` approved task with no `Signing.xcconfig` design. It documents the
+  proven device path in `play-two/README.md` only (the four commands, the UDID,
+  `ios-deploy` because `devicectl` needs iOS 17, the 2026-11-23 profile expiry);
+  the team lives in local configuration as `MAC_TEAM_ID` and is never committed.
+  The 6s is connected (iOS 15.8.8). TASK-010 is `done` (`PASS`), so TASK-002 is
+  next.
 - 2026-11-16 — `DEC-005` and `DEC-007` applied to the backlog; `DEC-006` (Relay)
   is superseded. TASK-010 renamed to `TASK-010-rename-to-playtwo.md` and rewritten
   as one coherent task for the code/manifest half (`depends_on: [TASK-001]`,
@@ -75,7 +91,7 @@ G4. `Attempts` counts developer launches; three means escalate.
   `com.lorand.playtwo` / `com.lorand.playtwo.tests`, no `CFBundleDisplayName`.
   TASK-002..009 swept: project argument `play-two`, scheme `PlayTwo`, simulator
   `iPhone 16e`, Mac path
-  `<workspace>` — no `Relay` and no
+  `<build-dir>` — no `Relay` and no
   hyphenated `com.lorand.play-two` remained. TASK-001 is `done` (`PASS`,
   2026-11-16).
 - 2026-11-15 — post-G3 gaps closed: TASK-007 gained the `Restart` launch marker
