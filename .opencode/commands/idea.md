@@ -1,13 +1,16 @@
 ---
-description: Start or continue intake for a product idea
+description: Start or continue intake for an idea
 agent: ba
 ---
 
-Use skill `ba-intake` on this idea:
+Idea: $ARGUMENTS
 
-$ARGUMENTS
+Use skill `ba-intake`.
 
-If no idea was given, ask for it in one sentence. Then interview me one question
-at a time — do not send a list — and write `product/IDEA.md` as we go. Do not
-write `product/SPEC.md` until you have the problem, the primary user, the core
-flow, the non-goals and the success criteria.
+1. Route it: an existing project, or a new one (skill `ba-new-project`)? Say which
+   in one line, with your reasoning.
+2. If no idea was given, ask for it in one sentence.
+3. Interview one question at a time — never a list — and write the project's
+   `product/IDEA.md` as you go.
+4. Do not write `product/SPEC.md` until you have the problem, the primary user,
+   the core flow, the non-goals, the success criteria and the stack.

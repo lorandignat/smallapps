@@ -13,7 +13,7 @@ attempt: 1
 
 | # | Criterion | Verdict | Evidence |
 | --- | --- | --- | --- |
-| 1 |  | PASS/FAIL | command + output line, or `file:line` |
+| 1 |  | PASS/FAIL | command + result, or `file:line` |
 | 2 |  |  |  |
 
 Evidence is a command the BA could re-run, or an exact `path:line` quote. "Looks
@@ -42,8 +42,7 @@ What could not be checked and which Mac-only step is missing.
 
 ## Verdict
 
-`PASS` only if every criterion has evidence, no regressions, no blockers. State
-the single most important reason here.
+`PASS` only if every criterion has evidence, no regressions and no blockers.
 
 **Verdict:** PENDING
 

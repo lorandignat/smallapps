@@ -1,9 +1,9 @@
-# OPEN QUESTIONS FOR THE HUMAN
+# OPEN QUESTIONS — workspace level
 
-The BA writes here instead of guessing. Nothing in an unattended run should wait
-on this file: if a question blocks work, the BA marks the task `blocked`, picks
-the next independent task, and moves on.
+Decisions that need the human and are not owned by a single project. Project
+questions live in `<project>/docs/QUESTIONS.md`. The BA writes here instead of
+guessing.
 
-| ID | Date | Question | Blocks | Proposed default if unanswered |
+| ID | Date | Question | Blocks | Default if unanswered |
 | --- | --- | --- | --- | --- |
-| — | — | none yet | — | — |
+| QQ-001 | 2026-11-15 | Which stack for the first iOS project — Flutter, React Native/Expo, or Swift with a remote Mac? See `docs/PLATFORM.md`. | First project's `docs/STACK.md`, and therefore G1 | None; stack must be chosen at intake |

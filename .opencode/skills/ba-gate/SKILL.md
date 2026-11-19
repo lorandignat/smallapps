@@ -5,9 +5,10 @@ description: Approval checklists for the four BA gates - spec, features, task at
 
 # Gates
 
-A gate is a decision you record, not a vibe. Approve only after opening the
-files. Every approval goes in `docs/PROJECT-STATE.md` (gates table) and, if it
-involved a judgement call, into `docs/DECISIONS.md`.
+Paths below are relative to the active project (`<project>/`). A gate is a
+decision you record, not a vibe. Approve only after opening the files. Every
+approval goes in the project's `docs/STATE.md` (gates table) and, if it involved a
+judgement call, into its `docs/DECISIONS.md`.
 
 ## G1 — Spec (`product/SPEC.md`)
 
@@ -16,7 +17,7 @@ involved a judgement call, into `docs/DECISIONS.md`.
 - [ ] Every in-scope item has a stated reason it is essential.
 - [ ] ≥ 3 non-goals with reasons.
 - [ ] ≥ 3 success criteria, each observable/testable.
-- [ ] Platform and stack decided in `docs/PLATFORM.md`.
+- [ ] Platform and stack decided in `docs/STACK.md`.
 - [ ] No open question blocks the first feature.
 - [ ] The human said yes.
 

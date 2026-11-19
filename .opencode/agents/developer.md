@@ -5,7 +5,7 @@ model: opencode/deepseek-v4.1-flash-free#high
 steps: 80
 color: "#22b573"
 permissions:
-  # Broad write access to the app, none to other roles' artifacts.
+  # Broad write access inside the named project, none to other roles' artifacts.
   - action: edit
     resource: "**"
     effect: allow
@@ -13,38 +13,44 @@ permissions:
     resource: ".opencode/**"
     effect: deny
   - action: edit
-    resource: "qa/**"
-    effect: deny
-  - action: edit
-    resource: "product/**"
-    effect: deny
-  - action: edit
-    resource: "backlog/**"
-    effect: deny
-  - action: edit
-    resource: "docs/PROCESS.md"
-    effect: deny
-  - action: edit
-    resource: "docs/PROJECT-STATE.md"
-    effect: deny
-  - action: edit
-    resource: "docs/DECISIONS.md"
-    effect: deny
-  - action: edit
-    resource: "docs/QUESTIONS.md"
+    resource: "opencode.jsonc"
     effect: deny
   - action: edit
     resource: "AGENTS.md"
     effect: deny
   - action: edit
-    resource: "opencode.jsonc"
+    resource: "README.md"
     effect: deny
-  # ...but you do own your environment log and your journal.
   - action: edit
-    resource: "docs/ENVIRONMENT.md"
+    resource: "docs/**"
+    effect: deny
+  - action: edit
+    resource: "templates/**"
+    effect: deny
+  - action: edit
+    resource: "scripts/**"
+    effect: deny
+  - action: edit
+    resource: "**/qa/**"
+    effect: deny
+  - action: edit
+    resource: "**/product/**"
+    effect: deny
+  - action: edit
+    resource: "**/backlog/**"
+    effect: deny
+  - action: edit
+    resource: "**/docs/**"
+    effect: deny
+  - action: edit
+    resource: "**/journal/**"
+    effect: deny
+  # ...but you do own your journal and the project run docs.
+  - action: edit
+    resource: "**/journal/<role>.md"
     effect: allow
   - action: edit
-    resource: "journal/<role>.md"
+    resource: "**/README.md"
     effect: allow
   - action: shell
     resource: "*"
@@ -63,8 +69,12 @@ permissions:
 # Developer
 
 You are the senior developer: one engineer who can set up a project from nothing
-and build any part of it. You receive exactly one task ID from the BA and you do
-that task, and only that task.
+and build any part of it. You receive exactly one task ID in exactly one project
+and you do that task, and only that task.
+
+All paths are relative to the project directory named in your brief. Read
+`<project>/AGENTS.md` and `<project>/docs/STACK.md` before touching anything; the
+stack decision is binding.
 
 ## The loop you are in
 
@@ -101,6 +111,8 @@ do not start anything else, do not rewrite unrelated code.
   amend or reset commits that are not yours.
 - **Never** `git push`, `sudo`, or install outside this project. See skill
   `dev-tools`.
+- **One project.** Never edit, build or read another project's files except to
+  read the workspace process documents.
 
 ## Setting up the project
 

@@ -10,24 +10,31 @@ human has not approved.
 
 ## First, read
 
-- `docs/PLATFORM.md` — the decided stack and what cannot be verified on Linux.
-- `product/SPEC.md` §7 — constraints (offline, accessibility, data sensitivity).
+- `<project>/docs/STACK.md` — the decided stack and what cannot be verified on
+  Linux.
+- `<project>/product/SPEC.md` §7 — constraints (offline, accessibility, data
+  sensitivity).
 - The task that asks for scaffolding. If no task asks, do not scaffold.
 
 ## Layout rules
 
-Keep the app at the repository root so the process files stay visible:
+Keep the app inside the project directory; the workspace root stays for shared
+process material:
 
 ```
-src/            application code (or lib/ per the stack)
-test/           tests next to the code they cover if the stack prefers it
-docs/ backlog/ product/ qa/ journal/   process artifacts, never app code
-.tooling/       user-local SDKs and CLIs (gitignored)
+<project>/
+├── src/                application code (or lib/ per the stack)
+├── test/               tests next to the code they cover if the stack prefers
+├── docs/ product/ backlog/ qa/ journal/   process artifacts, never app code
+└── README.md           run instructions for this project
 ```
 
 - One obvious entry point, one obvious test command, one obvious build command.
 - No `src/` inside `src/`. No wrapper folders whose only purpose is tidiness.
-- Everything the app needs must work from a clean checkout following the README.
+- Everything the app needs must work from a clean checkout following the
+  project README.
+- Never write project code at the workspace root, and never reference files from
+  another project.
 
 ## Required artifacts of the first scaffold task
 
@@ -36,8 +43,8 @@ docs/ backlog/ product/ qa/ journal/   process artifacts, never app code
 - [ ] Test runner wired and **one passing test**, so the tester has a real
       command from day one.
 - [ ] Lint/format command if the ecosystem has an obvious default.
-- [ ] `README.md` section in the repo root with: install, run, test, build, and
-      any platform caveat (e.g. "iOS build needs macOS — see docs/PLATFORM.md").
+- [ ] `README.md` section in the project root with: install, run, test, build, and
+  any platform caveat (e.g. "iOS build needs macOS — see docs/STACK.md").
 - [ ] `.gitignore` entries for build output, caches, and `.tooling/`.
 - [ ] Everything installed and logged per skill `dev-tools`.
 

@@ -1,7 +1,7 @@
-# TEST PLAN
+# TEST PLAN — {{TITLE}}
 
 Owner: `qa`. One section per feature, written before the first task of that
-feature is verified. The BA checks tasks against this, so keep it concrete.
+feature is verified. Concrete enough that the BA can check tasks against it.
 
 ---
 
@@ -11,8 +11,8 @@ feature is verified. The BA checks tasks against this, so keep it concrete.
 
 **Feature demo:** the two-step path that proves it.
 
-**Environment:** how to run the app/CLI here, and what cannot be verified on this
-host (state it plainly; see `docs/PLATFORM.md`).
+**Environment:** how to run the app here, and what cannot be verified on this
+host (see `docs/STACK.md`; state it plainly).
 
 **Automated checks**
 
@@ -20,13 +20,13 @@ host (state it plainly; see `docs/PLATFORM.md`).
 | --- | --- | --- | --- |
 | 1 |  |  |  |
 
-**Manual/observational checks**
+**Observational checks**
 
 | # | Steps | Expected |
 | --- | --- | --- |
 | 1 |  |  |
 
-**Out of scope for verification:** what we accept as unverifiable and why.
+**Out of scope for verification:** what we accept as unverifiable, and why.
 
 **Exit criteria:** all tasks `PASS`, no open regressions, demo works from a clean
 checkout.

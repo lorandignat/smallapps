@@ -1,196 +1,213 @@
-# PROCESS — how this team builds an app
+# PROCESS — how apps get built here
 
-Version 1. Owner: `ba`. Everyone reads this; only the human may change the
-priorities in it.
+Version 2. Owner: `ba`. Applies to every project in this workspace. Only the
+human changes the priorities in it; the BA enforces it.
+
+## 0. Workspace and projects
+
+- The workspace is `/homedir/agent/opencode/apps`. Shared materials: `docs/`,
+  `templates/`, `scripts/`, `.opencode/`, `.tooling/`.
+- A **project** is a first-level directory with its own `product/`, `docs/`,
+  `backlog/`, `qa/`, `journal/` and source. Registry: `docs/PROJECTS.md`.
+- One project per unit of work. No task, commit or decision spans two projects.
+- Shared agents, skills and process are deliberately not duplicated per project.
+  Project-specific guidance goes in `<project>/AGENTS.md`.
 
 ## 1. Roles
 
-| Agent | OpenCode ID | Mode | Talks to | Authority |
+| Agent | ID | Mode | Talks to | Owns |
 | --- | --- | --- | --- | --- |
-| Business Analyst | `ba` | primary (default) | the human, and dispatches the other three | Owns the product definition, the process, and every gate. Cannot write code. |
-| Project Manager | `pm` | subagent | `ba` only | Owns `backlog/`. Turns a spec into features, features into atomic tasks with acceptance criteria. Cannot write code, cannot run commands. |
-| Developer | `developer` | subagent | `ba` only | Owns the app source, its tests, and the toolchain. Works on exactly one task per invocation. |
-| Tester | `qa` | subagent | `ba` only | Owns `qa/`. Verifies work against acceptance criteria. Cannot edit source. |
+| Business analyst | `ba` | primary (default) | the human; dispatches the rest | spec, scope, gates, registry, workspace state |
+| Project manager | `pm` | subagent | `ba` | `<project>/backlog/` |
+| Developer | `developer` | subagent | `ba` | `<project>/` source, tests, toolchain |
+| Tester | `qa` | subagent | `ba` | `<project>/qa/` |
 
-**The BA is the only dispatcher.** PM never launches Developer or Tester; BA
-does, one call at a time. That keeps a single, auditable chain of custody, keeps
-the nesting shallow enough to be reliable on a small model, and gives the BA
-line-of-sight on every handoff, which is what "oversee and approve" requires.
+The BA is the only dispatcher. PM never launches Developer or Tester; that keeps
+one auditable chain of custody and one accountable owner per moment.
 
-## 2. Artifacts and ownership
+## 2. Project lifecycle
+
+```
+idea → intake → G1 spec → G2 features → G3 tasks → build loop → release → maintenance
+```
+
+A project sits in exactly one phase, recorded in `docs/PROJECTS.md` and in its
+own `docs/STATE.md`:
+
+| Phase | Meaning |
+| --- | --- |
+| `idea` | directory exists, nothing approved |
+| `intake` | BA interviewing, writing the spec |
+| `breakdown` | PM slicing features and tasks |
+| `build` | task loop running |
+| `release` | v1 criteria met, awaiting human acceptance |
+| `maintenance` | shipped; changes arrive as new features |
+| `paused` / `archived` | deliberately stopped; reason recorded |
+
+### Creating a project
+
+```sh
+./scripts/new-project.sh <slug>     # lowercase, dashes or underscores
+```
+
+Then: add the row to `docs/PROJECTS.md`, fill `<project>/README.md`, and start
+intake. A project with no approved spec is not real work — do not staff it.
+
+### Priorities across projects
+
+The human decides. When nothing is specified, the BA works the project with the
+oldest unanswered question or the nearest release, in that order, and says which
+it picked. Never interleave tasks from two projects in one run.
+
+## 3. Artifacts
+
+Per project, all paths relative to `<project>/`:
 
 | File | Written by | Read by |
 | --- | --- | --- |
+| `README.md` | ba, developer fills run instructions | everyone |
+| `AGENTS.md` | ba | everyone working in that project |
 | `product/IDEA.md` | ba | all |
 | `product/SPEC.md` | ba | all |
 | `backlog/BOARD.md` | pm | all |
 | `backlog/features/FEAT-###.md` | pm | all |
-| `backlog/tasks/TASK-###.md` | pm (ba may only change `status`) | all |
-| `qa/reports/TASK-###-review.md` | qa | all |
+| `backlog/tasks/TASK-###.md` | pm (ba changes `status` only) | all |
 | `qa/TEST-PLAN.md`, `qa/REGRESSION.md` | qa | all |
-| `journal/<role>.md`, `journal/<role>.md`, `journal/<role>.md`, `journal/<role>.md` | that role | all |
-| `docs/PROJECT-STATE.md`, `docs/DECISIONS.md`, `docs/QUESTIONS.md` | ba | all |
-| the local environment log | developer | all |
-| `src/**`, `app/**`, `test/**`, `*.lock`, manifests | developer | all |
+| `qa/reports/TASK-###-review.md` | qa | all |
+| `docs/STATE.md` | ba | all |
+| `docs/DESIGN.md` | ba | all |
+| `docs/STACK.md` | ba | all |
+| `docs/DECISIONS.md`, `docs/QUESTIONS.md` | ba | all |
+| `journal/<role>.md` | that role | all |
+| `src|app|lib|test/**`, manifests, lockfiles | developer | all |
 
-Write access is enforced with permission rules. If you cannot write a file,
-that is the process working — record the need in your journal and hand it to
-the owner.
+Workspace files: `docs/PROJECTS.md`, `docs/STATE.md` (ba), the local environment log
+(developer), everything else in `docs/` by human approval.
 
-## 3. Identifiers and states
+## 4. Identifiers and states
 
-IDs are zero-padded and never reused: `FEAT-001`, `TASK-001`, `DEC-001`,
-`QQ-001` (open question).
-
-Task states, in order:
+IDs are per project, zero-padded, never reused: `FEAT-001`, `TASK-001`,
+`DEC-001`, `QQ-001`. Reference them with the project prefix when writing at
+workspace level: `airplay2/TASK-014`.
 
 ```
 proposed → approved → in-progress → in-review → done
-                ↑                      │
-                └────── rework ────────┘
+              ↑                        │
+              └──────── rework ────────┘
 blocked / dropped are terminal-ish and always carry a reason.
 ```
 
-`done` requires: tester verdict `PASS`, BA gate G4 recorded, commit made, board
-updated. Nothing else counts as done — not "it compiles", not "developer says
-so".
+`done` requires: `qa` verdict `PASS`, BA gate G4, commit made, board updated.
+Not "it compiles", not "the developer says so".
 
-## 4. The loop
+## 5. The loop
 
 ### Phase 0 — Intake (human ⇄ ba)
 
-1. Human describes the idea. BA takes notes in `product/IDEA.md`.
-2. BA interviews: one question at a time, never a wall of questions. Cover
-   problem, primary user, the single core flow, what is explicitly out of scope
-   for v1, and how we will know v1 is finished.
-3. BA writes `product/SPEC.md` from the template and asks for approval.
-4. **Gate G1 (spec):** human approves the spec. Recorded in
-   `docs/PROJECT-STATE.md` and `docs/DECISIONS.md`.
-
-No feature, task, or code exists before G1.
+1. Human describes the idea. BA records it in `<project>/product/IDEA.md`.
+2. BA interviews one question at a time: problem, primary user, core flow,
+   non-goals, success criteria, constraints, stack.
+3. BA writes `<project>/product/SPEC.md` and asks for approval.
+4. **G1:** human approves. Recorded in the project's `docs/STATE.md` and, if
+   anything was contested, `docs/DECISIONS.md`.
 
 ### Phase 1 — Breakdown (ba → pm)
 
-5. BA sends PM one brief: the approved spec, the platform, and the definition
-   of v1. (Brief template: skill `ba-handoff`.)
-6. PM writes features as *vertical slices* (each one shippable and demoable),
-   then splits the first feature only into atomic tasks. Later features stay at
-   feature level until the current one is done — this prevents a 200-task
-   backlog rotting while the product changes.
-7. **Gate G2 (features):** BA checks each feature is independently demoable,
-   ordered by dependency, and consistent with the spec.
-8. **Gate G3 (tasks):** BA checks every task against the atomicity checklist
-   (skill `pm-atomic`). Any task that fails goes back to PM once with a specific
-   reason.
+5. BA sends PM the approved spec, the stack decision, and the definition of v1.
+6. PM writes vertical features, then splits **only the first feature** into
+   atomic tasks.
+7. **G2:** features are demoable, dependency-ordered, traceable to spec.
+8. **G3:** every task passes the atomicity checklist (`pm-atomic`).
 
 ### Phase 2 — Build loop (ba → developer ⇄ qa)
 
-For each task in dependency order, exactly this sequence:
+For each task, in dependency order, exactly this:
 
-9. BA sets the task file to `in-progress` and the board to `in-progress`, then
-   launches **developer** with the task ID only (no paraphrasing of the task).
-10. Developer does one task. It reads the task file, implements, runs the
-    project's own checks, writes `journal/<role>.md`, and returns a short report:
-    what changed, files touched, commands run, self-check results, anything the
-    tester must know.
-11. BA sets the task to `in-review`, then launches **tester** with the task ID
-    and the developer's report.
-12. Tester reads the task's acceptance criteria, verifies each one with real
-    evidence, runs the regression list, writes
-    `qa/reports/TASK-###-review.md`, and returns a verdict:
-    - `PASS` — every criterion verified, no regressions.
-    - `FAIL` — one or more criteria unmet or a regression; each finding has
-      file/line and a reproduction.
-    - `BLOCKED` — the criterion cannot be verified with the current environment.
-13. **Gate G4 (verdict):** BA reads the report itself, not just the summary.
-    - `PASS` → BA commits, sets task `done`, updates the board, appends to
-      `docs/PROJECT-STATE.md`, moves to the next task.
-    - `FAIL` → BA sets task `rework`, writes the tester's findings into the
-      handoff, and relaunches **developer** with the same task ID plus the
-      findings. Same task, new attempt. Developer does not start anything else.
-    - `BLOCKED` → BA either provides the missing environment, asks PM to split
-      the task, or escalates to the human via `docs/QUESTIONS.md`.
-14. Failure budget per task: **2 rework rounds**. On the 3rd `FAIL`, BA stops
-    this task, asks PM to split it into smaller tasks (or to rewrite the
-    criteria if they are untestable), and records a `DEC-###`.
+9. Task → `in-progress`, board updated, `attempts` incremented; launch
+   **developer** with the task ID only.
+10. Developer implements that one task, runs the checks, appends to
+    `<project>/journal/` (private), returns the report.
+11. Task → `in-review`; launch **qa** with the task ID and the report verbatim.
+12. Tester verifies each criterion with evidence, runs the regression list,
+    writes `qa/reports/TASK-###-review.md`, returns `PASS`, `FAIL` or `BLOCKED`.
+13. **G4:** BA reads the report and the diff.
+    - `PASS` → commit, task `done`, board and state updated, next task.
+    - `FAIL` → task `rework`; relaunch developer with the findings verbatim, same
+      task ID.
+    - `BLOCKED` → provide the missing thing, ask PM to re-cut the task, or log a
+      question and move to the next independent task.
+14. Two attempts per task. On the third `FAIL`, stop: PM splits the task or
+    rewrites the criteria, `DEC-###` recorded.
 
 ### Phase 3 — Feature close and release
 
-15. When all tasks of a feature are `done`: BA asks **tester** for a feature
-    verdict against `qa/TEST-PLAN.md`, and **pm** for the next feature's tasks.
-16. When every feature for v1 is `done`, BA writes a release note in
-    `docs/PROJECT-STATE.md`, checks the definition of done below, and stops for
-    human acceptance. iOS packaging/device runs need a Mac or CI; see
-    `docs/PLATFORM.md`.
+15. Feature done → tester verdict against `qa/TEST-PLAN.md`, PM breaks down the
+    next feature.
+16. All features done → release note in the project `docs/STATE.md`, definition
+    of done checked, stop for human acceptance.
 
-**Definition of done for v1:** spec's success criteria are all true; the core
-flow works from a clean checkout via the documented commands; no `FAIL` or
-`BLOCKED` tasks remain; regression list passes; the human has accepted.
+**Definition of done for a release:** spec success criteria true; core flow works
+from a clean checkout by the documented commands; no `FAIL`/`BLOCKED` tasks; the
+regression list passes; the human has accepted.
 
-## 5. Gates (BA checklists)
+## 6. Gates
 
-- **G1 spec:** problem, user, core flow, non-goals, success criteria, platform.
-- **G2 features:** vertical slices, demoable, dependency-ordered, traceable to
-  spec lines.
-- **G3 tasks:** atomicity checklist passes for every task; each has acceptance
-  criteria that a tester could verify with a command or an observation.
-- **G4 verdict:** tester report read in full; evidence present per criterion;
-  regressions addressed; commit made only after `PASS`.
+- **G1 spec:** problem, user, core flow, non-goals, success criteria, stack.
+- **G2 features:** vertical slices, demoable, ordered, traceable.
+- **G3 tasks:** atomicity checklist passes for every task; criteria testable.
+- **G4 verdict:** report read in full, evidence per criterion, scope respected,
+  regressions handled, commit only after `PASS`.
 
-A gate is never approved on a summary alone. BA opens the file.
+Checklists: skill `ba-gate`. A gate is never approved on a summary; open the file.
 
-## 6. Git protocol
+## 7. Git
 
-- One local repository at the project root. Branch `main`.
-- Commit after every `PASS` (one task = one commit), message:
-  `TASK-###: <task title>` — plus a body with the feature ID and the verdict.
-- BA also commits process artifacts (spec, backlog, state, journals) either with
-  the task commit or as `chore(process): ...` at phase boundaries.
-- Developer may commit *within* a task only as a checkpoint (`wip(TASK-###):`),
-  and must not squash BA's commits.
-- **No remote, no push.** `git push` is denied by policy. The human adds a
-  remote and pushes when they choose.
-- Never commit `.tooling/`, build outputs, or secrets. See `.gitignore`.
+- One repository for the workspace, branch `main`.
+- Commit after every `PASS`, prefixed with the project:
+  `airplay2/TASK-014: add save button`.
+- Process commits are workspace-level: `workspace/chore: ...` or
+  `<project>/chore: ...`.
+- Developer may commit checkpoints: `airplay2/wip(TASK-014): ...`, and never
+  rewords BA commits.
+- No remote, no push, ever, by an agent.
+- Never commit `.tooling/`, build output, or secrets.
 
-## 7. Autonomy (unattended runs)
+## 8. Autonomy
 
-When the human says "work overnight", the BA runs Phase 2 autonomously under
-these rules:
+When the human says "work overnight", the BA runs the build loop unattended:
 
-1. **Scope:** only tasks already `approved` in the backlog. Unattended runs do
-   not add features. New ideas go to `docs/QUESTIONS.md`.
-2. **Order:** dependency order, one task at a time, tester verdict before the
-   next task starts.
-3. **Commit:** after every PASS. Never leave more than one task uncommitted.
-4. **State:** update `docs/PROJECT-STATE.md` after every task, so a crashed or
-   interrupted run resumes cleanly.
-5. **Stop conditions** — stop and write to `docs/QUESTIONS.md` instead of
-   guessing:
+1. **Scope:** only `approved` tasks in the named project (or in the
+   highest-priority project if none is named). No new features.
+2. **Order:** dependency order, one task at a time, verdict before the next.
+3. **Commit:** after every `PASS`; never leave more than one task uncommitted.
+4. **State:** update the project `docs/STATE.md` and `docs/STATE.md` after every
+   task, so an interruption loses at most one task.
+5. **Stop and write a question** instead of guessing:
    - a gate cannot be passed;
-   - the same task fails 3 times;
+   - the same task has failed three times;
    - a requirement is ambiguous or contradicts the spec;
-   - a decision would cost money, require an Apple account, a Mac, a signing
-     key, network credentials, or anything outside this folder;
-   - the backlog for the current feature is exhausted.
-6. **Caps:** at most 12 task cycles per unattended run unless the human raises
-   it. Every cycle is bounded by the agents' step limits.
-7. **No destructive actions:** no `git reset --hard` on someone else's commit,
-   no deleting files outside `.tooling/` and build output, no rewriting history.
-8. **On waking:** the human reads `docs/PROJECT-STATE.md` → "Status" and
-   "Next action". The BA's first message summarizes it in five lines or fewer.
+   - the decision costs money, needs an Apple account, a Mac, signing keys, or
+     network credentials;
+   - the approved backlog for the current feature is exhausted.
+6. **Caps:** at most 12 task cycles per run, one project.
+7. **Nothing destructive:** no history rewrites, no deleting project files, no
+   touching another project.
+8. **On waking:** the human reads `docs/STATE.md` and the project's
+   `docs/STATE.md`; the BA's first message summarises both in five lines.
 
-## 8. Session protocol (every agent, every time)
+## 9. Session protocol
 
-1. Read `docs/PROJECT-STATE.md` and `backlog/BOARD.md` before acting.
-2. Read your own `journal/<role>.md` tail if you need recent history.
-3. Do the one unit of work you were given. Do not pick up extra work.
-4. Append to your journal: what you did, what you learned, what is next.
-5. Update the file you own; tell the dispatcher exactly what changed.
+1. Read `docs/STATE.md` → which project is active and what is next.
+2. Read that project's `docs/STATE.md` and `backlog/BOARD.md`.
+3. Confirm with `git status` and `git log --oneline -5` that disk and history
+   agree; if they do not, history wins, fix the state files, note it in the
+   journal.
+4. Do the one unit of work you were given. Nothing extra.
+5. Append to your journal; update the files you own; report what changed.
 
-If context is lost or a session dies: nothing is lost, the disk is the truth.
+If context is lost, nothing is lost: the disk is the truth.
 
-## 9. Changing this process
+## 10. Changing this process
 
-Proposals for a process change go in `docs/DECISIONS.md` as `DEC-###` with
-`status: proposed`. The human approves; then edit this file and bump the
-version at the top.
+Proposals go in `docs/DECISIONS.md` as `DEC-###` with `status: proposed`. The
+human approves; then edit this file and bump the version at the top.

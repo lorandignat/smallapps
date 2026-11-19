@@ -61,6 +61,38 @@ Format:
 - owner: ba
 - context: The build host is Linux with no Xcode and no root. iOS binaries can
   only be produced on macOS or a macOS CI runner.
-- decision: No language toolchain is installed yet. Options and their costs are
-  documented in `docs/PLATFORM.md`; the stack is chosen at first intake.
+- decision: No app language toolchain is installed yet. Options and their costs
+  are documented in `docs/PLATFORM.md`; each project records its stack in
+  `docs/STACK.md` at intake.
 - consequences: intake must settle the stack before Phase 1 breakdown.
+
+## DEC-005 — One repository, many projects
+
+- date: 2026-11-15
+- status: accepted
+- owner: ba
+- context: Several apps are planned. Splitting into repositories now would add
+  per-repo process duplication and make shared tooling awkward; splitting later
+  should still be cheap.
+- decision: A single git repository at the workspace root, one directory per
+  project, shared `.opencode/` agents and skills. All project artifacts live
+  inside the project directory; shared documents live in `docs/`.
+- consequences: one toolchain and one place to look for process; commits are
+  prefixed with the project name. Moving a project out later means copying its
+  directory and re-initialising a remote, because no project artifact depends on
+  a path outside it.
+
+## DEC-006 — Environment changes are recorded once, at workspace level
+
+- date: 2026-11-15
+- status: accepted
+- owner: ba
+- context: With several projects, per-project install logs duplicate the same
+  toolchain facts and rot independently.
+- decision: one environment log holds the installs, downloads and host-visible
+  changes, with one section per project for project-specific dependencies.
+  Lockfiles remain the source of truth for the exact versions a project builds
+  with. The log names local paths and accounts, so it is kept out of this
+  repository.
+- consequences: the developer owns one file instead of N; a project moved to its
+  own repository must copy its section with it.

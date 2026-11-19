@@ -28,7 +28,7 @@ Each criterion must be verifiable by a command or a described observation.
 
 1. [ ] Given <state>, when <action>, then <observable result>.
 2. [ ] <error case> produces <specific message/behaviour>.
-3. [ ] `npm test -- <file>` passes, including a new test for this behaviour.
+3. [ ] `<test command>` passes, including a new test for this behaviour.
 
 ## Verification commands
 
@@ -42,7 +42,7 @@ Each criterion must be verifiable by a command or a described observation.
 - [ ] `qa` verdict is `PASS`
 - [ ] Only files listed above changed
 - [ ] Regression list still passes
-- [ ] One commit `TASK-000: <title>` exists
+- [ ] One commit `{{PROJECT}}/TASK-000: <title>` exists
 
 ## Rework log
 

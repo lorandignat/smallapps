@@ -1,14 +1,17 @@
 ---
-description: Show where the project stands and what happens next
+description: Show the state of every project
 agent: ba
 ---
 
-Read `docs/PROJECT-STATE.md`, `backlog/BOARD.md` and `git log --oneline -5`.
+Read `docs/STATE.md`, `docs/PROJECTS.md`, `git log --oneline -5`, and the
+`docs/STATE.md` of every project listed as active.
 
-Reply in at most six lines:
+Reply as a compact table, one line per project, then at most three lines of
+commentary:
 
-- Phase and active feature/task.
-- Tasks done / total, blocked count.
-- Last commit subject.
-- Anything waiting on me (questions, decisions, Mac-only steps).
-- The next action you would take without me.
+```text
+<project>   <phase>   <n/m tasks>   <next task or gate>   <blocked?>
+```
+
+Then: what is waiting on me, and what you would do next without me. Six lines of
+commentary maximum. No process explanation.

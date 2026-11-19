@@ -1,8 +1,10 @@
 # PLATFORM — where iOS apps get built
 
-Owner: `ba`. Status: **undecided** (`DEC-004`). Settle this during intake,
-before PM breaks the first feature into tasks, because it decides what the
-developer is allowed to install and what the tester can actually verify.
+Owner: `ba`. Status: **undecided** (`DEC-004`). This is a workspace-level
+analysis, shared by every project. Each project records its own choice in
+`<project>/docs/STACK.md` during intake, before PM breaks the first feature into
+tasks, because the choice decides what the developer may install and what the
+tester can actually verify.
 
 ## The constraint
 
@@ -66,10 +68,13 @@ CI.
 
 ## What choosing an option commits us to
 
-- Record the choice as `DEC-###` and update this file.
-- Developer installs exactly the SDK that option needs, under `.tooling/`, and
-  logs it in the local environment log.
+- Record the choice in the project's `docs/STACK.md` and as `DEC-###` in its
+  `docs/DECISIONS.md`.
+- Developer installs exactly the SDK that option needs, under `.tooling/`
+  (workspace) or the project's own dependency directory, and logs it in the
+  local environment log, which is not published.
 - Tester writes the verification commands for that stack into
-  `qa/TEST-PLAN.md`; every acceptance criterion must be checkable with them.
+  `<project>/qa/TEST-PLAN.md`; every acceptance criterion must be checkable with
+  them.
 - `qa` must never mark `PASS` on an iOS-only claim it could not run. It returns
   `BLOCKED` and says which Mac-only step is missing.

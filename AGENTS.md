@@ -1,49 +1,52 @@
-# /homedir/agent/opencode/apps — agent boot instructions
+# Agent boot instructions — workspace
 
-This project builds apps end to end with a team of agents. Read
-`docs/PROCESS.md` before doing anything else: it defines the loop, the gates,
-and who is allowed to do what.
+This repository is a workspace holding several apps. Read
+`docs/PROCESS.md` before doing anything else; it defines the phases, the gates
+and who may do what. `docs/CONVENTIONS.md` covers naming and commits.
 
-## Hard rules for every agent
+## The one rule that matters
 
-1. Stay inside `/homedir/agent/opencode/apps`. Never read, write, or execute
-   anything outside it. No access to the host, other projects, or other users'
-   data. No `sudo`.
-2. Never `git push`. The remote is added when the human asks for it, and only
-   the human triggers a push.
-3. Never install anything outside this folder. Downloads and installs go under
-   `.tooling/` (or the project's own package manager directory) as this user.
-   Every install, download, and config change is logged in
-   the local environment log.
-4. Only the **business-analyst** (`ba`) talks to the human. `pm`, `developer`
-   and `tester` only ever respond to the agent that launched them.
-5. State lives on disk, not in context. Start every session by reading
-   `docs/PROJECT-STATE.md`. End every unit of work by updating it.
-6. One task at a time. A task is `done` only when `tester` has passed it and the
-   `ba` has recorded the verdict.
-7. Never edit files another role owns (see the ownership table in
-   `docs/PROCESS.md`).
+**Work happens inside one project at a time.** A project is a first-level
+directory: `airplay-receiver/`, `audiobooks/`. Shared material lives in
+`docs/`, `templates/`, `scripts/`, `.opencode/`. Never write project artifacts
+at the workspace root, and never mix two projects in one task.
 
-## Layout
+## Hard rules
 
-| Path | Owner | Purpose |
-| --- | --- | --- |
-| `docs/PROCESS.md` | ba | The loop, gates, handoffs (read-only for everyone) |
-| `docs/PROJECT-STATE.md` | ba | Resume point: where we are, next action |
-| `docs/DECISIONS.md` | ba | Decisions with rationale |
-| `docs/QUESTIONS.md` | ba | Open questions for the human |
-| the local environment log | developer | Installs, downloads, host changes |
-| `docs/PLATFORM.md` | ba | Target platforms and toolchain decisions |
-| `product/SPEC.md` | ba | Approved product definition |
-| `product/IDEA.md` | ba | Raw intake notes |
-| `backlog/BOARD.md` | pm | Status of every feature and task |
-| `backlog/features/*.md` | pm | Feature definitions |
-| `backlog/tasks/*.md` | pm | Atomic tasks with acceptance criteria |
-| `qa/TEST-PLAN.md` | tester | Test strategy per feature |
-| `qa/REGRESSION.md` | tester | Checks that must keep passing |
-| `qa/reports/*.md` | tester | Per-task verdicts with evidence |
-| `journal/*.md` | per agent | What each role did and why |
-| `src/`, `app/`, `test/` | developer | The actual project |
+1. Stay inside `/homedir/agent/opencode/apps`. No host access, no other users'
+   data, no `sudo`.
+2. Never `git push`, never add a remote. Publishing is the human's decision.
+3. Install nothing outside this folder. Shared toolchains go in `.tooling/`,
+   project dependencies in the project. Record every install in the
+   local environment log, which is not published.
+4. Only the business analyst (`ba`) talks to the human. `pm`, `developer` and
+   `qa` answer only the agent that launched them.
+5. State lives on disk. Workspace state: `docs/STATE.md`. Project state:
+   `<project>/docs/STATE.md`. Read both before acting; update before stopping.
+6. One task at a time. A task is `done` only when `qa` returns `PASS` and the
+   `ba` records the verdict.
+7. Record every project in `docs/PROJECTS.md` when it is created, and keep its
+   row true.
 
-Agents carry their own skills under `.opencode/skills/` (`ba-*`, `pm-*`,
-`dev-*`, `qa-*`). Only load skills matching your role.
+## Ownership
+
+| Path | Owner |
+| --- | --- |
+| `docs/PROCESS.md`, `docs/CONVENTIONS.md` | workspace; changed by human approval |
+| `docs/PROJECTS.md`, `docs/STATE.md`, `docs/DECISIONS.md`, `docs/QUESTIONS.md` | ba |
+| `docs/PLATFORM.md` | ba |
+| `templates/`, `scripts/` | ba |
+| `<project>/product/**` | ba |
+| `<project>/backlog/**` | pm (ba may change task status only) |
+| `<project>/docs/**` | ba |
+| `<project>/qa/**` | qa |
+| `<project>/src|app|lib|test/**`, manifests, lockfiles | developer |
+
+Write access is enforced by permission rules. If you cannot write a file, that is
+the process working: record the need in your journal and hand it to the owner.
+
+## Adding a project
+
+`./scripts/new-project.sh <slug>` creates the skeleton and registers nothing —
+the BA adds the row to `docs/PROJECTS.md` and opens intake. A project is not a
+project until it has a spec under gate G1.

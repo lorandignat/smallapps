@@ -33,10 +33,10 @@ that exercises the demo steps.
 
 ## Platform limits
 
-Check `docs/PLATFORM.md` before promising anything. On Linux you cannot run an iOS
-simulator or produce a signed build. Write that into the plan's "Out of scope for
-verification" section, and return `BLOCKED` when a criterion depends on it rather
-than inventing confidence.
+Check `<project>/docs/STACK.md` before promising anything. On Linux you cannot
+run an iOS simulator or produce a signed build. Write that into the plan's "Out
+of scope for verification" section, and return `BLOCKED` when a criterion depends
+on it rather than inventing confidence.
 
 ## Per-feature plan
 

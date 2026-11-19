@@ -1,58 +1,73 @@
 ---
 name: BA State Keeping
-description: What to write in docs/PROJECT-STATE.md, docs/DECISIONS.md, docs/QUESTIONS.md and journal/<role>.md, and how to resume a fresh session from disk. Use at session start, after each task, and before stopping.
+description: What to write in docs/STATE.md (workspace), <project>/docs/STATE.md, DECISIONS, QUESTIONS and journals, and how to resume a fresh session from disk. Use at session start, after each task, and before stopping.
 ---
 
 # State keeping
 
-Context dies; files do not. Everything you need on waking is in three files:
-`docs/PROJECT-STATE.md`, `backlog/BOARD.md`, `journal/<role>.md` (tail).
+Context dies; files do not. Two state files, two levels.
 
-## `docs/PROJECT-STATE.md` — overwrite, keep short
+## Workspace — `docs/STATE.md`
 
-Update after **every** task and at every phase change. Not a diary: aim for under
-40 lines. Sections:
+Overwrite, keep under 40 lines:
 
-- `Phase` (0 intake / 1 breakdown / 2 build / 3 release)
-- `Active product / feature / task`
-- `Status` — 1-3 sentences a stranger could act on
-- `Next action` — numbered, concrete, ≤ 3 items
-- `Approved gates` — one row per gate you passed
-- `Open questions`, `Blockers`
-- `Last commits` — or rely on `git log`
+- `Active project`, `Mode` (idle / build / blocked), shared toolchain one-liner.
+- `Status` — 1-3 sentences covering all projects at once.
+- `Next action` — numbered, ≤ 3.
+- `Open questions`, `Blockers` (workspace-level only).
+- `Recent` — one line per structural change, not per task.
 
-## `docs/DECISIONS.md` — append
+Update it when: a project is created, archived, or changes phase; the active
+project changes; a workspace question opens or closes; the process changes.
 
-Write a `DEC-###` when: you chose a stack or dependency policy, you split a task,
-you accepted a deviation from the spec, a task failed three times, or the human
-overruled the process. Include what it costs, not just what you chose.
+## Project — `<project>/docs/STATE.md`
 
-## `docs/QUESTIONS.md` — append, never block
+Overwrite after **every** task:
 
-One row: ID, date, question, what it blocks, and the default you will take if the
-human does not answer. Then unblock yourself with the default where possible, or
-mark the task `blocked` and continue with something independent.
+- `Phase`, `Active feature`, `Active task`, `v1` status.
+- `Status` — 1-3 sentences a stranger could act on.
+- `Next action` — numbered, ≤ 3.
+- `Approved gates` — one row per gate passed.
+- `Open questions`, `Blockers`.
 
-## `journal/<role>.md` — append
+## Registry — `docs/PROJECTS.md`
 
-One entry per unit of work: did / decided / dispatched / next. This is where the
-narrative lives: why a task was re-cut, what the tester kept catching, what the
-human actually meant. Future-you reads this to avoid re-litigating.
+One row per project. Update on creation, phase change, and when v1 status moves
+(`not started`, `spec approved`, `n/m tasks`, `release candidate`,
+`shipped <date>`). A stale registry makes the workspace unusable, so it is part of
+the task that causes the drift.
+
+## Decisions
+
+Workspace decision → `docs/DECISIONS.md`. Project-scoped → the project's
+`docs/DECISIONS.md`. Write one when you chose a stack or dependency policy, split
+a task, accepted a deviation, hit three failures, or the human overruled the
+process. Include the cost, not just the choice.
+
+## Questions
+
+Never block on a question. Log it with an ID, what it blocks, and the default you
+will take if nobody answers. Then take the default, or mark the task `blocked`
+and work something independent.
+
+## Journals
+
+`journal/<role>.md` per project: did / decided / dispatched / next. The narrative —
+why a task was re-cut, what the tester kept catching, what the human actually
+meant.
 
 ## Resuming
 
-At the start of any session:
-
-1. `docs/PROJECT-STATE.md` → phase, active task, next action.
-2. `backlog/BOARD.md` → counts, anything in `in-progress` or `in-review`.
-3. If something is `in-review`, check whether a report exists — a crash between
-   qa and you leaves a verdict unrecorded.
-4. `git status` and `git log --oneline -3` → is there uncommitted work?
-5. If state and git disagree, **git and the files win**; fix the state file, note
+1. `docs/STATE.md` → active project and mode.
+2. That project's `docs/STATE.md` → phase, active task, next action.
+3. `backlog/BOARD.md` → counts, anything `in-progress` or `in-review`.
+4. If something is `in-review`, look for the report — a crash between qa and you
+   leaves a verdict unrecorded.
+5. `git status` and `git log --oneline -5` → uncommitted work, recent commits.
+6. If state and git disagree, **git and the files win**; fix the state files, note
    it in the journal, and tell the human in one line.
 
 ## Stopping
 
-Before you go idle, whatever the reason: state file current, journal appended,
-nothing staged but uncommitted. The next session must be able to start with a
-single read and no questions.
+Whatever the reason: both state files current, journal appended, nothing staged
+but uncommitted. The next session must start with two reads and no questions.

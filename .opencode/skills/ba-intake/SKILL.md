@@ -5,6 +5,9 @@ description: Interview the human about an app idea, then write product/IDEA.md a
 
 # Intake
 
+Working directory: the project named in the brief (`<project>/`). Everything you
+write goes there: its `product/`, its `docs/`, its `backlog/`.
+
 Goal: a spec that a project manager can decompose without asking you anything.
 
 ## How to interview
@@ -56,6 +59,7 @@ record the human's call in `docs/DECISIONS.md`.
 
 ## After approval (G1)
 
-Record the approval in `docs/PROJECT-STATE.md`, log `DEC-###` for anything
+Record the approval in the project's `docs/STATE.md` and the registry, log
+`DEC-###` for anything
 surprising, then hand PM the brief from skill `ba-handoff`. Do not start coding
 or ask PM for tasks before G1.
