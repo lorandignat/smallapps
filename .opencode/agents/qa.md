@@ -12,6 +12,9 @@ permissions:
   - action: edit
     resource: "**/qa/**"
     effect: allow
+  - action: edit
+    resource: "**/journal/<role>.md"
+    effect: allow
   - action: shell
     resource: "*"
     effect: allow

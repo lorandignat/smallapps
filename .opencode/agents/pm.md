@@ -11,6 +11,9 @@ permissions:
   - action: edit
     resource: "**/backlog/**"
     effect: allow
+  - action: edit
+    resource: "**/journal/<role>.md"
+    effect: allow
   - action: shell
     resource: "*"
     effect: deny

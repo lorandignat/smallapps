@@ -94,3 +94,28 @@ Append only, newest at the bottom. One entry per unit of work. Status lives in
   and recorded the approval in SPEC, STATE and DEC-002.
 - decided: increment 1 (discoverable) is the only work that will be staffed.
 - next: PM breakdown, QA test plan, first task.
+
+## 2026-11-15 — G2, G3, and the two scope questions
+
+- did: read FEAT-001 and all eight task files; approved the feature at G2 (one
+  vertical slice, traces to S1/S5, ordered) and the task batch at G3 (one
+  behaviour each, no "and" in a title, <= 5 files, Given/When/Then criteria with
+  commands). Answered QQ-006 (DEC-003: default name in increment 1) and QQ-007
+  (DEC-004: withdraw on background; post-kill expiry is Bonjour's cache).
+- decided: TASK-001 approved to run; tasks 002-008 stay proposed until the
+  previous one is PASSed.
+- flagged: every build/test criterion in FEAT-001 is expected BLOCKED until the
+  Mac is configured. The scaffold is being written blind, so TASK-001 can only
+  fully pass after `check`.
+- next: QA test plan, then TASK-001.
+
+## 2026-11-15 — QA plan review
+
+- did: read the FEAT-001 test plan; fixed the agent permission gap that stopped
+  `qa` from writing `journal/<role>.md` (and gave `pm` the same rule for
+  `journal/<role>.md`); opened QQ-008 for the signing team, since S1b, S1c and S5
+  only exist on a signed device build.
+- decided: TASK-007 needs a launch marker so S5's log check has a producer; that
+  is PM's edit, not the BA's.
+- flagged: simulator iOS is newer than 15.0, so the deployment target is a
+  compile-time promise until the 6s runs it.

@@ -56,3 +56,35 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
   TV's own output is explicitly out of scope because Bluetooth timing cannot
   support it. Each increment is a kill-switch: if it fails, the next one is not
   written.
+
+## DEC-003 — The advertised name is fixed in increment 1; the settings screen lands in increment 2
+
+- date: 2026-11-15
+- status: accepted
+- owner: ba
+- context: SPEC §4 lists a name settings screen as in v1 but assigns it to no
+  increment; FEAT-001 therefore advertises a default name and S1 says "under the
+  configured name" (QQ-006).
+- decision: Increment 1 advertises the default `AirPlay Receiver`, taken from
+  `AppInfo.displayName`. The rename UI belongs to increment 2, where pairing and
+  the Home app make a stable, human-chosen name matter.
+- consequences: S1 is verified with the default name in increment 1 and
+  re-verified with a renamed device when the UI lands. No task is added to
+  FEAT-001.
+
+## DEC-004 — S1's disappearance check means a graceful withdrawal, not cache expiry
+
+- date: 2026-11-15
+- status: accepted
+- owner: ba
+- context: S1 says the entry disappears "within 30 seconds of the app being
+  killed", but no app code runs after a kill: the Apple TV's Bonjour cache decides
+  (QQ-007).
+- decision: Verify the half the app controls — backgrounding or stopping the
+  receiver withdraws the advertisement promptly (TASK-006) — and record the
+  post-kill disappearance as cache expiry, measured once and noted, not as a
+  pass/fail on app code. S5 keeps the stale-entry check, which is the part that
+  actually matters to the owner.
+- consequences: the increment-1 demo measures both, and QA states which one is
+  the app's responsibility. S1's wording is read this way until the next G1
+  touch, when it can be paraphrased.
