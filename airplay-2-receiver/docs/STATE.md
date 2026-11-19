@@ -6,20 +6,24 @@
 **Updated:** 2026-11-15
 **Phase:** build
 **Active feature:** FEAT-001
-**Active task:** TASK-001
+**Active task:** TASK-002 next
 **v1:** increment 4 of DEC-002 (discoverable → pairable → audible → useful)
 
 ## Status
 
-G1 passed. FEAT-001 (discoverable) is approved at G2/G3 with eight atomic tasks,
-TASK-001 to TASK-008. TASK-001 (scaffold) is in progress. The Mac bridge is
-written but untested until local configuration exists and `xcodebuild -version` passes, so build/test criteria are expected to return BLOCKED.
+G1 passed. FEAT-001 (discoverable) approved at G2/G3 with nine tasks. TASK-001
+(scaffold) is **done**: PASS on the real Mac, 5/5 criteria, simulator build and
+unit test green (Xcode 26.6, iOS 26.5 SDK, thin 15.0 deployment target). The
+build loop is unblocked; TASK-002 is next.
 
 ## Next action
 
-1. TASK-001: developer writes the scaffold, QA verifies what this host can show
-   and records the build checks as BLOCKED.
-2. Human configures the Mac (QQ-005). Then TASK-001 is re-verified and PASSed.
+1. Connect the iPhone 6s to the Mac and trust it — it is not in
+   `xcrun devicectl list devices`, so S1b, S1c and TASK-009 cannot be verified.
+2. TASK-002 (TXT record) then the rest in dependency order.
+2. Re-run QA on TASK-001 (attempt 2 of the verification, same task). Expected
+   findings to close: display name duplicated in `project.yml`, generated
+   `Info.plist` files not gitignored.
 3. Only after TASK-001 passes does TASK-002 start.
 
 ## Approved gates
@@ -38,5 +42,7 @@ QQ-007 answered by DEC-003 and DEC-004.
 
 ## Blockers
 
-Builds and device checks wait on `xcodebuild -version` (QQ-005). Spec work
-does not.
+QQ-005 resolved 2026-11-16: `xcodebuild -version`, `sync`, `xcodegen generate`,
+simulator build and unit tests all pass (Xcode 26.6, iOS 26.5 SDK). Still open:
+QQ-008 (signing team) for TASK-009, and the iPhone 6s is not connected to the
+Mac.

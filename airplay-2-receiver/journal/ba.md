@@ -119,3 +119,37 @@ Append only, newest at the bottom. One entry per unit of work. Status lives in
   is PM's edit, not the BA's.
 - flagged: simulator iOS is newer than 15.0, so the deployment target is a
   compile-time promise until the 6s runs it.
+
+## 2026-11-15 — TASK-001 implemented, BLOCKED
+
+- did: developer wrote the scaffold (project.yml, SwiftUI entry, one test);
+  QA verified the static half and returned BLOCKED with five minor findings and
+  no code defect claimed.
+- decided: stop the loop here. Continuing would stack unverified Swift on an
+  unverified scaffold, and the process forbids counting it as done.
+- flagged: TASK-001 stays `blocked`, attempts 1. The Mac is the only missing
+  thing: local configuration, key, Xcode opened once, XcodeGen.
+- next: on `xcodebuild -version`, re-verify TASK-001, then TASK-002.
+
+## 2026-11-16 — Mac onboarding
+
+- did: configured local configuration for the Tailscale address
+  (<build-host>, user <user>); the first `check` reached the Mac and was
+  refused for lack of the public key. Wrote the onboarding script because the
+  human cannot paste into the Mac's terminal: idempotent key install, then Xcode,
+  iOS SDK, XcodeGen and Remote Login checks. Tested its key logic twice under a
+  temporary HOME (second run adds nothing).
+- decided: onboarding is a script, not a copy-pasted command; the Mac pulls it
+  over scp/Taildrop (documented in the private build notes).
+- flagged: sandbox test cannot exercise the macOS-only branches (stat -f,
+  systemsetup, xcodebuild); first real run will.
+
+## 2026-11-16 — TASK-001 passes on the real Mac
+
+- did: bridge fixes (PATH, tilde, project discovery) got `sync`, `xcodegen`,
+  simulator build and the unit test green; QA re-verified with 5/5 criteria and a
+  mutation probe that proves the test is not vacuous.
+- decided: TASK-001 done at G4. Minor findings stay open: generated
+  Info.plists not gitignored, display name duplicated in `project.yml` and
+  `AppInfo`, `iPhone 16` still named in TASK-001's command.
+- flagged: no iPhone 6s connected, so device criteria remain unverifiable.

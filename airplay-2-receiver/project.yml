@@ -1,0 +1,66 @@
+# XcodeGen spec — the source of truth for AirPlayReceiver.xcodeproj.
+# The generated project is gitignored. After editing this file, regenerate on
+# the Mac (see FEAT-001 Notes):
+#   ./scripts/mac-build.sh run 'cd ~/apps-build/airplay-2-receiver && xcodegen generate'
+#
+# No third-party dependencies, no signing team: the team is machine-specific and
+# lives in a gitignored Signing.xcconfig when TASK-009 needs it.
+
+name: AirPlayReceiver
+
+options:
+  bundleIdPrefix: com.airplayreceiver
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+
+targets:
+  AirPlayReceiver:
+    type: application
+    platform: iOS
+    sources: [src]
+    settings:
+      base:
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    info:
+      # Written by `xcodegen generate` from this file; never committed.
+      path: src/Info.plist
+      properties:
+        CFBundleDisplayName: AirPlay Receiver
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+
+  AirPlayReceiverTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [test]
+    dependencies:
+      - target: AirPlayReceiver
+    settings:
+      base:
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/AirPlayReceiver.app/AirPlayReceiver"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    info:
+      # Written by `xcodegen generate` from this file; never committed.
+      path: test/Info.plist
+      properties: {}
+
+schemes:
+  AirPlayReceiver:
+    build:
+      targets:
+        AirPlayReceiver: all
+        AirPlayReceiverTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - AirPlayReceiverTests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

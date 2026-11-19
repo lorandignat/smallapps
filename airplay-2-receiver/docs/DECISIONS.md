@@ -88,3 +88,19 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
 - consequences: the increment-1 demo measures both, and QA states which one is
   the app's responsibility. S1's wording is read this way until the next G1
   touch, when it can be paraphrased.
+
+## DEC-005 — Simulator destination is `iPhone 16e`; the Mac runs Xcode 26.6
+
+- date: 2026-11-16
+- status: accepted
+- owner: ba
+- context: The Mac has Xcode 26.6 with the iOS 26.5 SDK and no `iPhone 16`
+  simulator; the only iPhone-shaped simulator installed is `iPhone 16e`
+  (`xcrun simctl list devices available`). Task files and the QA plan were
+  written against a guessed name.
+- decision: Use `platform=iOS Simulator,name=iPhone 16e` in every verification
+  command. The deployment target stays iOS 15.0: it builds with the 26.5 SDK, and
+  the 6s is the real target, not the simulator.
+- consequences: PM updates the remaining task files; the simulator's iOS is 26.5,
+  so passing there proves compilation and unit behaviour, never iOS 15 runtime
+  behaviour. Only the 6s does that.

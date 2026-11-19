@@ -2,8 +2,8 @@
 id: TASK-001
 title: Scaffold the XcodeGen app with one unit test
 feature: FEAT-001
-status: approved
-attempts: 0
+status: done
+attempts: 1
 owner: null
 depends_on: []
 estimate: small
@@ -87,7 +87,8 @@ recorded in the review, not hidden.
 
 | Attempt | Date | Tester findings | Outcome |
 | --- | --- | --- | --- |
-| — | — | — | — |
+| 1 | 2026-11-15 | `BLOCKED`: criteria 1, 2, 3 and 5 need the Mac; local configuration absent. Five minor findings, no code defect claimed. | Blocked on QQ-005, not rework. |
+| 1b | 2026-11-16 | PASS on the real Mac: 5/5 criteria, regressions clean, mutation probe showed the test fails when the name changes. Six minor findings, none blocking. | Done. |
 
 ## Notes
 

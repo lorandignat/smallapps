@@ -88,6 +88,7 @@ stay at feature level until their turn (`DEC-002`).
 | TASK-006 | Withdraw the advertisement when the app leaves the foreground | proposed |
 | TASK-007 | Record advertisement events in a diagnostic log | proposed |
 | TASK-008 | Export the diagnostic log to a file | proposed |
+| TASK-009 | Install a signed build on the device | blocked (QQ-008) |
 
 ## Notes
 
@@ -95,6 +96,15 @@ stay at feature level until their turn (`DEC-002`).
 build and test runs on the human's Mac through the build bridge; until
 local configuration exists and `check` passes, each task is written and left
 unverified (`BLOCKED`, `QQ-005`). Task files say so individually.
+
+**Device install.** S1b, S1c and S5 exist only on the iPhone 6s, and TASK-001
+verifies `iphonesimulator` only. TASK-009 builds, installs and launches a signed
+`iphoneos` build; it is `blocked` until `QQ-008` names the signing team, and the
+team is read from a gitignored `Signing.xcconfig`, never from `project.yml`.
+
+**S5's log line.** TASK-007 records a `Restart` line on every launch, which is the
+producer of the "`Restart` line for that launch" that S5 requires; its
+exported-file check runs after TASK-008.
 
 **Process gap, not a spec gap.** `rsync -a <project> <build-host>:<build-dir>/` copies the tree but
 does not run `xcodegen`, and `.xcodeproj` is gitignored (`docs/STACK.md`). After

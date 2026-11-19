@@ -33,7 +33,6 @@ Preamble for every review, from the workspace root:
 ```sh
 xcodebuild -version          # read the "== xcode ==" block — see A1
 rsync -a <project> <build-host>:<build-dir>/ airplay-2-receiver
-# only after any project.yml change, once:
 xcodegen generate
 ```
 
@@ -41,12 +40,25 @@ xcodegen generate
 edit without the third line fails `build`/`test` with `no .xcodeproj or
 .xcworkspace`. That failure is a process step missed, not a code defect.
 
+Run `xcodegen generate` after **every** `sync`, not only after a `project.yml`
+change: `sync` is `rsync --delete` and the generated `.xcodeproj`, `src/Info.plist`
+and `test/Info.plist` exist only on the Mac, so each sync removes them. Observed
+on TASK-001 round 2 (2026-11-16): after `sync`, `ls -d *.xcodeproj` → `zsh:1: no
+matches found: *.xcodeproj`, and both plists were absent.
+
+**The Mac bridge is up since 2026-11-16** (`check` exits 0: macOS 26.6.2, Xcode
+26.6, iOS 26.5 SDK). The simulator is `iPhone 16e`, not `iPhone 16` (`DEC-005`);
+the literal `iPhone 16` destination fails with `xcodebuild: error: Unable to find
+a device matching the provided destination specifier`, verified on TASK-001.
+
 **BLOCKED looks like this here**, and it is never PASS and never FAIL: the
 command prints `error: missing .../local configuration, `cannot reach
-<user>@<host> over ssh`, or `no .xcodeproj or .xcworkspace` (exit 1). Record the
-exact error line, the `*.log` path and the criterion as
-`BLOCKED (QQ-005)` in the review. Today that is the expected state of every
-build row below.
+<user>@<host> over ssh`, `no .xcworkspace or .xcodeproj in <dir>` (exit 1), or
+`xcodebuild: error: Unable to find a device matching the provided destination
+specifier` (wrong simulator name — use `iPhone 16e`). Record the exact error line
+and the `*.log` path in the review. Today the bridge is up, so
+any of these is a real failure of the bridge or of the tree, not the expected
+state.
 
 ### Automated checks
 
@@ -57,13 +69,13 @@ build row below.
 | --- | --- | --- | --- |
 | A1 | `xcodebuild -version` — then read the `== xcode ==` block for a line matching `^Xcode [0-9]` | the Mac bridge works **and** Xcode exists. Exit 0 alone does not: `check` runs `xcodebuild -version … \|\| true`, so a missing Xcode still exits 0 | enabler for A2-A8 |
 | A2 | `xcodebuild build airplay-2-receiver AirPlayReceiver iphonesimulator` | the tree compiles for the simulator and produces `build/Build/Products/Debug-iphonesimulator/AirPlayReceiver.app` | R1; TASK-001 c2 |
-| A3 | `xcodebuild test airplay-2-receiver AirPlayReceiver 'platform=iOS Simulator,name=iPhone 16' \| tee /tmp/opencode/feat-001-test.log` then `grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/feat-001-test.log` | every unit test green, and the count is at least the high-water mark: 1 after TASK-001, 6/10/13/17/21/25/28 as TASK-002…008 land | R2; every task's "Executed N tests" criterion |
-| A4 | `xcrun simctl boot "iPhone 16" \|\| true; xcrun simctl bootstatus "iPhone 16" -b; xcrun simctl install booted <build-dir>/airplay-2-receiver/build/Build/Products/Debug-iphonesimulator/AirPlayReceiver.app` then `xcrun simctl launch booted <bundle-id>` | the app runs and is foreground — `simctl launch` prints `<bundle-id>: <pid>`; a pid is the evidence, a bare error means the app is not running and an empty browse proves nothing | prerequisite for A5-A8 |
+| A3 | `xcodebuild test airplay-2-receiver AirPlayReceiver 'platform=iOS Simulator,name=iPhone 16e' \| tee /tmp/opencode/feat-001-test.log` then `grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/feat-001-test.log` | every unit test green, and the count is at least the high-water mark: 1 after TASK-001, 6/10/13/17/21/25/28 as TASK-002…008 land | R2; every task's "Executed N tests" criterion |
+| A4 | `xcrun simctl boot "iPhone 16e" \|\| true; xcrun simctl bootstatus "iPhone 16e" -b; xcrun simctl install booted <build-dir>/airplay-2-receiver/build/Build/Products/Debug-iphonesimulator/AirPlayReceiver.app` then `xcrun simctl launch booted <bundle-id>` | the app runs and is foreground — `simctl launch` prints `<bundle-id>: <pid>`; a pid is the evidence, a bare error means the app is not running and an empty browse proves nothing | prerequisite for A5-A8 |
 | A5 | `dns-sd -B _airplay._tcp . > /tmp/ap2-b.txt 2>&1 & BP=$!; sleep 1; xcrun simctl terminate booted <bundle-id> 2>/dev/null; echo "T0 $(date -u +%H:%M:%S)"; xcrun simctl launch booted <bundle-id>; sleep 30; kill $BP 2>/dev/null; grep " Add " /tmp/ap2-b.txt \| sed -E "s/.*_airplay\._tcp\.[[:space:]]+//" \| sort -u` — expect exactly one line reading `AirPlay Receiver`, and its first `Add` timestamp within 30 s of `T0` | **S1a**: the app registers the service over real mDNS, once, under the app's name, within the deadline. Count **by name**, not by type: the Apple TV and any HomePod publish `_airplay._tcp` too | S1a |
 | A6 | `dns-sd -L "AirPlay Receiver" _airplay._tcp . > /tmp/ap2-l.txt 2>&1 & BP=$!; sleep 3; kill $BP 2>/dev/null; cat /tmp/ap2-l.txt` — expect `can be reached at <host>:7000` and the TXT keys `deviceid`, `features` (64-bit, bit 38 set), `model`, `srcvers`, `vv=2` | the instance resolves to a host and the TXT record from TASK-002 reached the wire intact | S1a; TASK-002 c2; TASK-004 c1-c2 at network level |
 | A7 | `nc -w 5 <host> 7000 \| xxd` twice in a row, `<host>` taken from A6 | **S1d**: a sender that found us gets exactly `RTSP/1.0 200 OK`, `Content-Length: 0`, an empty body, and the connection closes (the `nc` returns before its 5 s deadline); the second call answers identically (not single-use). On the simulator `<host>` is the Mac — that proves listener + registration linkage only; on the device it is the LAN path, which is the evidence that matters | S1d; TASK-003 c1-c2 |
 | A8 | From A5's running state: `xcrun simctl launch booted com.apple.Preferences` (backgrounds our app) then re-run A5's browse — expect **zero** lines reading `AirPlay Receiver`; then `xcrun simctl launch booted <bundle-id>` and re-run A5 — expect exactly one, same name | S1c's app-controlled half per `DEC-004`: leaving the foreground withdraws the advertisement, returning republishes one, not two. Proxy evidence for the device step O3, not a substitute | S1c (app half); TASK-006 c1-c2 |
-| A9 | On this host: `grep -c 'packages:' airplay-2-receiver/project.yml` → `0`; `grep -n 'iOS: "15.0"' airplay-2-receiver/project.yml`; `grep -c 'DEVELOPMENT_TEAM' airplay-2-receiver/project.yml` → `0`; `grep -rnE 'XCTSkip\|\.skip' airplay-2-receiver/test \|\| echo 'no skips'`; `grep -nE 'xcodeproj\|build/' airplay-2-receiver/.gitignore` | no dependency, no signing team in the shared file, target still 15.0, no test silently skipped, generated project still ignored | R3, R5 |
+| A9 | On this host: `grep -c 'packages:' airplay-2-receiver/project.yml` → `0`; `grep -n 'iOS: "15.0"' airplay-2-receiver/project.yml`; `grep -A1 '^schemes:' airplay-2-receiver/project.yml` → `AirPlayReceiver:` (not the project `name:`); `grep -c 'DEVELOPMENT_TEAM' airplay-2-receiver/project.yml` → `0`; `grep -rnE 'XCTSkip\|\.skip' airplay-2-receiver/test \|\| echo 'no skips'`; `grep -nE 'xcodeproj\|build/' airplay-2-receiver/.gitignore` | no dependency, no signing team in the shared file, target still 15.0, the scheme still exists, no test silently skipped, generated project still ignored | R3, R5 |
 
 A5-A8 assume the app starts advertising on its own when active (TASK-005 adds no
 buttons, TASK-006 wires `scenePhase`). If a browse is empty, first prove the
@@ -119,8 +131,9 @@ Run at feature close, once; each catches a criterion met by accident.
 ### Out of scope for verification (accepted, with reasons)
 
 - **Any iOS execution on this host.** No Swift, Xcode or simulator here; the Mac
-  is the only execution environment and is unconfigured (`QQ-005`). Until
-  `check` passes, A2-A8 are `BLOCKED`.
+  is the only execution environment. The bridge went green on 2026-11-16, so
+  A1-A9 now run for real; `BLOCKED` is only for a bridge failure, and it names
+  the error line.
 - **`dns-sd` on this host.** macOS-only; avahi on Linux would be a different
   responder and proves nothing about the Mac's mDNS proxy. A5-A8, T1-T4 run via
   `the build bridge run`.
@@ -128,9 +141,10 @@ Run at feature close, once; each catches a criterion met by accident.
   simulator browse is not evidence for it.
 - **"Disappears within 30 s of a kill" as app behaviour.** No code runs after a
   kill; per `DEC-004` this is measured once (O4) and recorded, never pass/fail.
-- **iOS 15.0 runtime behaviour.** The test destination is `iPhone 16`, a much
-  newer runtime: 15.0 is only a deployment-target promise checked at compile
-  time (A9). Device behaviour is observed on the 6s, which is the real target.
+- **iOS 15.0 runtime behaviour.** The test destination is `iPhone 16e`, an iOS
+  26.5 runtime (`DEC-005`): 15.0 is only a deployment-target promise checked at
+  compile time (A9) and in the built product's `MinimumOSVersion`. Device
+  behaviour is observed on the 6s, which is the real target.
 - **Signed `iphoneos` builds.** No signing team in `project.yml` (A9), by
   design; signing is the human's one-time Xcode step (O1).
 - **AirPlay discovery semantics beyond `_airplay._tcp`.** Whether the Apple TV

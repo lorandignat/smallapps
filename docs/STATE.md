@@ -5,23 +5,21 @@
 
 **Updated:** 2026-11-15
 **Active project:** `airplay-2-receiver`
-**Mode:** intake — spec next
+**Mode:** build — paused on the Mac
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, past its spike: DEC-001 chooses a sideloaded iOS AirPlay 2 receiver
-and DEC-002 splits it into four kill-switch increments. The build problem is
-solved in principle — the build bridge drives the human's Mac over SSH
-(DEC-007) — but it is untested until local configuration exists and
-`xcodebuild -version` succeeds.
+One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) has nine tasks.
+TASK-001 (scaffold) is implemented and QA returns BLOCKED because no Mac is
+configured. Everything else is paused behind it deliberately.
 
 ## Next action
 
 1. Human fills local configuration (host, user), installs the key on the Mac from
-   `ssh-copy-id <build-host>`, then `check` must print `xcodebuild -version`.
-2. Write `airplay-2-receiver/product/SPEC.md` for increment 1 and settle the
-   project stack; ask for G1.
+   `ssh-copy-id <build-host>`, installs XcodeGen, then `check` must print
+   `xcodebuild -version`.
+2. Re-verify TASK-001, then TASK-002 through TASK-009 in order.
 
 ## Open questions
 
@@ -30,10 +28,12 @@ Workspace `docs/QUESTIONS.md` QQ-002 (Mac reachability). Project questions in
 
 ## Blockers
 
-None for planning. Device verification waits on QQ-002.
+QQ-002 — the Mac is unreachable; no iOS build, test or install is possible
+anywhere. Everything else is unblocked.
 
 ## Recent
 
 - 2026-11-15 — scaffolded the agent team (v1, single project).
 - 2026-11-15 — restructured into a multi-project workspace (v2).
 - 2026-11-15 — spike closed; iOS AP2 attempt accepted; Mac bridge built.
+- 2026-11-15 — G1-G3 passed; TASK-001 implemented, BLOCKED on the Mac.
