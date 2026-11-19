@@ -55,15 +55,43 @@ final class AppState: ObservableObject {
 
     private let advertiser: ServiceAdvertiserProtocol
 
+    /// The diagnostic log every advertisement event leaves a line in
+    /// (TASK-007): the launch `Restart` marker, then the advertising,
+    /// stopped and failure lines. Memory-only — TASK-008 exports it. Read by
+    /// tests through `@testable`; the log itself writes nothing.
+    let eventLog = EventLog()
+
     init(advertiser: ServiceAdvertiserProtocol) {
         self.advertiser = advertiser
+        eventLog.record("Restart")
         advertiser.onStateChange = { [weak self] newState in
-            let mapped = AppState.map(newState)
-            if Thread.isMainThread {
-                self?.status = mapped
-            } else {
-                DispatchQueue.main.async { self?.status = mapped }
-            }
+            self?.handleAdvertiserState(newState)
+        }
+    }
+
+    /// Records the event the advertiser just reported (TASK-007), then
+    /// mirrors it into ``status``: a start line when the service is
+    /// advertising, a stop line when it is stopped, a failure line on any
+    /// failure.
+    private func handleAdvertiserState(_ newState: ServiceAdvertiser.State) {
+        let mapped = AppState.map(newState)
+        switch mapped {
+        case .advertising:
+            eventLog.record("Advertising as \(advertiser.name)")
+        case .stopped:
+            eventLog.record("Stopped")
+        case .failed:
+            // The message itself is not logged: it can name the device id
+            // (the TXT-record refusal in `ServiceAdvertiser.start`), and the
+            // log is exported and shared (TASK-008). Outcome only.
+            eventLog.record("Advertiser failed")
+        case .idle:
+            break
+        }
+        if Thread.isMainThread {
+            status = mapped
+        } else {
+            DispatchQueue.main.async { self.status = mapped }
         }
     }
 
