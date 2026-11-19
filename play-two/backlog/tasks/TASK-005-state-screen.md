@@ -2,8 +2,8 @@
 id: TASK-005
 title: Show the receiver state on the main screen
 feature: FEAT-001
-status: proposed
-attempts: 0
+status: done
+attempts: 1
 owner: null
 depends_on: [TASK-004]
 estimate: small

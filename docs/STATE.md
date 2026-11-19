@@ -9,7 +9,7 @@
 ## Status
 
 One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) has ten tasks,
-TASK-001, TASK-002, TASK-003, TASK-004 and TASK-010 done
+TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 and TASK-010 done
 (device-proven: one `PlayTwo` resolves to `<device>.local.:7000`).
 The Mac bridge signs, installs and launches on the iPhone 6s (iOS 15.8.8) end
 to end; `ios-deploy` replaces `devicectl`, which does not support iOS 15.
@@ -18,8 +18,8 @@ days.
 
 ## Next action
 
-1. TASK-004 (publish `_airplay._tcp`) — done at G4 (PASS, 17/17, device-proven).
-   FEAT-001 S1d closed. Then TASK-005 (on-screen state), 006-008, TASK-009 last.
+1. TASK-005 (receiver state) — done at G4 (PASS, 21/21). Then TASK-006 (foreground
+   state), 007-008, TASK-009 last.
 2. Publication: `lorandignat/smallapps` holds the scrubbed history
    (`public-history`, 55 commits from 2026-11-15), rebuilt by
    `.tooling/publish/make-history.sh` and force-pushed as `main` (`DEC-013`).

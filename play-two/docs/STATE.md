@@ -3,14 +3,14 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-**Active task:** none — TASK-004 done; TASK-005 next
+**Active task:** none — TASK-005 done; TASK-006 next
 **v1:** increment 4 of DEC-002 (discoverable → pairable → audible → useful)
 
 ## Status
 
 G1 passed. FEAT-001 has ten tasks; TASK-001 (scaffold), TASK-002 (TXT record),
-TASK-003 (TCP listener), TASK-004 (publish service) and TASK-010 (rename to
-PlayTwo) are **done**. The app
+TASK-003 (TCP listener), TASK-004 (publish service), TASK-005 (receiver state)
+and TASK-010 (rename to PlayTwo) are **done**. The app
 builds as `PlayTwo`, bundle id `com.lorand.playtwo`, iOS 15.0 deployment target.
 A signed device build installs and launches on the iPhone 6s (iOS 15.8.8) via
 `build … iphoneos` + `install` + `ios-deploy --justlaunch` (`DEC-008`); Xcode 27
@@ -19,11 +19,9 @@ needs an iOS 15.7 developer disk image for that last step, which is installed. T
 
 ## Next action
 
-1. TASK-004 (publish `_airplay._tcp`) — done at G4 (PASS, 17/17, device-proven).
-   FEAT-001 S1d closed. Picking the offered receiver then fails at pairing,
-   which is increment 2, not a regression.
-2. TASK-005 (on-screen state) is next; 006-008 in dependency order after it.
-2. Then 005-008 in dependency order.
+1. TASK-005 (receiver state) — done at G4 (PASS, 21/21, R9 added).
+2. TASK-006 (keep advertisement in step with foreground state) is next; 007-008
+   after it.
 3. TASK-009 last: the README "Running it on the iPhone" section.
 
 ## Approved gates

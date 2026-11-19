@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** TASK-004 (approved)
+(approved, G2/G3) · **Active task:** none — TASK-005 done; TASK-006 next
 
 ## Features
 
@@ -24,7 +24,7 @@ They are specified only after increment 1 is demonstrated.
 | TASK-002 | FEAT-001 | Build the AirPlay TXT record from a stable device id | done | 2 | PASS 2026-11-16 |
 | TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | done | 3 | PASS 2026-11-18 (6/6, 2 MINOR); attempts 1-2 BLOCKED |
 | TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | done | 2 | PASS 2026-11-19 — 17/17 simulator, device-proven, R2 high-water 13→17 |
-| TASK-005 | FEAT-001 | Show the receiver state on the main screen | proposed | 0 | — |
+| TASK-005 | FEAT-001 | Show the receiver state on the main screen | done | 1 | PASS 2026-11-19 — 21/21, R9 added |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | proposed | 0 | — |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | proposed | 0 | — |
@@ -79,8 +79,8 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 4 done (TASK-001, TASK-002, TASK-003, TASK-010; `PASS` 2026-11-16 and
-  2026-11-18) / 10 total
+- tasks: 5 done (TASK-001, TASK-002, TASK-003, TASK-004, TASK-005, TASK-010; `PASS`
+  2026-11-16, 2026-11-18, 2026-11-19) / 10 total
 - approved and next: TASK-004; TASK-009 is approved but ordered last
 - blocked: 0 — `QQ-005` and `QQ-008` are resolved and the 6s is connected
 
