@@ -24,6 +24,14 @@ final class ReceiverListener {
     /// owns TCP 7000 on the test host (`DEC-011`).
     let port: NWEndpoint.Port
 
+    /// The Bonjour service to register with the port, or `nil` for a plain TCP
+    /// listener.
+    ///
+    /// One `NWListener` carries both, so the advertised port and the answering
+    /// port cannot drift apart (TASK-004, `DEC-012`). TASK-003's tests pass no
+    /// service, and the reply is the same 38 bytes either way.
+    let service: NWListener.Service?
+
     /// What the listener is doing. `failed` carries the `NWError` the system
     /// reported, so a caller can show it instead of guessing.
     enum State: Equatable {
@@ -40,9 +48,11 @@ final class ReceiverListener {
     private let queue = DispatchQueue(label: "com.lorand.playtwo.receiver-listener")
     private var listener: NWListener?
 
-    /// Creates a listener on `port`, defaulting to 7000 (`DEC-011`).
-    init(port: NWEndpoint.Port = .init(rawValue: 7000)!) {
+    /// Creates a listener on `port`, defaulting to 7000 (`DEC-011`), that
+    /// registers `service` when it starts, if one is given.
+    init(port: NWEndpoint.Port = .init(rawValue: 7000)!, service: NWListener.Service? = nil) {
         self.port = port
+        self.service = service
     }
 
     /// Binds ``port`` and starts accepting connections.
@@ -62,6 +72,9 @@ final class ReceiverListener {
 
         do {
             let listener = try NWListener(using: parameters, on: port)
+            // The registration, if any, rides on this listener: no second
+            // socket, and the service advertises this listener's port.
+            listener.service = service
             listener.stateUpdateHandler = { [weak self] state in
                 self?.report(state)
             }

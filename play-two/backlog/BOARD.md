@@ -3,7 +3,7 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-18 · **Phase:** build · **Active feature:** FEAT-001
+**Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
 (approved, G2/G3) · **Active task:** TASK-004 (approved)
 
 ## Features
@@ -23,7 +23,7 @@ They are specified only after increment 1 is demonstrated.
 | TASK-010 | FEAT-001 | Rename the Xcode project to PlayTwo | done | 1 | PASS 2026-11-16 |
 | TASK-002 | FEAT-001 | Build the AirPlay TXT record from a stable device id | done | 2 | PASS 2026-11-16 |
 | TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | done | 3 | PASS 2026-11-18 (6/6, 2 MINOR); attempts 1-2 BLOCKED |
-| TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | approved | 0 | — |
+| TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | done | 2 | PASS 2026-11-19 — 17/17 simulator, device-proven, R2 high-water 13→17 |
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | proposed | 0 | — |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | proposed | 0 | — |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
@@ -40,10 +40,18 @@ exported log for the S5 observation.
 
 ## Blockers
 
-- **TASK-003 is re-cut, not blocked.** `DEC-011` makes the listener port
-  injectable (default 7000), so the unit tests bind a free port on the simulator
-  and the real 7000 becomes an app-level observation once TASK-004 gives the
-  listener a caller. Two `BLOCKED` runs changed no source.
+- **Scripted launch works again.** Xcode 27 ships no iOS 15 developer disk image,
+  so `ios-deploy --justlaunch` refused until a 15.7 image was placed in the
+  user's `DeviceSupport` directory; it now launches and reports `success`.
+- **TASK-004 criterion 4 is proven on the device.** After adding the local-network
+  declarations and tapping Allow, `dns-sd -B _airplay._tcp` shows exactly one
+  `PlayTwo`, resolving to `<device>.local.:7000`; `nc <device-ip>
+  7000` succeeds; a second iPhone offers PlayTwo in its AirPlay picker. The
+  simulator suite for the rework still needs a Mac run; the `policyDenied` unit
+  test is in the tree. QA is the next step.
+- **The model's free usage limit is exhausted.** Long verification runs are cut
+  off mid-task; a short follow-up still works. Either wait for the quota or move
+  to a paid plan before the next long run.
 
 - `QQ-005` resolved 2026-11-16: the bridge builds and tests on the Mac
   (Xcode 26.6, iOS 26.5 SDK).

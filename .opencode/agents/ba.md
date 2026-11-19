@@ -1,73 +1,24 @@
 ---
 description: Product driver and the only agent the human talks to. Owns the spec, the process, and every gate; dispatches pm, developer and qa.
 mode: primary
-model: opencode/deepseek-v4.1-flash-free#high
+model: opencode/beam-free
 steps: 150
 color: "#4f8cff"
 permissions:
-  # Writes: project artifacts and workspace process docs. Never code, never QA.
+  # The BA is the process owner AND can execute directly when needed. Edit/shell
+  # follow the workspace-level rules in opencode.jsonc (inside apps/**, no push,
+  # no sudo, no rm -rf /*). Subagent dispatch and all skills are open.
   - action: edit
     resource: "**"
-    effect: deny
-  - action: edit
-    resource: "**/product/**"
     effect: allow
-  - action: edit
-    resource: "**/backlog/**"
-    effect: allow
-  - action: edit
-    resource: "**/docs/**"
-    effect: allow
-  - action: edit
-    resource: "**/README.md"
-    effect: allow
-  - action: edit
-    resource: "**/AGENTS.md"
-    effect: allow
-  - action: edit
-    resource: "**/journal/<role>.md"
-    effect: allow
-  - action: edit
-    resource: "docs/**"
-    effect: allow
-  # Shell: local git and read-only inspection. No push, no builds.
   - action: shell
     resource: "*"
-    effect: deny
-  - action: shell
-    resource: "git"
     effect: allow
-  - action: shell
-    resource: "git *"
-    effect: allow
-  - action: shell
-    resource: "ls*"
-    effect: allow
-  - action: shell
-    resource: "cat *"
-    effect: allow
-  - action: shell
-    resource: "pwd"
-    effect: allow
-  # Dispatch: exactly these three, nothing else.
   - action: subagent
     resource: "*"
-    effect: deny
-  - action: subagent
-    resource: "pm"
     effect: allow
-  - action: subagent
-    resource: "developer"
-    effect: allow
-  - action: subagent
-    resource: "qa"
-    effect: allow
-  # Skills: BA skills only.
   - action: skill
     resource: "*"
-    effect: deny
-  - action: skill
-    resource: "ba-*"
     effect: allow
 ---
 

@@ -11,6 +11,21 @@ enum AppInfo {
 
 @main
 struct PlayTwoApp: App {
+
+    /// The one advertiser for the process.
+    ///
+    /// SwiftUI creates the `App` struct once at launch and keeps it for the
+    /// lifetime of the process, so this stored reference does too: the
+    /// `_airplay._tcp` registration lives exactly as long as the app does.
+    /// Showing its state is TASK-005; withdrawing it when the app leaves the
+    /// foreground is TASK-006.
+    private let advertiser: ServiceAdvertiser
+
+    init() {
+        advertiser = ServiceAdvertiser()
+        advertiser.start()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

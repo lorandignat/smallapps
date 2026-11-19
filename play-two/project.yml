@@ -29,6 +29,14 @@ targets:
       properties:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        # iOS 14+ refuses to register a Bonjour service unless the app declares
+        # why it needs the local network and lists every service type it
+        # publishes. Without these two keys the registration is silently
+        # denied in the device build (the simulator does not enforce it) and
+        # the listener ends in `.waiting` with a policy error (TASK-004).
+        NSLocalNetworkUsageDescription: "PlayTwo advertises itself as an AirPlay speaker on your local network so that devices on the same Wi-Fi can find and connect to it."
+        NSBonjourServices:
+          - _airplay._tcp
 
   PlayTwoTests:
     type: bundle.unit-test

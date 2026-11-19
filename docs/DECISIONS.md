@@ -112,7 +112,7 @@ Format:
 ## DEC-009 — The public repository is a sanitised snapshot, not the history
 
 - date: 2026-11-17
-- status: accepted
+- status: superseded by `DEC-013`
 - owner: ba (human decision)
 - context: `DEC-008` assumed the whole history could be published as it stands.
   It cannot: the history carries the build host's address and account, the Mac's
@@ -132,3 +132,26 @@ Format:
   exactly, because the bridge is not in it — that is intended. Republishing is a
   re-run of the snapshot script, not a rebase. `DEC-008`'s "full history" and
   "the Apple ID stays" no longer hold; its naming decision still does.
+
+## DEC-013 — Publish the history, scrubbed commit by commit
+
+- date: 2026-11-19
+- status: accepted
+- owner: ba (human decision)
+- context: `DEC-009` published one orphan commit, so three days of work appeared
+  as a single "Initial import". The human wants the repository to show how the
+  app, the agents and the requirements evolved. Scrubbing the tree is already
+  solved; what was missing was scrubbing each commit rather than the final state.
+- decision: `make-history.sh` replays every commit on `main` in order, applies the
+  same rules to each tree, scrubs each commit message with the same patterns, and
+  re-commits with the original message, subject and date. A commit whose tree is
+  unchanged after scrubbing is dropped, so the public log carries no empty
+  commits. The result is `public-history`, pushed as `main`. Authorship is the
+  human's, as in the snapshot. The private repository remains the source of
+  truth; `main` is never rewritten or pushed.
+- consequences: the public log now shows 55 commits from 2026-11-15 onward —
+  spec, decisions, agent definitions, task cuts, verdicts and code — each with
+  the date it happened. The journals remain private, so the reasoning behind a
+  commit is summarised by its message, not published verbatim. Republishing is
+  `make-history.sh` plus a force-push, which rewrites the public history each
+  time; that is acceptable because the public repository is generated.
