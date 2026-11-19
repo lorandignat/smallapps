@@ -20,6 +20,11 @@ permissions:
   - action: subagent
     resource: "*"
     effect: deny
+  # You answer the analyst, not the human. A decision you cannot make comes back
+  # with your report; the analyst answers it or takes it to the human.
+  - action: question
+    resource: "*"
+    effect: deny
   - action: skill
     resource: "*"
     effect: deny

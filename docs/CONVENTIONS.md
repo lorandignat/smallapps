@@ -44,6 +44,8 @@ rewrites, no pushes.
 - Sentence case headings, one `#` per file.
 - Tables only for things with columns worth comparing; prose for reasoning.
 - Keep `STATE.md` under 40 lines; history goes in journals.
+- Reports are summaries; evidence lives in files and is cited by path. A report
+  quotes the lines that prove a claim, never a whole log.
 - Link relatively (`../docs/PROCESS.md`), never absolute paths.
 - No emoji in repository documents. No badges that are not true.
 

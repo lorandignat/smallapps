@@ -34,20 +34,66 @@ summary alone:
 The process is written down in [`docs/PROCESS.md`](docs/PROCESS.md) and is
 enforced by the roles below, not by good intentions.
 
-## The team
+## The agents
 
-| Role | Responsibility |
+Four AI agents do the work. A person talks to one of them, the business analyst,
+which drives the process and dispatches the rest. The others run as subagents in
+the background and answer the analyst only. When one of them needs a decision it
+asks the analyst, which answers from the product definition and the decisions on
+record, and takes the question to the person when those do not settle it.
+
+| Agent | Mode | Responsibility |
+| --- | --- | --- |
+| Business analyst | primary | Product definition, scope, priorities and the four gates. Owns the spec and the state. |
+| Project manager | subagent | Turns the approved spec into features and atomic tasks; owns the backlog. |
+| Developer | subagent | Builds one task per invocation, sets up and maintains the codebase, answers rework. |
+| Tester | subagent | Verifies acceptance criteria with evidence, owns the regression list. |
+
+The human owns the product and every irreversible decision. The agents absorb the
+routine work so attention goes to what the app should be. Model settings live in
+`opencode.jsonc`; the rules they follow are in [`docs/PROCESS.md`](docs/PROCESS.md).
+
+## How a task moves
+
+```
+human  ⇄  ba                 idea, priority, gate approvals
+           │
+           ├──▶ pm           approved spec → features → atomic tasks
+           ├──▶ developer    one task ID → code, tests, report
+           └──▶ qa           task ID + report → verdict and evidence
+                     │
+                     ▼
+                   ba            PASS  → commit, close the task, take the next
+                                 FAIL  → same task back to the developer
+                                 BLOCKED → fix the cause, re-cut, or record it
+```
+
+One task at a time, in dependency order. A task is closed only on a passing
+verdict, and the commit is made by the analyst, never by the agent that wrote the
+code.
+
+Each subagent starts with fresh context and returns a summary — what changed,
+which checks ran, what needs a decision. Implementation detail stays in the files
+and the journals, so the analyst carries the loop, not the code.
+
+## State, not a transcript
+
+This is a stripped-down workflow for ideas, prototypes and fast iteration, and
+the shape follows from that. Requirements, decisions, the backlog and the progress
+of every task are written to markdown as the work happens:
+
+| Question | File |
 | --- | --- |
-| Business analyst | Product definition, scope, priorities, and the four gates. The only role a person talks to. |
-| Project manager | Turns the approved spec into features and atomic tasks; owns the backlog. |
-| Developer | Builds one task per pass, sets up and maintains the codebase, fixes failed work. |
-| Tester | Verifies against acceptance criteria with evidence, owns the regression list. |
+| What are we building, and how do we know it works? | `<project>/product/SPEC.md` |
+| Why is it built this way? | `<project>/docs/DECISIONS.md` |
+| What is left, and what is in flight? | `<project>/backlog/BOARD.md` |
+| Where did we stop? | `docs/STATE.md` and `<project>/docs/STATE.md` |
+| What has actually been tried? | `<project>/journal/` (private) |
 
-These are AI agents operating under [`.opencode/`](.opencode) with a fixed
-process; the human owns the product and every irreversible decision. Model
-details live in `opencode.jsonc`. The intent is not autonomy for its own sake:
-the agents do the routine work so the human spends attention on what the app
-should be.
+A session begins by reading those files instead of replaying a conversation. That
+keeps the working context small and the cost low, and it is what makes a handoff
+possible: a new chat, a different model or a person resumes at the same task,
+under the same constraints, because the constraints are on disk.
 
 ## Repository layout
 
@@ -95,8 +141,8 @@ Inside a session: `/projects`, `/project <slug>`, `/status`, `/resume`,
 ## Version control
 
 One repository, branch `main`, one commit per passing task, prefixed with the
-project name (`airplay2/TASK-014: …`). No remote is configured and agents cannot
-push; publishing is a human decision, made when a project is ready for it.
+project name (`play-two/TASK-014: …`). Agents cannot push; publishing is a human
+decision, made when a project is ready for it.
 
 ## Where to start
 

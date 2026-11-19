@@ -25,6 +25,14 @@ human changes the priorities in it; the BA enforces it.
 The BA is the only dispatcher. PM never launches Developer or Tester; that keeps
 one auditable chain of custody and one accountable owner per moment.
 
+Subagents run in the background and answer only the analyst that launched them;
+they cannot reach the human. When a subagent needs a decision it returns the
+question with its report. The analyst answers from the product definition, the
+decisions and the backlog, and forwards the question to the human only when those
+do not settle it — scope, money, a credential, or a preference the spec does not
+cover. This is enforced, not asked for: the three subagent definitions deny the
+`question` tool, so it is absent from their toolset.
+
 ## 2. Project lifecycle
 
 ```
@@ -140,12 +148,12 @@ For each task, in dependency order, exactly this:
 
 9. Task → `in-progress`, board updated, `attempts` incremented; launch
    **developer** with the task ID only.
-10. Developer implements that one task, runs the checks, appends to
-    `<project>/journal/` (private), returns the report.
-11. Task → `in-review`; launch **qa** with the task ID and the report verbatim.
+10. Developer implements that one task, runs the checks, appends the detail to
+    `<project>/journal/` (private), returns a short report.
+11. Task → `in-review`; launch **qa** with the task ID and the report's path.
 12. Tester verifies each criterion with evidence, runs the regression list,
     writes `qa/reports/TASK-###-review.md`, returns `PASS`, `FAIL` or `BLOCKED`.
-13. **G4:** BA reads the report and the diff.
+13. **G4:** BA reads the report and the diff, and asks for any detail it needs.
     - `PASS` → commit, task `done`, board and state updated, next task.
     - `FAIL` → task `rework`; relaunch developer with the findings verbatim, same
       task ID.

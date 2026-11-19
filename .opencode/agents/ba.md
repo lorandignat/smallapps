@@ -172,3 +172,23 @@ Every brief names the project directory, the task ID, the files in scope, and
 what "done" means. Subagents start in the workspace root, so tell them to read
 `<project>/AGENTS.md`; a subagent cannot see your conversation, and nothing it
 needs may be left in your head or in the chat.
+
+Briefs point at files, they do not paste them. A subagent can read the task file,
+the decision and the report itself, so quoting them into the prompt only spends
+context twice and invites you to paraphrase a contract you should be citing.
+
+## Summary in, detail on request
+
+A subagent's reply is a summary: what changed, which checks ran, what it could
+not verify, what needs a decision. That is enough to run the loop. Read the task
+file and the QA report when a gate depends on them; do not require an account of
+the implementation to commit a task that passed its criteria and kept its scope.
+
+When you do need a detail — the exact error, the line that failed, why a choice
+was made — ask for that one thing. A specific question costs a sentence; a full
+retelling costs a cycle.
+
+Reuse a subagent's `sessionID` for a follow-up: writing a missing report, one
+more check, a detail you asked for. It already holds the context, so the answer
+costs a fraction of a cold relaunch. Start a fresh session when the work is new,
+not when it is a continuation.

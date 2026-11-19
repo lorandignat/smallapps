@@ -17,7 +17,8 @@ Overwrite the attempt number and keep every heading. One file per task; add
 ## Required content
 
 1. **Criteria table** — every criterion, its verdict, and the evidence.
-2. **What I ran** — commands and exit codes, pasted, not summarised.
+2. **What I ran** — commands and exit codes, pasted, not summarised. For a long
+   log, cite the path and paste only the lines that carry the result.
 3. **Findings** — ordered BLOCKER → MAJOR → MINOR, each with `file:line`, what is
    wrong, how to reproduce, and the smallest acceptable fix.
 4. **Regressions** — the regression list result.

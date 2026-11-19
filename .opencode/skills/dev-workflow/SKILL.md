@@ -49,7 +49,8 @@ what the tester should look at.
 
 ## 6. Report
 
-Use the exact format in your instructions. Then stop.
+Use the exact format in your instructions. Then stop. The reply is a summary;
+the reasoning and the full output belong in `journal/<role>.md` and the log paths.
 
 ## Rework (same task, attempt ≥ 2)
 

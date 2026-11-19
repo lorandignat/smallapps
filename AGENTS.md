@@ -19,8 +19,11 @@ at the workspace root, and never mix two projects in one task.
 3. Install nothing outside this folder. Shared toolchains go in `.tooling/`,
    project dependencies in the project. Record every install in the
    local environment log, which is not published.
-4. Only the business analyst (`ba`) talks to the human. `pm`, `developer` and
-   `qa` answer only the agent that launched them.
+4. The business analyst (`ba`) is the human's interface and the dispatcher.
+   `pm`, `developer` and `qa` run in the background and answer only the analyst;
+   they cannot reach the human. The analyst answers from the spec, the decisions
+   and the backlog, and forwards a question to the human only when those do not
+   settle it.
 5. State lives on disk. Workspace state: `docs/STATE.md`. Project state:
    `<project>/docs/STATE.md`. Read both before acting; update before stopping.
 6. One task at a time. A task is `done` only when `qa` returns `PASS` and the

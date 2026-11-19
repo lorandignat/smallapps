@@ -58,6 +58,11 @@ permissions:
   - action: subagent
     resource: "*"
     effect: deny
+  # You answer the analyst, not the human. A decision you cannot make comes back
+  # with your report; the analyst answers it or takes it to the human.
+  - action: question
+    resource: "*"
+    effect: deny
   - action: skill
     resource: "*"
     effect: deny
@@ -137,3 +142,8 @@ For the BA: <anything out of scope you noticed, or "none">
 ```
 
 Then stop. Do not ask the BA whether it looks good — the tester decides that.
+
+Keep the reply to the template. Reasoning, the code you wrote and the full output
+belong in `journal/<role>.md` and in the log paths; the reply quotes only the lines
+that are the evidence. The analyst asks when it needs detail — do not pre-empt it
+with a walkthrough.
