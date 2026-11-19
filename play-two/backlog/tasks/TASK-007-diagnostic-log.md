@@ -2,8 +2,8 @@
 id: TASK-007
 title: Record advertisement events in a diagnostic log
 feature: FEAT-001
-status: proposed
-attempts: 0
+status: done
+attempts: 1
 owner: null
 depends_on: [TASK-006]
 estimate: small
@@ -31,28 +31,28 @@ demo has a written trace and FEAT-001's S5 can tell which launch it is reading.
   `init`); `src/PlayTwoApp.swift` already constructs it and is **not** in
   scope.
 - Explicitly **do not** touch: `project.yml`, `src/AirPlay/`, `src/Net/`,
-  `src/ContentView.swift`, `src/PlayTwoApp.swift`, `docs/`, `qa/`,
-  `journal/`, `scripts/`, `.opencode/`.
+  `src/ContentView.swift`, `src/PlayTwoApp.swift`, `docs/`, `qa/`, `journal/`,
+  `scripts/`, `.opencode/`.
 
 ## Acceptance criteria
 
-1. [ ] Given an empty log, when `record("Advertising as PlayTwo")` is
+1. [x] Given an empty log, when `record("Advertising as PlayTwo")` is
        called, then `entries.count` is 1 and the entry text is exactly that
        string, prefixed by a `yyyy-MM-dd HH:mm:ss.SSS` timestamp within 2 seconds
        of the test's own clock.
-2. [ ] Given capacity 2000 and 2005 records, then `entries.count` is 2000 and the
+2. [x] Given capacity 2000 and 2005 records, then `entries.count` is 2000 and the
        oldest surviving entry is record number 6 — memory is bounded.
-3. [ ] Given the app is advertising and then backgrounds, then the log contains a
+3. [x] Given the app is advertising and then backgrounds, then the log contains a
        line whose message starts `Advertising` and names the service, and later a
        line starting `Stopped`.
-4. [ ] Given a fresh app process, when the app has finished launching, then the
+4. [x] Given a fresh app process, when the app has finished launching, then the
        log's **first** entry's message is exactly `Restart` (timestamp prefix
        only, nothing after it), and every later launch records `Restart` again as
        that session's first entry — same string on the first launch and on a
        relaunch, with nothing read from disk or from the previous session.
-5. [ ] Given 100 records issued concurrently from 4 threads, then the log holds
+5. [x] Given 100 records issued concurrently from 4 threads, then the log holds
        exactly 100 entries and no crash occurs.
-6. [ ] `EventLogTests` passes: `Executed 5 tests, with 0 failures`.
+6. [x] `EventLogTests` passes: `Executed 5 tests, with 0 failures`.
 
 ## Verification commands
 
@@ -85,17 +85,17 @@ in the same block and the exported-file check is recorded as `BLOCKED (TASK-008)
 
 ## Definition of done
 
-- [ ] All criteria have evidence in `qa/reports/TASK-007-review.md`
-- [ ] `qa` verdict is `PASS`
-- [ ] Only files listed above changed
-- [ ] Regression list still passes
-- [ ] One commit `play-two/TASK-007: record advertisement events in a diagnostic log` exists
+- [x] All criteria have evidence in `qa/reports/TASK-007-review.md`
+- [x] `qa` verdict is `PASS`
+- [x] Only files listed above changed
+- [x] Regression list still passes
+- [x] One commit `play-two/TASK-007: record advertisement events in a diagnostic log` exists
 
 ## Rework log
 
 | Attempt | Date | Tester findings | Outcome |
 | --- | --- | --- | --- |
-| — | — | — | — |
+| 1 | 2026-11-19 | — | PASS (attempt 1), BA G4 2026-11-19 |
 
 ## Notes
 

@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** TASK-007 (in-progress)
+(approved, G2/G3) · **Active task:** TASK-008 (in-progress)
 
 ## Features
 
@@ -26,8 +26,8 @@ They are specified only after increment 1 is demonstrated.
 | TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | done | 2 | PASS 2026-11-19 — 17/17 simulator, device-proven, R2 high-water 13→17 |
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | done | 1 | PASS 2026-11-19 — 21/21, R9 added |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | done | 2 | PASS 2026-11-19 (5/5, attempt 2) |
-| TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
-| TASK-008 | FEAT-001 | Export the diagnostic log to a file | proposed | 0 | — |
+| TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | done | 1 | PASS 2026-11-19 (6/6, attempt 1) |
+| TASK-008 | FEAT-001 | Export the diagnostic log to a file | in-progress | 1 | — |
 | TASK-009 | FEAT-001 | Install a signed build on the device | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
@@ -49,9 +49,8 @@ exported log for the S5 observation.
   7000` succeeds; a second iPhone offers PlayTwo in its AirPlay picker. The
   simulator suite for the rework still needs a Mac run; the `policyDenied` unit
   test is in the tree. QA is the next step.
-- **The model's free usage limit is exhausted.** Long verification runs are cut
-  off mid-task; a short follow-up still works. Either wait for the quota or move
-  to a paid plan before the next long run.
+- **Agents run on Tidepool Alpha.** The free pool is exhausted; all launches use
+  `opencode/tidepool-alpha-free` (`opencode.jsonc`, `.opencode/agents/ba.md`).
 
 - `QQ-005` resolved 2026-11-16: the bridge builds and tests on the Mac
   (Xcode 26.6, iOS 26.5 SDK).
@@ -79,9 +78,9 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 6 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006; `PASS`
+- tasks: 7 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006, TASK-007; `PASS`
   2026-11-16, 2026-11-18, 2026-11-19) / 10 total
-- approved and next: TASK-007; TASK-009 is approved but ordered last
+- approved and next: TASK-008; TASK-009 is approved but ordered last
 - blocked: 0 — `QQ-005` and `QQ-008` are resolved and the 6s is connected
 
 ## Recent changes
@@ -127,3 +126,13 @@ G4. `Attempts` counts developer launches; three means escalate.
   the foreground republishes the advertisement. Board, project state and journal
   updated; commit `play-two/TASK-006: keep the advertisement in step with the
   foreground state`.
+
+- 2026-11-19 — TASK-007 `done` (`PASS`, 6/6, attempt 1, 2026-11-19): `EventLog`
+  records one timestamped line per advertisement event (`Advertising as
+  PlayTwo`, `Stopped`, `Advertiser failed`); `AppState.init` records `Restart`
+  as the first entry of every launch; storage is in-memory, bounded at 2000
+  entries (drop-oldest), appended under `NSLock`; `EventLogTests` grows to 5.
+  Board, state and journal updated; regression high-water mark raised 25 → 30
+  (`qa/REGRESSION.md` R2, per `qa/reports/TASK-007-review.md`); commit
+  `play-two/TASK-007: record advertisement events in a diagnostic log` (wip
+  commit `55ca41b`).

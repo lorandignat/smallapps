@@ -3,7 +3,7 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-**Active task:** TASK-007 (in-progress)
+**Active task:** TASK-008 (in-progress)
 **v1:** increment 4 of DEC-002 (discoverable → pairable → audible → useful)
 
 ## Status
@@ -20,9 +20,9 @@ needs an iOS 15.7 developer disk image for that last step, which is installed. T
 ## Next action
 
 1. TASK-006 done at G4 (PASS, 5/5, attempt 2, 2026-11-19).
-2. TASK-007 (record advertisement events in a diagnostic log) is next; 008
-   (export the log to a file) after it.
-3. TASK-009 last: the README "Running it on the iPhone" section.
+2. TASK-007 done at G4 (PASS, 6/6, attempt 1, 2026-11-19); wip commit `55ca41b` on main.
+3. TASK-008 (export the diagnostic log to a file) is next; TASK-009 last:
+   the README "Running it on the iPhone" section.
 
 ## Approved gates
 
