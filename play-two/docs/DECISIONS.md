@@ -252,3 +252,23 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
   that the app has to be rebuilt. This makes discovery the first thing observed on
   the real hardware, which is S1b, and it remains a human observation for the Apple
   TV's own speaker list.
+
+## DEC-014 — TASK-006 rework scope expansion (clear the listener)
+
+- date: 2026-11-19
+- status: accepted
+- owner: ba (human decision)
+- context: TASK-006 was delivered with `src/Net/ServiceAdvertiser.swift` out of
+  scope; QA attempt 1 (FAIL) showed the real-app bug: `start()` no-ops because
+  `listener` is never cleared, so returning to the foreground does not republish
+  the service and `AppState.status` stays `.stopped`. The unit tests passed only
+  because the spy has no `listener` guard, masking the defect.
+- decision: the developer's rework clears `self.listener = nil` in
+  `listenerChanged(.cancelled)` before `report(.stopped)` (one line in
+  `ServiceAdvertiser.swift`). QA attempt 2 passed 5/5 on the suite
+  (`Executed 25 tests, with 0 failures`); criterion 2's republish path is
+  verified statically. The expansion is recorded so any future re-cut of
+  TASK-006 includes it.
+- consequences: the task's stated scope is narrower than the code that closed
+  it; the only source change beyond TASK-006's normal closure artifacts is the
+  one line in `ServiceAdvertiser.swift`.

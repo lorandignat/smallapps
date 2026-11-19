@@ -161,6 +161,7 @@ final class ServiceAdvertiser {
         case .failed(let error):
             report(Self.failure(for: error))
         case .cancelled:
+            self.listener = nil
             report(.stopped)
         }
     }

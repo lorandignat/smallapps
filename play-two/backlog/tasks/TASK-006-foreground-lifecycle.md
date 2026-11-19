@@ -2,8 +2,8 @@
 id: TASK-006
 title: Keep the advertisement in step with the foreground state
 feature: FEAT-001
-status: proposed
-attempts: 0
+status: done
+attempts: 2
 owner: null
 depends_on: [TASK-005]
 estimate: small
@@ -68,17 +68,18 @@ green; record any failure, do not mark the criteria met on the static checks.
 
 ## Definition of done
 
-- [ ] All criteria have evidence in `qa/reports/TASK-006-review.md`
-- [ ] `qa` verdict is `PASS`
-- [ ] Only files listed above changed
-- [ ] Regression list still passes
-- [ ] One commit `play-two/TASK-006: keep the advertisement in step with the foreground state` exists
+- [x] All criteria have evidence in `qa/reports/TASK-006-review.md`
+- [x] `qa` verdict is `PASS`
+- [x] Only files listed above changed
+- [x] Regression list still passes
+- [x] One commit `play-two/TASK-006: keep the advertisement in step with the foreground state` exists
 
 ## Rework log
 
 | Attempt | Date | Tester findings | Outcome |
 | --- | --- | --- | --- |
-| — | — | — | — |
+| 1 | 2026-11-19 | BLOCKER — `ServiceAdvertiser.start()` no-ops after the first backgrounding: `listener` is never cleared in `stop()`/`listenerChanged`; spy-masked; real-app fail of criterion 2. | FAIL (attempt 1) |
+| 2 | 2026-11-19 | BLOCKER fix: clear `self.listener = nil` in `listenerChanged(.cancelled)`; criterion 2 verified statically (republish path: `start()` → new `ReceiverListener` → `report(.advertising)`). | PASS (attempt 2), BA G4 2026-11-19 |
 
 ## Notes
 

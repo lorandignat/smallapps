@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** none — TASK-005 done; TASK-006 next
+(approved, G2/G3) · **Active task:** TASK-007 (in-progress)
 
 ## Features
 
@@ -25,7 +25,7 @@ They are specified only after increment 1 is demonstrated.
 | TASK-003 | FEAT-001 | Answer TCP connections on port 7000 | done | 3 | PASS 2026-11-18 (6/6, 2 MINOR); attempts 1-2 BLOCKED |
 | TASK-004 | FEAT-001 | Publish the `_airplay._tcp` service | done | 2 | PASS 2026-11-19 — 17/17 simulator, device-proven, R2 high-water 13→17 |
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | done | 1 | PASS 2026-11-19 — 21/21, R9 added |
-| TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | proposed | 0 | — |
+| TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | done | 2 | PASS 2026-11-19 (5/5, attempt 2) |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | proposed | 0 | — |
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | proposed | 0 | — |
 | TASK-009 | FEAT-001 | Install a signed build on the device | approved | 0 | — |
@@ -79,9 +79,9 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 5 done (TASK-001, TASK-002, TASK-003, TASK-004, TASK-005, TASK-010; `PASS`
+- tasks: 6 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006; `PASS`
   2026-11-16, 2026-11-18, 2026-11-19) / 10 total
-- approved and next: TASK-004; TASK-009 is approved but ordered last
+- approved and next: TASK-007; TASK-009 is approved but ordered last
 - blocked: 0 — `QQ-005` and `QQ-008` are resolved and the 6s is connected
 
 ## Recent changes
@@ -121,3 +121,9 @@ G4. `Attempts` counts developer launches; three means escalate.
   that S5's log half needs (criterion 4, `EventLogTests` 4 → 5); TASK-009 added
   for the signed device build/install/launch that S1b, S1c and S5 require, and
   marked `blocked` on `QQ-008`.
+
+- 2026-11-19 — TASK-006 `done` on attempt 2 (`PASS`, 5/5, 2026-11-19): the
+  rework clears `ServiceAdvertiser.listener` on `.cancelled`, so returning to
+  the foreground republishes the advertisement. Board, project state and journal
+  updated; commit `play-two/TASK-006: keep the advertisement in step with the
+  foreground state`.

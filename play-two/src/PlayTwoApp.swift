@@ -11,6 +11,8 @@ enum AppInfo {
 
 @main
 struct PlayTwoApp: App {
+    @StateObject private var appState: AppState
+    @Environment(\.scenePhase) private var scenePhase
 
     /// The one advertiser for the process.
     ///
@@ -19,16 +21,19 @@ struct PlayTwoApp: App {
     /// `_airplay._tcp` registration lives exactly as long as the app does.
     /// Showing its state is TASK-005; withdrawing it when the app leaves the
     /// foreground is TASK-006.
-    private let advertiser: ServiceAdvertiser
-
     init() {
-        advertiser = ServiceAdvertiser()
+        let advertiser = ServiceAdvertiser()
+        let state = AppState(advertiser: advertiser)
+        _appState = StateObject(wrappedValue: state)
         advertiser.start()
     }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(status: appState.status)
+        }
+        .onChange(of: scenePhase) { phase in
+            appState.handleScenePhase(phase)
         }
     }
 }
