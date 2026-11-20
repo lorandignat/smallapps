@@ -41,3 +41,5 @@ devicectl's floor — so the device is found through `ios-deploy -c`.
 - 2026-11-18 — TASK-003 PASS (6/6): the listener takes a port, defaults to 7000.
 - 2026-11-19 — `DEC-013`: the public repository is the scrubbed history, not one
   commit; `make-history.sh` replays every commit through the same rules.
+- 2026-11-20 — `DEC-015`: GUI-session helper runs via `sh`; no `chmod +x` on the
+  Mac anymore (detail: the GUI-session runner, `the build bridge:123`).

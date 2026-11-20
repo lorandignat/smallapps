@@ -176,3 +176,24 @@ Format:
   only through the scrubbing pipeline; the leak protection is preserved. The
   developer agent's instructions and PROCESS.md §7 carry the constraint in
   writing.
+
+## DEC-015 — The GUI-session helper runs via `sh`, not `chmod +x`
+
+- date: 2026-11-20
+- status: accepted
+- owner: ba
+- context: The Mac is flagged as a "remote SSH-driven workflow: used base64 -d to
+  create /private/tmp/mac-gui-run.sh; added executable permission with
+  `chmod +x`; executed the new temporary script; passed a Base64-encoded command
+  to it" (hobby project; the user doesn't like that pattern).
+- decision: The executable bit is never needed: the GUI-session runner writes
+  `run.sh`, and the LaunchAgent in the private build notes runs it as
+  `/bin/sh "$work/run.sh"` (the GUI-session runner:49`); the inner command is
+  also run via `/bin/sh "$work/cmd.sh"` (the GUI-session runner:37`). So
+  `chmod +x "$work/run.sh"` (the GUI-session runner:42`) is removed, and
+  `scripts/mac-build.sh:123` now runs `sh /tmp/mac-gui-run.sh '$b64'` instead of
+  `chmod +x /tmp/mac-gui-run.sh; /tmp/mac-gui-run.sh '$b64'`. The base64 wire
+  format is unchanged; only the exec bit is gone.
+- consequences: No `chmod +x` executes on the Mac during any build GUI
+  command. If some future platform/setup requires the helper to be executable,
+  re-add the bit — but not here.
