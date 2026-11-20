@@ -2,28 +2,30 @@
 
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
-**Updated:** 2026-11-19 · **Active project:** `play-two`
-**Mode:** build — task loop, TASK-004 in-review
+**Updated:** 2026-11-20 · **Active project:** `play-two`
+**Mode:** build — task loop, TASK-008 in-review (BLOCKED on criterion 4, human tap)
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) has ten tasks,
-TASK-001, TASK-002, TASK-003, TASK-004, TASK-005 and TASK-010 done
-(device-proven: one `PlayTwo` resolves to `<device>.local.:7000`).
-The Mac bridge signs, installs and launches on the iPhone 6s (iOS 15.8.8) end
-to end; `ios-deploy` replaces `devicectl`, which does not support iOS 15.
-Signing is the human's free Apple ID (`DEC-008`), so profiles expire after seven
-days.
+One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) has ten tasks.
+Done: TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006,
+TASK-007 (device-proven: one `PlayTwo` resolves to
+`<device>.local.:7000`). TASK-008 at G4 review: BLOCKED on criterion 4
+(human tap at the simulator); criteria 1, 2, 3, 5 verified, suite 33/33.
+TASK-009 approved, last. Mac reachable again (QQ-009 closed); agents now run on
+`opencode/deepseek-v4.1-flash-free#high` (all four agent files + `opencode.jsonc`).
 
 ## Next action
 
-1. TASK-005 (receiver state) — done at G4 (PASS, 21/21). Then TASK-006 (foreground
-   state), 007-008, TASK-009 last.
-2. Publication: `lorandignat/smallapps` holds the scrubbed history
-   (`public-history`, 55 commits from 2026-11-15), rebuilt by
-   `.tooling/publish/make-history.sh` and force-pushed as `main` (`DEC-013`).
-   TASK-004 still needs the 6s on the LAN for its discovery criterion.
+1. TASK-008: human taps `Export Log` in the `iPhone 16e` simulator and reports
+   whether the share sheet opens with `airplay-receiver-log.txt` (O6). On a clean
+   report, BA records G4 PASS and commits `play-two/TASK-008: export the
+   diagnostic log to a file`. Also needs the PM amendment for the file list and
+   the build destination string (PM subagent blocked on quota).
+2. TASK-009 last: document the device install path in `play-two/README.md`.
+3. Publication: `lorandignat/smallapps` holds the scrubbed history (12 commits),
+   remote `main` = `6eb6155`. No pending push.
 
 ## Open questions and blockers
 

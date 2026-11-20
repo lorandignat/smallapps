@@ -1,11 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
-  // All four agents run on the free DeepSeek model.
-  "model": "opencode/tidepool-alpha-free",
-  // To revert when DeepSeek quota resets: change to "opencode/deepseek-v4.1-flash-free"
-  // and restore `model: opencode/deepseek-v4.1-flash-free#high` in the four agent
-  // files under .opencode/agents/.
+  // All four agents run on `opencode/beam-free` (default level).
+  "model": "opencode/beam-free",
+  // Set per agent in `.opencode/agents/*.md` as well, so a launcher that ignores
+  // the global default still lands on the same model.
 
   // The only agent the human talks to.
   "default_agent": "ba",

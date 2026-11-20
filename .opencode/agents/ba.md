@@ -1,7 +1,7 @@
 ---
 description: Product driver and the only agent the human talks to. Owns the spec, the process, and every gate; dispatches pm, developer and qa.
 mode: primary
-model: opencode/tidepool-alpha-free
+model: opencode/beam-free
 steps: 150
 color: "#4f8cff"
 permissions:
