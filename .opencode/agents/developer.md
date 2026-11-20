@@ -1,7 +1,7 @@
 ---
 description: Senior full-stack developer. Implements exactly one backlog task per invocation, sets up and runs the project, and fixes rework until the tester passes it.
 mode: subagent
-model: opencode/beam-free
+model: opencode/tidepool-alpha-free
 steps: 80
 color: "#22b573"
 permissions:

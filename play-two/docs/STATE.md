@@ -2,8 +2,8 @@
 
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
-**Updated:** 2026-11-20 · **Phase:** release · **Active feature:** FEAT-001 (complete)
-**Active task:** none — awaiting human acceptance of increment 1
+**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
+**Active task:** none — G2/G3 approved, TASK-011 next (increment 2 / pairable)
 
 ## Status
 
@@ -24,9 +24,12 @@ Definition of done met pending human acceptance.
 
 ## Next action
 
-Human accepts increment 1 (or requests changes). On acceptance: phase →
-maintenance, then PM breaks down increment 2 (pairable) from DEC-002. No new
-features start before acceptance.
+Increment 1 shipped and accepted. PM broke down increment 2 into FEAT-002
+(crypto primitives, 5 tasks TASK-011..015), FEAT-003 (pairing endpoints,
+feature level), FEAT-004 (configurable name, feature level). G2/G3 approved.
+Build loop starts with TASK-011 (TLV8 codec, no dependencies). Open questions
+before FEAT-003: fixed vs generated setup code; retirement of the fixed 38-byte
+reply (R4) once HTTP handling lands.
 
 ## Approved gates
 
