@@ -3,35 +3,33 @@
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
 **Updated:** 2026-11-20 · **Active project:** `play-two`
-**Mode:** maintenance — increment 1 shipped; PM breaking down increment 2 (pairable)
+**Mode:** build, paused — Mac disconnected; no builds until the old MacBook is up
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, in maintenance. Increment 1 (discoverable) shipped 2026-11-20
-(all ten tasks done, O1-O6 observed, release note written, human accepted).
-PM breaking down increment 2 (pairable): HAP pairing so the phone can be added
-in the Home app on iOS 15.3 (S2). Increments 3 (audible) and 4 (useful) stay
-unspecified until increment 2 is demonstrated. Agents on `opencode/beam-free`.
+One project, in build. Increment 1 (discoverable) shipped and accepted.
+Increment 2 (pairable) is mid-build: TASK-011 done (TLV8, `play-two/TASK-011:
+TLV8 codec (encode and decode)`), TASK-012 blocked (Mac disconnected).
 
 ## Next action
 
-1. Feature close: human performs O1-O6 observations on the 6s / simulator
-   (screen read, discovery browse, `nc :7000`, AirPlay picker on a second
-   iPhone, restart log line, Export Log share sheet) and reports them.
-2. BA records the release note in play-two/docs/STATE.md and checks the
-   definition of done; PM breaks down increment 2 (pairable) only after the
-   human accepts increment 1. No new features start before acceptance.
-3. Publication: `lorandignat/smallapps` holds the scrubbed history (12 commits),
-   remote `main` = `6eb6155`. No pending push; the human pushes when ready.
+Mac will be set up tomorrow (old MacBook). On resume: TASK-012 (SRP verifier)
+→ QA → commit `play-two/TASK-012: derive SRP-3072 verifier from setup code and
+salt` → TASK-013 → TASK-014 → TASK-015 → FEAT-003 → FEAT-004 → increment 3
+(audible). No builds until the MacBook is up.
 
 ## Open questions and blockers
 
 Workspace `docs/QUESTIONS.md` and `play-two/docs/QUESTIONS.md`: QQ-003 (personal
-use) still carries its default. No blockers; the Mac is reachable and the 6s is
-attached. `xcrun xctrace list devices` never lists it — iOS 15 is below
-devicectl's floor — so the device is found through `ios-deploy -c`.
+use) still carries its default. Blocker: Mac disconnected (user setting up the
+old MacBook); TASK-012 blocked until it is set up (see project state).
+
 ## Recent
+
+- 2026-11-20 — DEC-015: GUI-session helper runs via `sh`, no `chmod +x` on the
+  Mac; increment 2 mid-build: TASK-011 done (2026-11-20, `6aee109`), TASK-012
+  blocked (Mac disconnected).
 
 - 2026-11-15 — scaffolded the team; restructured into a multi-project workspace;
   spike closed, iOS AP2 attempt accepted, Mac bridge built.
