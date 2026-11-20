@@ -3,8 +3,8 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** none — FEAT-001 complete
+**Updated:** 2026-11-20 · **Phase:** release · **Active feature:** FEAT-001 (complete)
+· **Active task:** none — awaiting human acceptance
 
 ## Features
 

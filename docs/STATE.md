@@ -3,14 +3,14 @@
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
 **Updated:** 2026-11-20 · **Active project:** `play-two`
-**Mode:** build — FEAT-001 complete (10/10 tasks); awaiting human O1-O6 observations + acceptance
+**Mode:** release — increment 1 (discoverable) complete; awaiting human acceptance
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) complete — all
-ten tasks done (TASK-001..TASK-010), committed through 1eb1170. Device build
-installed and launched on the iPhone 6s (PID 8968, advertising as PlayTwo).
+One project, in release. FEAT-001 (discoverable) complete — all ten tasks done,
+committed through 1eb1170; human observations O1-O6 reported 2026-11-20; release
+note written in play-two/docs/STATE.md. Awaiting human acceptance of increment 1.
 Agents run on `opencode/beam-free` (default level). Mac reachable (QQ-009
 closed). Public history at `lorandignat/smallapps`, remote main = 6eb6155.
 
