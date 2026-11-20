@@ -3,7 +3,7 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-001
-**Active task:** TASK-009 (approved; device build/install/launch on the 6s)
+**Active task:** none — FEAT-001 complete (TASK-001..TASK-010 all done)
 **v1:** increment 4 of DEC-002 (discoverable → pairable → audible → useful)
 
 ## Status
@@ -19,13 +19,14 @@ needs an iOS 15.7 developer disk image for that last step, which is installed. T
 
 ## Next action
 
-1. TASK-008 done at G4 (PASS, 4/4, attempt 2, 2026-11-20); criterion 4
-   relocated to O6 human observation at FEAT-001 close. Commit
-   `play-two/TASK-008: export the diagnostic log to a file`.
-2. TASK-009 next: document the device install path in `play-two/README.md`
-   (static criteria 1-2 verifiable here; criteria 3-5 need the Mac + device).
-3. TASK-009 is the last task of FEAT-001; after it, feature close and the
-   human's O1-O5 observations.
+1. FEAT-001 complete: TASK-001..TASK-010 all done. TASK-009 committed
+   `play-two/TASK-009: document the device install path`.
+2. Feature close: human O1-O5 observations on the 6s (screen read, discovery
+   browse, nc :7000, AirPlay picker on a second iPhone, restart log line) plus
+   O6 (Export Log share sheet in the simulator). Then release note + human
+   acceptance per PROCESS §5 phase 3.
+3. Increments 2-4 of DEC-002 (pairable, audible, useful) get feature files
+   only after increment 1 is demonstrated.
 
 ## Approved gates
 

@@ -48,6 +48,36 @@ xcodebuild build -scheme PlayTwo -sdk iphoneos
 xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e'
 ```
 
+## Running it on the iPhone
+
+The device path is repeatable and uses the Mac's Aqua session for signing.
+Prerequisites that are already true: the free Apple ID `<apple-id>`
+is signed in to Xcode on the Mac, the signing team is set for PlayTwo in Xcode,
+and `MAC_TEAM_ID` is present in local configuration (never committed).
+
+From the workspace root:
+
+```sh
+rsync -a <project> <build-host>:<build-dir>/
+xcodegen generate
+xcodebuild build -scheme PlayTwo -sdk iphoneos
+ios-deploy --bundle build/Build/Products/Debug-iphoneos/PlayTwo.app --id <udid>
+ios-deploy --justlaunch --id <udid> --bundle play-two/build/Build/Products/Debug-iphoneos/PlayTwo.app
+```
+
+The profile `iOS Team Provisioning Profile: com.lorand.playtwo` expires
+**2026-11-23**. After that date the app stops launching; rebuild and
+reinstall with the commands above (`-allowProvisioningUpdates` regenerates the
+profile).
+
+Device: UDID `<udid>`, name
+"<device>", iOS 15.8.8, connected over USB.
+
+`xcrun devicectl` does not work for iOS 15 (it requires iOS 17); install and
+launch go through `ios-deploy`, which does. Device builds must go through
+build (Aqua session); running `xcodebuild` over ssh loses keychain
+access and fails with `errSecInternalComponent`.
+
 ## Layout
 
 ```

@@ -3,8 +3,8 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-(approved, G2/G3) · **Active task:** TASK-008 (in-progress)
+**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-001
+(approved, G2/G3) · **Active task:** none — FEAT-001 complete
 
 ## Features
 
@@ -28,7 +28,7 @@ They are specified only after increment 1 is demonstrated.
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | done | 2 | PASS 2026-11-19 (5/5, attempt 2) |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | done | 1 | PASS 2026-11-19 (6/6, attempt 1) |
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | done | 2 | PASS 2026-11-20 (4/4, crit. 4 relocated to O6 human observation at FEAT-001 close) |
-| TASK-009 | FEAT-001 | Install a signed build on the device | approved | 0 | — |
+| TASK-009 | FEAT-001 | Install a signed build on the device | done | 1 | PASS 2026-11-20 (4/5, crit. 5 = O1 human observation) |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
@@ -81,8 +81,8 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 0 done / 1 total
-- tasks: 7 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006, TASK-007; `PASS`
-  2026-11-16, 2026-11-18, 2026-11-19) / 10 total
+- tasks: 10 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005,
+  TASK-006, TASK-007, TASK-008, TASK-009; `PASS` 2026-11-16 … 2026-11-20) / 10 total
 - approved and next: TASK-008 (blocked — Mac offline, QQ-009); TASK-009 is approved but ordered last
 - blocked: 1 — TASK-008 (`QQ-009`; Mac offline)
 
