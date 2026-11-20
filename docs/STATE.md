@@ -3,29 +3,27 @@
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
 **Updated:** 2026-11-20 · **Active project:** `play-two`
-**Mode:** build — task loop, TASK-008 in-review (BLOCKED on criterion 4, human tap)
+**Mode:** build — FEAT-001 complete (10/10 tasks); awaiting human O1-O6 observations + acceptance
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) has ten tasks.
-Done: TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005, TASK-006,
-TASK-007 (device-proven: one `PlayTwo` resolves to
-`<device>.local.:7000`). TASK-008 at G4 review: BLOCKED on criterion 4
-(human tap at the simulator); criteria 1, 2, 3, 5 verified, suite 33/33.
-TASK-009 approved, last. Mac reachable again (QQ-009 closed); agents now run on
-`opencode/deepseek-v4.1-flash-free#high` (all four agent files + `opencode.jsonc`).
+One project, in build. G1/G2/G3 passed; FEAT-001 (discoverable) complete — all
+ten tasks done (TASK-001..TASK-010), committed through 1eb1170. Device build
+installed and launched on the iPhone 6s (PID 8968, advertising as PlayTwo).
+Agents run on `opencode/beam-free` (default level). Mac reachable (QQ-009
+closed). Public history at `lorandignat/smallapps`, remote main = 6eb6155.
 
 ## Next action
 
-1. TASK-008: human taps `Export Log` in the `iPhone 16e` simulator and reports
-   whether the share sheet opens with `airplay-receiver-log.txt` (O6). On a clean
-   report, BA records G4 PASS and commits `play-two/TASK-008: export the
-   diagnostic log to a file`. Also needs the PM amendment for the file list and
-   the build destination string (PM subagent blocked on quota).
-2. TASK-009 last: document the device install path in `play-two/README.md`.
+1. Feature close: human performs O1-O6 observations on the 6s / simulator
+   (screen read, discovery browse, `nc :7000`, AirPlay picker on a second
+   iPhone, restart log line, Export Log share sheet) and reports them.
+2. BA records the release note in play-two/docs/STATE.md and checks the
+   definition of done; PM breaks down increment 2 (pairable) only after the
+   human accepts increment 1. No new features start before acceptance.
 3. Publication: `lorandignat/smallapps` holds the scrubbed history (12 commits),
-   remote `main` = `6eb6155`. No pending push.
+   remote `main` = `6eb6155`. No pending push; the human pushes when ready.
 
 ## Open questions and blockers
 
