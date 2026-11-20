@@ -155,3 +155,24 @@ Format:
   commit is summarised by its message, not published verbatim. Republishing is
   `make-history.sh` plus a force-push, which rewrites the public history each
   time; that is acceptable because the public repository is generated.
+
+## DEC-014 — Build agent may push only the scrubbed public-history ref
+
+- date: 2026-11-20
+- status: accepted
+- owner: ba
+- context: The human wants the build loop to publish without a manual step,
+  but raw `main` contains team ids, Mac paths, UDIDs, `ENVIRONMENT.md`
+  references and other material that must never reach the public repository.
+  The scrubbed-history pipeline (`make-history.sh`, DEC-013) exists to prevent
+  that leak.
+- decision: The developer (build) agent may run `git push`, but only the
+  scrubbed ref produced by `.tooling/publish/make-history.sh`
+  (`public-history` → `origin/main`). It must never push raw `main`, never
+  add a remote, and never bypass the scrubbing step. The BA (and the other
+  agents) still never push. Publishing the private working branch anywhere
+  remains the human's decision.
+- consequences: The build loop can publish a release candidate unattended, but
+  only through the scrubbing pipeline; the leak protection is preserved. The
+  developer agent's instructions and PROCESS.md §7 carry the constraint in
+  writing.

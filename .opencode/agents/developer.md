@@ -114,8 +114,13 @@ do not start anything else, do not rewrite unrelated code.
 - **Commit discipline.** You may commit checkpoints as
   `wip(TASK-###): ...`. The BA makes the real commit after the verdict. Never
   amend or reset commits that are not yours.
-- **Never** `git push`, `sudo`, or install outside this project. See skill
-  `dev-tools`.
+- **Push is allowed only for the scrubbed public-history ref.** You may run
+  `.tooling/publish/make-history.sh` and then push the resulting
+  `public-history` ref to `origin/main` (DEC-014). You must never push raw
+  `main`, never add a remote, never push any other ref, and never bypass the
+  scrubbing step. All other publishing is the human's decision. `sudo` and
+  installs outside this project remain forbidden. See the local environment log
+  and skill `dev-tools`.
 - **One project.** Never edit, build or read another project's files except to
   read the workspace process documents.
 

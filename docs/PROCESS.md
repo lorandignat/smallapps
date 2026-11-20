@@ -1,6 +1,6 @@
 # PROCESS — how apps get built here
 
-Version 2. Owner: `ba`. Applies to every project in this workspace. Only the
+Version 3. Owner: `ba`. Applies to every project in this workspace. Only the
 human changes the priorities in it; the BA enforces it.
 
 ## 0. Workspace and projects
@@ -192,7 +192,10 @@ Checklists: skill `ba-gate`. A gate is never approved on a summary; open the fil
   `<project>/chore: ...`.
 - Developer may commit checkpoints: `airplay2/wip(TASK-014): ...`, and never
   rewords BA commits.
-- No remote, no push, ever, by an agent.
+- No agent pushes raw `main` or adds a remote. The developer (build) agent may
+  push only the scrubbed `public-history` ref produced by
+  `.tooling/publish/make-history.sh` (DEC-014); every other publish is the
+  human's decision.
 - Never commit `.tooling/`, build output, or secrets.
 
 ## 8. Autonomy

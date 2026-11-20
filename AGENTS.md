@@ -15,7 +15,10 @@ at the workspace root, and never mix two projects in one task.
 
 1. Stay inside `/homedir/agent/opencode/apps`. No host access, no other users'
    data, no `sudo`.
-2. Never `git push`, never add a remote. Publishing is the human's decision.
+2. Never `git push` raw `main` and never add a remote. The build agent may push
+   only the scrubbed `public-history` ref produced by
+   `.tooling/publish/make-history.sh` (DEC-014); all other publishing is the
+   human's decision.
 3. Install nothing outside this folder. Shared toolchains go in `.tooling/`,
    project dependencies in the project. Record every install in the
    local environment log, which is not published.
