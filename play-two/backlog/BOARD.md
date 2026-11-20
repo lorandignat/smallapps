@@ -3,17 +3,23 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-20 · **Phase:** release · **Active feature:** FEAT-001 (complete)
-· **Active task:** none — awaiting human acceptance
+**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
+· **Active task:** none — G2/G3 approved, TASK-011 next
 
 ## Features
 
 | ID | Title | Slice (demoable outcome) | Status | Tasks |
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
+| FEAT-002 | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | proposed | 0 |
+| FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
-Increments 2-4 of `DEC-002` (pairable, audible, useful) have no feature files yet.
-They are specified only after increment 1 is demonstrated.
+FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
+screen listed under "Also in v1" (`SPEC` §4), assigned to increment 2 by
+`DEC-003`. FEAT-003 depends on FEAT-002; FEAT-004 depends on FEAT-001. Only
+FEAT-002 is broken down into tasks; the rest stay at feature level until their
+turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
 
 ## Tasks
 
@@ -29,6 +35,11 @@ They are specified only after increment 1 is demonstrated.
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | done | 1 | PASS 2026-11-19 (6/6, attempt 1) |
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | done | 2 | PASS 2026-11-20 (4/4, crit. 4 relocated to O6 human observation at FEAT-001 close) |
 | TASK-009 | FEAT-001 | Install a signed build on the device | done | 1 | PASS 2026-11-20 (4/5, crit. 5 = O1 human observation) |
+| TASK-011 | FEAT-002 | TLV8 codec (encode and decode) | approved | 0 | — |
+| TASK-012 | FEAT-002 | Derive SRP-3072 verifier from setup code and salt | approved | 0 | — |
+| TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | approved | 0 | — |
+| TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | approved | 0 | — |
+| TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
@@ -80,11 +91,9 @@ G4. `Attempts` counts developer launches; three means escalate.
 
 ## Counts
 
-- features: 0 done / 1 total
-- tasks: 10 done (TASK-001, TASK-010, TASK-002, TASK-003, TASK-004, TASK-005,
-  TASK-006, TASK-007, TASK-008, TASK-009; `PASS` 2026-11-16 … 2026-11-20) / 10 total
-- approved and next: TASK-008 (blocked — Mac offline, QQ-009); TASK-009 is approved but ordered last
-- blocked: 1 — TASK-008 (`QQ-009`; Mac offline)
+- features: 1 done (FEAT-001) / 4 total; FEAT-002 approved (5 tasks); FEAT-003/004 proposed
+- tasks: 10 done (TASK-001..TASK-009, TASK-010; `PASS`) / 15 total; TASK-011..015 approved, next
+- blocked: 0 (profile expires 2026-11-23)
 
 ## Recent changes
 
@@ -129,6 +138,13 @@ G4. `Attempts` counts developer launches; three means escalate.
   the foreground republishes the advertisement. Board, project state and journal
   updated; commit `play-two/TASK-006: keep the advertisement in step with the
   foreground state`.
+
+- 2026-11-20 — PM breakdown of increment 2: added FEAT-002 (HAP crypto primitives,
+  5 tasks TASK-011..015), FEAT-003 (HAP pairing endpoints and persistence, feature
+  level), FEAT-004 (configurable advertised name, feature level). Settings screen
+  placed in increment 2, not increment 1, per DEC-003 (increment 1 is shipped).
+  FEAT-002 is the first feature broken down; FEAT-003/004 stay at feature level.
+  Phase → breakdown.
 
 - 2026-11-19 — TASK-007 `done` (`PASS`, 6/6, attempt 1, 2026-11-19): `EventLog`
   records one timestamped line per advertisement event (`Advertising as

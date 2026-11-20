@@ -3,16 +3,16 @@
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
 **Updated:** 2026-11-20 · **Active project:** `play-two`
-**Mode:** release — increment 1 (discoverable) complete; awaiting human acceptance
+**Mode:** maintenance — increment 1 shipped; PM breaking down increment 2 (pairable)
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
-One project, in release. FEAT-001 (discoverable) complete — all ten tasks done,
-committed through 1eb1170; human observations O1-O6 reported 2026-11-20; release
-note written in play-two/docs/STATE.md. Awaiting human acceptance of increment 1.
-Agents run on `opencode/beam-free` (default level). Mac reachable (QQ-009
-closed). Public history at `lorandignat/smallapps`, remote main = 6eb6155.
+One project, in maintenance. Increment 1 (discoverable) shipped 2026-11-20
+(all ten tasks done, O1-O6 observed, release note written, human accepted).
+PM breaking down increment 2 (pairable): HAP pairing so the phone can be added
+in the Home app on iOS 15.3 (S2). Increments 3 (audible) and 4 (useful) stay
+unspecified until increment 2 is demonstrated. Agents on `opencode/beam-free`.
 
 ## Next action
 
