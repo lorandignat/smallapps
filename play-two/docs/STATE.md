@@ -2,8 +2,8 @@
 
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
-**Updated:** 2026-11-19 · **Phase:** build · **Active feature:** FEAT-001
-**Active task:** TASK-008 (blocked — Mac offline, QQ-009)
+**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-001
+**Active task:** TASK-009 (approved; device build/install/launch on the 6s)
 **v1:** increment 4 of DEC-002 (discoverable → pairable → audible → useful)
 
 ## Status
@@ -19,13 +19,13 @@ needs an iOS 15.7 developer disk image for that last step, which is installed. T
 
 ## Next action
 
-1. TASK-006 done at G4 (PASS, 5/5, attempt 2, 2026-11-19).
-2. TASK-007 done at G4 (PASS, 6/6, attempt 1, 2026-11-19); wip commit `55ca41b` on main.
-3. TASK-008 (export the diagnostic log to a file) is `blocked` — the Mac is
-   offline (`QQ-009`). When it is back: dev reruns the four verification
-   commands, QA verifies, BA commits
+1. TASK-008 done at G4 (PASS, 4/4, attempt 2, 2026-11-20); criterion 4
+   relocated to O6 human observation at FEAT-001 close. Commit
    `play-two/TASK-008: export the diagnostic log to a file`.
-4. TASK-009 last: the README "Running it on the iPhone" section.
+2. TASK-009 next: document the device install path in `play-two/README.md`
+   (static criteria 1-2 verifiable here; criteria 3-5 need the Mac + device).
+3. TASK-009 is the last task of FEAT-001; after it, feature close and the
+   human's O1-O5 observations.
 
 ## Approved gates
 
@@ -37,6 +37,8 @@ app about twice in twelve runs. Details in `qa/reports/TASK-003-review.md`.
 
 ## Open questions and blockers
 
-`docs/QUESTIONS.md`: QQ-003 (personal use, default assumed) is the only open one.
-No blockers. Device observations S1b, S1c and S5 stay unverified until the app runs
-on the phone with the advertisement in place.
+`docs/QUESTIONS.md`: QQ-003 (personal use, default assumed) is the only open one;
+QQ-009 closed 2026-11-20 (Mac back). One human-observation pending: TASK-008
+criterion 4 (tap Export Log in the simulator, report O6). No other blockers.
+Device observations S1b, S1c and S5 stay unverified until the app runs on the
+phone with the advertisement in place.

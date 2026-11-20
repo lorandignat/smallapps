@@ -27,7 +27,7 @@ They are specified only after increment 1 is demonstrated.
 | TASK-005 | FEAT-001 | Show the receiver state on the main screen | done | 1 | PASS 2026-11-19 — 21/21, R9 added |
 | TASK-006 | FEAT-001 | Keep the advertisement in step with the foreground state | done | 2 | PASS 2026-11-19 (5/5, attempt 2) |
 | TASK-007 | FEAT-001 | Record advertisement events in a diagnostic log | done | 1 | PASS 2026-11-19 (6/6, attempt 1) |
-| TASK-008 | FEAT-001 | Export the diagnostic log to a file | blocked | 1 | BLOCKED 2026-11-19 — Mac offline, QQ-009 |
+| TASK-008 | FEAT-001 | Export the diagnostic log to a file | done | 2 | PASS 2026-11-20 (4/4, crit. 4 relocated to O6 human observation at FEAT-001 close) |
 | TASK-009 | FEAT-001 | Install a signed build on the device | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →

@@ -14,7 +14,7 @@ The developer may not deviate from this file.
 | Test runner | XCTest, run on a simulator on the Mac |
 | Dependencies | none at increment 1; every later dependency needs a `DEC-###` |
 | Build command | `xcodebuild build -scheme PlayTwo -sdk iphoneos` |
-| Test command | `xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e'` |
+| Test command | `xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e,OS=26.5'` |
 | Verification here | unit tests: no (needs the Mac). Device behaviour: no. See below. |
 
 ## Why this stack

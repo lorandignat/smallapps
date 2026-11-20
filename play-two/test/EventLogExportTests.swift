@@ -4,9 +4,11 @@ import XCTest
 /// The TASK-008 unit tests for `EventLogExport`: the file the screen shares.
 final class EventLogExportTests: XCTestCase {
 
-    /// The file the export writes into the temporary directory.
+    /// The file the export writes into the temporary directory. Spelled out
+    /// rather than read from `EventLogExport.fileName`, so the test pins the
+    /// name the task requires instead of agreeing with whatever the code says.
     private var exportedFileURL: URL {
-        FileManager.default.temporaryDirectory.appendingPathComponent(EventLogExport.fileName)
+        FileManager.default.temporaryDirectory.appendingPathComponent("airplay-receiver-log.txt")
     }
 
     override func tearDown() {
@@ -25,7 +27,7 @@ final class EventLogExportTests: XCTestCase {
         guard case .success(let url) = result else {
             return XCTFail("export of two entries should succeed")
         }
-        XCTAssertEqual(url.lastPathComponent, EventLogExport.fileName, "the file is named airplay-receiver-log.txt")
+        XCTAssertEqual(url.lastPathComponent, "airplay-receiver-log.txt", "the file is named airplay-receiver-log.txt")
         XCTAssertTrue(FileManager.default.fileExists(atPath: url.path), "the file exists in the temporary directory")
         guard let contents = try? Data(contentsOf: url) else {
             return XCTFail("the exported file is readable")
