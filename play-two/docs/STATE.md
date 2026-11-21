@@ -37,5 +37,5 @@ code; retirement of the fixed 38-byte reply (R4) once HTTP handling lands.
 
 ## Approved gates
 
-G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for all ten tasks
-(TASK-003 had 2 MINOR; TASK-008 crit. 4 relocated to O6). QQ-003, QQ-009 closed.
+G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for ten tasks
+(TASK-003 2 MINOR; TASK-008 crit. 4 → O6). QQ-003, QQ-009 closed.
