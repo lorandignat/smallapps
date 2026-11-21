@@ -2,8 +2,8 @@
 
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
-**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** TASK-012 (in-progress, resumed, Mac back: Xcode 14.2, 6s still paired)
+**Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
+**Active task:** TASK-012 (in-progress, attempt 1, decision (a))
 
 ## Status
 
@@ -27,12 +27,14 @@ Definition of done met pending human acceptance.
 TASK-011 done at G4 (PASS, 1/5, attempt 1, 2026-11-20): TLV8 codec written,
 suite 38/38 (`TLV8Tests` 5/5), regressions R1/R2/R5 pass (R2 high-water 33 →
 38, QA-closed R5 literal). Commit `play-two/TASK-011: TLV8 codec (encode and decode)`.
-TASK-012 blocked (Mac disconnected). Developer TASK-012 stopped at attempt 1;
-progress in `play-two/journal/<role>.md` (see stop entry). Resume when the old
-MacBook is set up: finish dev, QA, commit `play-two/TASK-012: derive SRP-3072
-verifier from setup code and salt`, then TASK-013 → TASK-014 → TASK-015, then
-FEAT-003, then FEAT-004, then increment 3 (Audible). No builds until the
-MacBook is up. Open questions before FEAT-003: fixed vs generated setup code;
+TASK-012 in-progress (attempt 1, decision (a): full 384-byte `v = g^x mod N`).
+Mac is up: Xcode 14.2, simulators are iOS 16.2 only (iPhone 14 / 14 Plus / 14
+Pro / SE 3rd gen), so the old `iPhone 16e,OS=26.5` destination must be replaced
+with e.g. `platform=iOS Simulator,name=iPhone 14,OS=16.2`. All agents now run
+`opencode/deepseek-v4.1-flash-free#low`.
+Next: dev → QA → commit `play-two/TASK-012: derive SRP-3072 verifier from setup
+code and salt`, then TASK-013 → 014 → 015, FEAT-003, FEAT-004, increment 3
+(Audible). Open questions before FEAT-003: fixed vs generated setup code;
 retirement of the fixed 38-byte reply (R4) once HTTP handling lands.
 
 ## Approved gates
