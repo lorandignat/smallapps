@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-· **Active task:** TASK-012 (in-progress, attempts 1) — resume of the stopped dev attempt
+· **Active task:** TASK-012 (blocked, attempts 2) — code written, needs xcodegen on the Mac to test
 
 ## Features
 
@@ -36,7 +36,7 @@ turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
 | TASK-008 | FEAT-001 | Export the diagnostic log to a file | done | 2 | PASS 2026-11-20 (4/4, crit. 4 relocated to O6 human observation at FEAT-001 close) |
 | TASK-009 | FEAT-001 | Install a signed build on the device | done | 1 | PASS 2026-11-20 (4/5, crit. 5 = O1 human observation) |
 | TASK-011 | FEAT-002 | TLV8 codec (encode and decode) | done | 1 | PASS 2026-11-20 — `TLV8Tests` 5/5, suite 38/38 |
-| TASK-012 | FEAT-002 | Derive SRP-3072 verifier from setup code and salt | in-progress | 1 | — (resumed) |
+| TASK-012 | FEAT-002 | Derive SRP-3072 verifier from setup code and salt | blocked | 2 | — needs `xcodegen` on the Mac (`brew install xcodegen`) |
 | TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | approved | 0 | — |
 | TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | approved | 0 | — |
 | TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | approved | 0 | — |

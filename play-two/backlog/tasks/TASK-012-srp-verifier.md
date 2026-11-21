@@ -2,8 +2,8 @@
 id: TASK-012
 title: Derive SRP-3072 verifier from setup code and salt
 feature: FEAT-002
-status: in-progress
-attempts: 1
+status: blocked
+attempts: 2
 owner: null
 depends_on: []
 estimate: small
