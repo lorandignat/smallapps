@@ -1,7 +1,7 @@
 import XCTest
 @testable import PlayTwo
 
-/// SRP-3072 verifier derivation (TASK-012).
+/// SRP-3072 verifier derivation (TASK-012) and server ephemeral B (TASK-013).
 ///
 /// The expected vectors below were computed independently in Python 3
 /// (`hashlib.sha512`, `pow(2, x, N)` with the RFC 3526 section 4 modulus);
@@ -47,48 +47,82 @@ final class SRPTests: XCTestCase {
 
     /// Criterion 1: deriving twice for the same code and salt is identical.
     func testDeriverIsDeterministic() {
-        XCTAssertEqual(SRP.deriveVerifier(setupCode: "00102003", salt: salt),
-                       SRP.deriveVerifier(setupCode: "00102003", salt: salt))
+        let exp = expectation(description: "derive")
+        DispatchQueue.global().async {
+            XCTAssertEqual(SRP.deriveVerifier(setupCode: "00102003", salt: self.salt),
+                           SRP.deriveVerifier(setupCode: "00102003", salt: self.salt))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 120)
     }
 
     /// Criterion 2: the same code with two different salts derives
     /// different verifiers.
     func testVerifierChangesWithSalt() {
-        XCTAssertNotEqual(SRP.deriveVerifier(setupCode: "00102003", salt: salt),
-                          SRP.deriveVerifier(setupCode: "00102003",
-                                             salt: otherSalt))
+        let exp = expectation(description: "derive")
+        DispatchQueue.global().async {
+            XCTAssertNotEqual(SRP.deriveVerifier(setupCode: "00102003", salt: self.salt),
+                              SRP.deriveVerifier(setupCode: "00102003",
+                                                 salt: self.otherSalt))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 120)
     }
 
     /// Criterion 3: the derived v is the genuine full verifier, 1 <= v < N.
     func testVerifierIsInRange() {
-        guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: salt) else {
-            XCTFail("deriveVerifier returned nil")
-            return
+        let exp = expectation(description: "derive")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            XCTAssertTrue(SRP.isInRange(v))
+            exp.fulfill()
         }
-        XCTAssertTrue(SRP.isInRange(v))
+        wait(for: [exp], timeout: 120)
     }
 
     /// Criterion 4 (independent vector): x is SHA512(salt || "00102003"),
     /// the digest read as a big integer (first digest byte = x's MSB).
     func testXByteOrderMatchesIndependentVector() {
-        XCTAssertEqual(SRP.x(salt: salt, code: "00102003"),
-                       data(fromHex: expectedXHex))
+        // x() is a hash, not a derivation; safe on any thread, but keep heavy
+        // callers off the main thread per DEC-017 anyway.
+        let exp = expectation(description: "x")
+        DispatchQueue.global().async {
+            XCTAssertEqual(SRP.x(salt: self.salt, code: "00102003"),
+                           self.data(fromHex: self.expectedXHex))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 60)
     }
 
     /// Criterion 4 (independent vector): the derived v matches the
     /// independently computed g^x mod N, byte for byte.
     func testDerivedVerifierMatchesIndependentVector() {
-        XCTAssertEqual(SRP.deriveVerifier(setupCode: "00102003", salt: salt),
-                       data(fromHex: expectedVHex))
+        let exp = expectation(description: "derive")
+        DispatchQueue.global().async {
+            XCTAssertEqual(SRP.deriveVerifier(setupCode: "00102003", salt: self.salt),
+                           self.data(fromHex: self.expectedVHex))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 120)
     }
 
     /// Criterion 5 (companion): k = H(N || g) with H = SHA-512.
     func testKIsHashOfNAndG() {
-        XCTAssertEqual(SRP.k(), data(fromHex: expectedKHex))
+        let exp = expectation(description: "k")
+        DispatchQueue.global().async {
+            XCTAssertEqual(SRP.k(), self.data(fromHex: self.expectedKHex))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 60)
     }
 
     /// Setup codes must be 8 digits after dashes are stripped.
     func testDeriveVerifierRejectsNonEightDigitCodes() {
+        // No heavy derivation here; validation only.
         XCTAssertNil(SRP.deriveVerifier(setupCode: "1234", salt: salt))
         XCTAssertNil(SRP.deriveVerifier(setupCode: "123456789", salt: salt))
         XCTAssertNil(SRP.deriveVerifier(setupCode: "1234567A", salt: salt))
@@ -97,7 +131,81 @@ final class SRPTests: XCTestCase {
 
     /// Dashes are stripped before validation ("00-10-20-03" == "00102003").
     func testDeriveVerifierStripsDashes() {
-        XCTAssertEqual(SRP.deriveVerifier(setupCode: "00-10-20-03", salt: salt),
-                       SRP.deriveVerifier(setupCode: "00102003", salt: salt))
+        let exp = expectation(description: "derive")
+        DispatchQueue.global().async {
+            XCTAssertEqual(SRP.deriveVerifier(setupCode: "00-10-20-03", salt: self.salt),
+                           SRP.deriveVerifier(setupCode: "00102003", salt: self.salt))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 120)
+    }
+
+    // MARK: - TASK-013: server generates salt and ephemeral B
+
+    /// Criterion 1: generateEphemeral returns a salt (>= 16 bytes) and B
+    /// with 1 <= B < N.
+    func testGenerateEphemeralReturnsSaltAndBInRange() {
+        let exp = expectation(description: "gen")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let session = SRP.generateEphemeral(v: v) else {
+                XCTFail("generateEphemeral returned nil")
+                exp.fulfill()
+                return
+            }
+            XCTAssertGreaterThanOrEqual(session.salt.count, 16)
+            XCTAssertTrue(SRP.isInRange(session.B))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 180)
+    }
+
+    /// Criterion 2: two calls with the same verifier produce different salts
+    /// and B values.
+    func testGenerateEphemeralRandomness() {
+        let exp = expectation(description: "gen")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let s1 = SRP.generateEphemeral(v: v),
+                  let s2 = SRP.generateEphemeral(v: v) else {
+                XCTFail("generateEphemeral returned nil")
+                exp.fulfill()
+                return
+            }
+            XCTAssertNotEqual(s1.salt, s2.salt)
+            XCTAssertNotEqual(s1.B, s2.B)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 240)
+    }
+
+    /// Criterion 3: the returned session retains a and v.
+    func testGenerateEphemeralRetainsAAndV() {
+        let exp = expectation(description: "gen")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let session = SRP.generateEphemeral(v: v) else {
+                XCTFail("generateEphemeral returned nil")
+                exp.fulfill()
+                return
+            }
+            XCTAssertEqual(session.v, v)
+            XCTAssertEqual(session.a.count, 32)
+            XCTAssertTrue(session.a.contains(where: { $0 != 0 }))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 180)
     }
 }

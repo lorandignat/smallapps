@@ -39,11 +39,15 @@ enum SRP {
     /// The generator of the RFC 3526 group, in its one-byte encoding.
     static let g = Data([0x02])
 
-    /// SRP multiplier: H(N || g), H = SHA-512.
-    static func k() -> Data {
+    /// SRP multiplier: H(N || g), H = SHA-512, computed once and reused.
+    private static let cachedK: Data = {
         var input = Self.NData
         input.append(contentsOf: Self.g)
         return Self.sha512(input)
+    }()
+
+    static func k() -> Data {
+        Self.cachedK
     }
 
     /// Derives v = g^x mod N for `setupCode` and `salt`, or `nil` when the
@@ -73,6 +77,42 @@ enum SRP {
             return false  // v == 0
         }
         return Self.compare(value, N) < 0
+    }
+
+    /// Server-side step (TASK-013): given a verifier `v`, generate a fresh
+    /// salt (>= 16 random bytes) and a random ephemeral secret `a`, compute
+    /// `B = (k*v + g^a) mod N`, and return an in-memory session retaining
+    /// `a`, `v`, `B` and `salt`. Nothing is persisted.
+    static func generateEphemeral(v: Data) -> SRPServerSession? {
+        // Cached multiplier (computed once).
+        let kLimbs = Self.limbs(from: Self.k())
+
+        var salt = Data()
+        var sessionA = Data()
+        var bData = Data()
+
+        repeat {
+            // Fresh salt, >= 16 random bytes.
+            salt = SymmetricKey(size: .bits128).withUnsafeBytes { Data($0) }
+
+            // Random ephemeral secret a (256 bits), nonzero.
+            repeat {
+                sessionA = SymmetricKey(size: .bits256).withUnsafeBytes { Data($0) }
+            } while !sessionA.contains(where: { $0 != 0 })
+
+            let vLimbs = Self.limbs(from: v)
+            let kvLimbs = Self.redc(Self.mulmont(Self.montgomery(kLimbs),
+                                                 Self.montgomery(vLimbs)))
+
+            let gLimbs = Self.limbs(from: Self.g)
+            let aLimbs = Self.limbs(from: sessionA)
+            let gaLimbs = Self.modExp(gLimbs, aLimbs)
+
+            let bLimbs = Self.addMod(kvLimbs, gaLimbs)
+            bData = Self.data(fromLimbs: bLimbs, byteCount: Self.nByteCount)
+        } while !Self.isInRange(bData)
+
+        return SRPServerSession(a: sessionA, v: v, B: bData, salt: salt)
     }
 
     // MARK: - setup-code validation
@@ -134,6 +174,39 @@ enum SRP {
         var out = Data()
         out.append(contentsOf: SHA512.hash(data: input))
         return out
+    }
+
+    // MARK: - modular arithmetic helpers
+
+    /// (a + b) mod N for little-endian limb arrays.
+    static func addMod(_ a: [UInt32], _ b: [UInt32]) -> [UInt32] {
+        var sum = [UInt32](repeating: 0, count: L + 1)
+        var carry: UInt64 = 0
+        for i in 0..<L {
+            let s = UInt64(a[i]) + UInt64(b[i]) + carry
+            sum[i] = UInt32(truncatingIfNeeded: s)
+            carry = s >> 32
+        }
+        sum[L] = UInt32(truncatingIfNeeded: carry)
+
+        while sum[L] != 0 || Self.compare(Array(sum[0..<L]), N) >= 0 {
+            var borrow: UInt64 = 0
+            for i in 0..<L {
+                let aVal = UInt64(sum[i])
+                let bVal = UInt64(N[i]) + borrow
+                if aVal >= bVal {
+                    sum[i] = UInt32(truncatingIfNeeded: aVal - bVal)
+                    borrow = 0
+                } else {
+                    sum[i] = UInt32(truncatingIfNeeded: aVal + (1 << 32) - bVal)
+                    borrow = 1
+                }
+            }
+            if borrow == 1 {
+                sum[L] -= 1
+            }
+        }
+        return Array(sum[0..<L])
     }
 
     // MARK: - exponentiation (Montgomery)
@@ -304,4 +377,17 @@ enum SRP {
         }
         return x
     }
+
+    // MARK: - session type (TASK-013)
+    /// In-memory server-side SRP session. Holds the ephemeral secret `a`, the
+    /// verifier `v`, the public value `B` and the salt. Never persisted.
+    struct SRPServerSession {
+        let a: Data
+        let v: Data
+        let B: Data
+        let salt: Data
+    }
 }
+
+/// Top-level alias so `SRPServerSession` resolves without the `SRP.` prefix.
+typealias SRPServerSession = SRP.SRPServerSession

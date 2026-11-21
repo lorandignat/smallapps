@@ -2,7 +2,7 @@
 id: TASK-013
 title: SRP-3072 server generates salt and ephemeral B
 feature: FEAT-002
-status: in-progress
+status: in-review
 attempts: 1
 owner: null
 depends_on: [TASK-012]
