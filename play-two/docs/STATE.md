@@ -3,7 +3,7 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** TASK-012 (blocked — Mac disconnected; dev stopped, 2026-11-20)
+**Active task:** TASK-012 (in-progress, resumed, Mac back: Xcode 14.2, 6s still paired)
 
 ## Status
 
