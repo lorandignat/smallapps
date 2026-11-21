@@ -219,3 +219,24 @@ Format:
   means bumping the version and checksum in this record, and only after a
   release whose minimum macOS is <= 12.7.6 has been confirmed from the Mach-O
   load command.
+
+## DEC-017 — SRP derivation performance and watchdog safety (proposed)
+
+- date: 2026-11-21
+- status: proposed
+- owner: ba
+- context: TASK-012's SRP-3072 derivation takes ~16-22 s per call in a Debug
+  (`-Onone`) simulator build and ~124 s for the 8 SRP tests. Running it
+  synchronously on the main (test) thread trips the iOS FrontBoard watchdog
+  (`0x8BADF00D`), so the suite crashed on a cold simulator and only passed on
+  a warm run (QA report TASK-012, finding 1 MAJOR). The algorithm is correct
+  and independent-vector verified; only the cost is in question. TASK-013 and
+  TASK-014 add more modular exponentiations, so the cost recurs.
+- decision (proposed): (a) every SRP test that calls `deriveVerifier`/`modExp`
+  must move the call off the main thread (background queue + XCTestExpectation)
+  so the watchdog cannot fire; (b) record a Release/`-O` timing on device before
+  deciding whether the REDC needs rewriting; (c) do not change the algorithm or
+  add a dependency without a further `DEC-###` (`docs/STACK.md`).
+- consequences: no code change to `SRP.swift` is authorised by this proposal;
+  the test-harness change in (a) is permitted within `test/SRPTests.swift`.
+  Pending human approval.

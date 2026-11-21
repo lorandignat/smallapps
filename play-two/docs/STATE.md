@@ -3,14 +3,14 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** TASK-012 (in-review, attempt 3 — suite 46/46, QA running)
+**Active task:** TASK-013 (approved, attempts 0) — next build-loop task
 
 ## Status
 
-FEAT-001 (discoverable) complete: ten tasks done through 1eb1170. App builds as
+FEAT-001 (discoverable) complete: ten tasks through 1eb1170. App builds as
 `PlayTwo` (bundle `com.lorand.playtwo`, iOS 15.0) and installs on the iPhone 6s
 via `build iphoneos` + `install` + `ios-deploy --justlaunch` (DEC-008); profile
-expires 2026-11-23. Suite 38 tests, high-water 38; R1-R11 pass.
+expires 2026-11-23. Suite 38 tests; R1-R11 pass.
 
 ## Release note (increment 1 — discoverable)
 
@@ -22,10 +22,11 @@ the share sheet. Definition of done met pending human acceptance.
 ## Next action
 
 TASK-011 done (2026-11-20): TLV8 codec, suite 38/38, R2 high-water 33 → 38.
-TASK-012 attempt 3: suite 46/46 green (`SRPTests` 8/8) on `iPhone 14,OS=16.2`;
-xcodegen 2.38.0 staged (DEC-016). Decision (a): full 384-byte `v = g^x mod N`.
-Dev flags SRPTests at ~16-22 s per derivation in Debug; a DEC is needed before
-optimising (candidate: -O test config).
+TASK-012 done (2026-11-21): G4 PASS, commit `play-two/TASK-012: derive SRP-3072
+verifier from setup code and salt`, suite 46/46, R2 high-water 46, QA report
+`qa/reports/TASK-012-review.md`. DEC-017 (proposed) records the watchdog/perf
+finding. Next: TASK-013 (SRP ephemeral B), attempts 0, approved, depends on
+TASK-012. Use destination `platform=iOS Simulator,name=iPhone 14,OS=16.2`.
 Xcode 14.2: simulators are iOS 16.2 only (iPhone 14/14 Plus/14 Pro/SE 3rd gen);
 use `platform=iOS Simulator,name=iPhone 14,OS=16.2`. Agents run
 `opencode/deepseek-v4.1-flash-free#low`.
