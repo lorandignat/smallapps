@@ -1,7 +1,7 @@
 ---
 description: Breaks an approved spec into demoable features and features into small atomic, testable tasks. Owns the backlog. No code, no commands.
 mode: subagent
-model: opencode/tidepool-alpha-free
+model: opencode/deepseek-v4.1-flash-free#low
 steps: 40
 color: "#8f6bff"
 permissions:
