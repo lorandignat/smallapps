@@ -15,18 +15,15 @@ iphoneos` + `install` + `ios-deploy --justlaunch` (DEC-008). Profile expires
 
 ## Release note (increment 1 — discoverable)
 
-Human observations O1-O6 all reported 2026-11-20: screen reads
-`PlayTwo` with status text; `dns-sd` shows one `PlayTwo` resolving to
-`<device>.local.:7000`; `nc :7000` succeeds; a second iPhone lists
-PlayTwo in its AirPlay picker; restart log line is `Restart`; `Export Log` opens
-the share sheet with `airplay-receiver-log.txt`. No FAIL/BLOCKED tasks remain.
-Definition of done met pending human acceptance.
+Human observations O1-O6 reported 2026-11-20: screen shows `PlayTwo` + status;
+`dns-sd` resolves one `PlayTwo` at `<device>.local.:7000`; `nc :7000`
+succeeds; a second iPhone lists it; restart logs `Restart`; `Export Log` opens
+the share sheet. Definition of done met pending human acceptance.
 
 ## Next action
 
-TASK-011 done at G4 (PASS, 1/5, attempt 1, 2026-11-20): TLV8 codec written,
-suite 38/38 (`TLV8Tests` 5/5), regressions R1/R2/R5 pass (R2 high-water 33 →
-38, QA-closed R5 literal). Commit `play-two/TASK-011: TLV8 codec (encode and decode)`.
+TASK-011 done at G4 (2026-11-20): TLV8 codec, suite 38/38 (`TLV8Tests` 5/5),
+R2 high-water 33 → 38, commit `play-two/TASK-011: TLV8 codec (encode and decode)`.
 TASK-012 in-progress (attempt 1, decision (a): full 384-byte `v = g^x mod N`).
 Mac is up: Xcode 14.2, simulators are iOS 16.2 only (iPhone 14 / 14 Plus / 14
 Pro / SE 3rd gen), so the old `iPhone 16e,OS=26.5` destination must be replaced
