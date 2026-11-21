@@ -1,4 +1,5 @@
 import XCTest
+import CryptoKit
 @testable import PlayTwo
 
 /// SRP-3072 verifier derivation (TASK-012) and server ephemeral B (TASK-013).
@@ -207,5 +208,150 @@ final class SRPTests: XCTestCase {
             exp.fulfill()
         }
         wait(for: [exp], timeout: 180)
+    }
+
+    // MARK: - TASK-014: server verifies client proof
+
+    /// Client side of SRP-6a, built from the same big-int helpers. Returns the
+    /// client's public value A, proof M1, expected M2 and session key K.
+    private func clientHandshake(session: SRPServerSession,
+                                setupSalt: Data,
+                                code: String) -> (A: Data, M1: Data, M2: Data, K: Data)? {
+        guard let v = SRP.deriveVerifier(setupCode: code, salt: setupSalt) else {
+            return nil
+        }
+        var aClient = Data()
+        repeat {
+            aClient = SymmetricKey(size: .bits256).withUnsafeBytes { Data($0) }
+        } while !aClient.contains(where: { $0 != 0 })
+
+        let gLimbs = SRP.limbs(from: SRP.g)
+        let aClientLimbs = SRP.limbs(from: aClient)
+        let A_limbs = SRP.modExp(gLimbs, aClientLimbs)
+        let A_data = SRP.data(fromLimbs: A_limbs, byteCount: SRP.nByteCount)
+
+        let kLimbs = SRP.limbs(from: SRP.k())
+        let vLimbs = SRP.limbs(from: v)
+        let kvLimbs = SRP.redc(SRP.mulmont(SRP.montgomery(kLimbs),
+                                             SRP.montgomery(vLimbs)))
+
+        let B_limbs = SRP.limbs(from: session.B)
+        var baseLimbs: [UInt32]
+        if SRP.compare(B_limbs, kvLimbs) >= 0 {
+            baseLimbs = B_limbs
+            SRP.subtractInPlace(&baseLimbs, kvLimbs)
+        } else {
+            var nMinusKv = SRP.N
+            SRP.subtractInPlace(&nMinusKv, kvLimbs)
+            baseLimbs = SRP.addMod(B_limbs, nMinusKv)
+        }
+
+        let xData = SRP.x(salt: setupSalt, code: code)
+        let xLimbs = SRP.limbs(from: xData)
+
+        var uInput = Data()
+        uInput.append(contentsOf: A_data)
+        uInput.append(contentsOf: session.B)
+        let uData = SRP.sha512(uInput)
+        let uLimbs = SRP.limbs(from: uData)
+
+        let term1 = SRP.modExp(baseLimbs, aClientLimbs)
+        let baseU = SRP.modExp(baseLimbs, uLimbs)
+        let term2 = SRP.modExp(baseU, xLimbs)
+        let S_limbs = SRP.redc(SRP.mulmont(SRP.montgomery(term1),
+                                             SRP.montgomery(term2)))
+        let S_data = SRP.data(fromLimbs: S_limbs, byteCount: SRP.nByteCount)
+        let K = SRP.sha512(S_data)
+
+        var m1Input = Data()
+        m1Input.append(contentsOf: A_data)
+        m1Input.append(contentsOf: session.B)
+        m1Input.append(contentsOf: K)
+        let M1 = SRP.sha512(m1Input)
+
+        var m2Input = Data()
+        m2Input.append(contentsOf: A_data)
+        m2Input.append(contentsOf: M1)
+        m2Input.append(contentsOf: K)
+        let M2 = SRP.sha512(m2Input)
+
+        return (A_data, M1, M2, K)
+    }
+
+    /// Criterion 1 & 3: valid proof returns M2 and K; keys agree.
+    func testVerifyRoundTrip() {
+        let exp = expectation(description: "verify")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let session = SRP.generateEphemeral(v: v) else {
+                XCTFail("generateEphemeral returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let client = self.clientHandshake(session: session,
+                                                   setupSalt: self.salt,
+                                                   code: "00102003") else {
+                XCTFail("client handshake failed")
+                exp.fulfill()
+                return
+            }
+            guard let result = SRP.verify(session: session,
+                                         clientA: client.A,
+                                         clientM1: client.M1) else {
+                XCTFail("verify returned nil for valid proof")
+                exp.fulfill()
+                return
+            }
+            XCTAssertEqual(result.M2, client.M2)
+            XCTAssertEqual(result.K, client.K)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 300)
+    }
+
+    /// Criterion 2: tampered M1 returns nil.
+    func testVerifyTamperedM1ReturnsNil() {
+        let exp = expectation(description: "verify")
+        DispatchQueue.global().async {
+            guard let v = SRP.deriveVerifier(setupCode: "00102003", salt: self.salt) else {
+                XCTFail("deriveVerifier returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let session = SRP.generateEphemeral(v: v) else {
+                XCTFail("generateEphemeral returned nil")
+                exp.fulfill()
+                return
+            }
+            guard let client = self.clientHandshake(session: session,
+                                                   setupSalt: self.salt,
+                                                   code: "00102003") else {
+                XCTFail("client handshake failed")
+                exp.fulfill()
+                return
+            }
+            var tampered = client.M1
+            tampered[0] ^= 0x01
+            XCTAssertNil(SRP.verify(session: session,
+                                   clientA: client.A,
+                                   clientM1: tampered))
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 300)
+    }
+
+    /// Criterion 4: A == 0 or A % N == 0 aborts.
+    func testVerifyRejectsDegenerateA() {
+        let zeroA = Data(repeating: 0, count: SRP.nByteCount)
+        let nA = SRP.NData
+        let dummy = SRPServerSession(a: Data(), v: Data(), B: Data(), salt: Data())
+        XCTAssertNil(SRP.verify(session: dummy, clientA: zeroA,
+                                clientM1: Data(repeating: 0, count: 64)))
+        XCTAssertNil(SRP.verify(session: dummy, clientA: nA,
+                                clientM1: Data(repeating: 0, count: 64)))
     }
 }

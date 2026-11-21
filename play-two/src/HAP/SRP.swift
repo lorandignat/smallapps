@@ -115,6 +115,69 @@ enum SRP {
         return SRPServerSession(a: sessionA, v: v, B: bData, salt: salt)
     }
 
+    /// Server-side step (TASK-014): given the client's public value `A` and
+    /// client proof `M1`, verify `M1`; on success derive the session key `K`
+    /// and the server proof `M2`; on failure return nil. `A` must not be 0 or
+    /// a multiple of N. The session's `a` and `v` are not retained beyond
+    /// this call.
+    static func verify(session: SRPServerSession, clientA: Data, clientM1: Data) -> (M2: Data, K: Data)? {
+        // Abort on degenerate A.
+        if Self.isZeroModN(clientA) {
+            return nil
+        }
+
+        let A_limbs = Self.limbs(from: clientA)
+        let B_data = session.B
+        let vLimbs = Self.limbs(from: session.v)
+
+        // u = H(A || B).
+        var uInput = Data()
+        uInput.append(contentsOf: clientA)
+        uInput.append(contentsOf: B_data)
+        let uData = Self.sha512(uInput)
+        let uLimbs = Self.limbs(from: uData)
+
+        // v^u mod N.
+        let vu = Self.modExp(vLimbs, uLimbs)
+        // A * v^u mod N.
+        let aTimesVu = Self.redc(Self.mulmont(Self.montgomery(A_limbs),
+                                                Self.montgomery(vu)))
+        // S = (A * v^u)^a mod N.
+        let aLimbs = Self.limbs(from: session.a)
+        let S_limbs = Self.modExp(aTimesVu, aLimbs)
+        let S_data = Self.data(fromLimbs: S_limbs, byteCount: Self.nByteCount)
+        let K = Self.sha512(S_data)
+
+        // Recomputed client proof.
+        var m1Input = Data()
+        m1Input.append(contentsOf: clientA)
+        m1Input.append(contentsOf: B_data)
+        m1Input.append(contentsOf: K)
+        let m1Computed = Self.sha512(m1Input)
+        guard m1Computed == clientM1 else {
+            return nil
+        }
+
+        // M2 = H(A || M1 || K).
+        var m2Input = Data()
+        m2Input.append(contentsOf: clientA)
+        m2Input.append(contentsOf: clientM1)
+        m2Input.append(contentsOf: K)
+        let M2 = Self.sha512(m2Input)
+
+        return (M2: M2, K: K)
+    }
+
+    /// Whether `a` is 0 modulo N (covers A == 0 and A % N == 0).
+    static func isZeroModN(_ a: Data) -> Bool {
+        var d = Self.limbs(from: a)
+        while d.count < 2 * L {
+            d.append(0)
+        }
+        let r = Self.reduce(&d)
+        return !r.contains(where: { $0 != 0 })
+    }
+
     // MARK: - setup-code validation
 
     /// The setup code with dashes stripped, or `nil` when the remainder is
