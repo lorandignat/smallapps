@@ -197,3 +197,25 @@ Format:
 - consequences: No `chmod +x` executes on the Mac during any build GUI
   command. If some future platform/setup requires the helper to be executable,
   re-add the bit — but not here.
+
+## DEC-016 — xcodegen is staged under `.tooling/` on the build host
+
+- date: 2026-11-21
+- status: accepted
+- owner: ba
+- context: The build host moved to a MacBook Pro 2015 on macOS 12.7.6 (Xcode
+  14.2). `xcodegen` is not installed there, Homebrew 3.6.4 has no bottle for
+  macOS 12, and the project's `.xcodeproj` is generated, not committed. The
+  workspace rule is that toolchains live in `.tooling/`, not in the machine.
+- decision: Vendor the upstream release `xcodegen.zip` **2.38.0**
+  (`yonaskolb/XcodeGen`, sha256
+  `aed5bedc80979058287d46b292d3118f89a4cec8e7f1f2ff849e190948c9cd7e`; x86_64
+  slice minimum macOS 10.13) at `<build-dir>/.tooling/xcodegen/` on the build host
+  — i.e. inside the synced workspace copy, not in `/usr/local` and not via
+  `brew`. the build bridge prepends `<build-dir>/.tooling/xcodegen/bin` to
+  `PATH`, so every existing `xcodegen generate` command works unchanged.
+- consequences: Replacing the build host only needs the same unzip plus the
+  checksum; nothing on the Mac is installed system-wide. Upgrading xcodegen
+  means bumping the version and checksum in this record, and only after a
+  release whose minimum macOS is <= 12.7.6 has been confirmed from the Mach-O
+  load command.
