@@ -37,7 +37,7 @@ turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
 | TASK-009 | FEAT-001 | Install a signed build on the device | done | 1 | PASS 2026-11-20 (4/5, crit. 5 = O1 human observation) |
 | TASK-011 | FEAT-002 | TLV8 codec (encode and decode) | done | 1 | PASS 2026-11-20 — `TLV8Tests` 5/5, suite 38/38 |
 | TASK-012 | FEAT-002 | Derive SRP-3072 verifier from setup code and salt | done | 3 | PASS (qa/reports/TASK-012-review.md) |
-| TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | in-review | 1 | — suite 10/10 |
+| TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | done | 1 | PASS (qa/reports/TASK-013-review.md) |
 | TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | approved | 0 | — |
 | TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | approved | 0 | — |
 
