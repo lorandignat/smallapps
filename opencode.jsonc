@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
-  // All four agents run on the default model, `opencode/deepseek-v4.1-flash-free` with variant `low`.
-  "model": "opencode/deepseek-v4.1-flash-free#low",
+  // All four agents run on `opencode/beam-free`.
+  "model": "opencode/beam-free",
   // Set per agent in `.opencode/agents/*.md` as well, so a launcher that ignores
   // the global default still lands on the same model.
 
