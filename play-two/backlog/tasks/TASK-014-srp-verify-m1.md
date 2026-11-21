@@ -2,8 +2,8 @@
 id: TASK-014
 title: SRP-3072 server verifies client proof and derives session key
 feature: FEAT-002
-status: approved
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-013]
 estimate: small
