@@ -22,18 +22,13 @@ the share sheet. Definition of done met pending human acceptance.
 ## Next action
 
 TASK-011 done (2026-11-20): TLV8 codec, suite 38/38, R2 high-water 33 → 38.
-TASK-012 done (2026-11-21): G4 PASS, commit `play-two/TASK-012: derive SRP-3072
-verifier from setup code and salt`, suite 46/46, R2 high-water 46, QA report
-`qa/reports/TASK-012-review.md`. DEC-017 (proposed) records the watchdog/perf
-finding. Next: TASK-013 (SRP ephemeral B), attempts 0, approved, depends on
-TASK-012. Use destination `platform=iOS Simulator,name=iPhone 14,OS=16.2`.
-Xcode 14.2: simulators are iOS 16.2 only (iPhone 14/14 Plus/14 Pro/SE 3rd gen);
-use `platform=iOS Simulator,name=iPhone 14,OS=16.2`. Agents run
-`opencode/deepseek-v4.1-flash-free#low`.
-Next: unblock TASK-012 → QA → commit `play-two/TASK-012: derive SRP-3072 verifier
-from setup code and salt`, then TASK-013 → 014 → 015, FEAT-003, FEAT-004,
-increment 3 (Audible). Open questions before FEAT-003: fixed vs generated setup
-code; retirement of the fixed 38-byte reply (R4) once HTTP handling lands.
+TASK-012 done (2026-11-21): G4 PASS, commit `play-two/TASK-012: derive
+SRP-3072 verifier from setup code and salt`, suite 46/46, R2 high-water 46, QA
+report `qa/reports/TASK-012-review.md`. DEC-017 (proposed) records the
+watchdog/perf finding. Next: TASK-013 (SRP ephemeral B), attempts 0, approved,
+depends on TASK-012. Destination `platform=iOS Simulator,name=iPhone 14,OS=16.2`.
+Agents run `opencode/beam-free`. Open questions before FEAT-003: fixed vs
+generated setup code; retirement of the fixed 38-byte reply (R4).
 
 ## Approved gates
 
