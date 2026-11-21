@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
-  // All four agents run on `opencode/beam-free`.
-  "model": "opencode/beam-free",
+  // All four agents run on the default model, `opencode/tidepool-alpha-free`.
+  "model": "opencode/tidepool-alpha-free",
   // Set per agent in `.opencode/agents/*.md` as well, so a launcher that ignores
   // the global default still lands on the same model.
 

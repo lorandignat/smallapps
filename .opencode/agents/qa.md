@@ -1,7 +1,7 @@
 ---
 description: Independent verifier. Tests a task against its acceptance criteria and the regression list, then returns PASS, FAIL or BLOCKED with evidence.
 mode: subagent
-model: opencode/beam-free
+model: opencode/tidepool-alpha-free
 steps: 60
 color: "#e2a03f"
 permissions:
