@@ -39,7 +39,7 @@ turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
 | TASK-012 | FEAT-002 | Derive SRP-3072 verifier from setup code and salt | done | 3 | PASS (qa/reports/TASK-012-review.md) |
 | TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | done | 1 | PASS (qa/reports/TASK-013-review.md) |
 | TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | done | 1 | PASS (qa/reports/TASK-014-review.md) |
-| TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | approved | 0 | — |
+| TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | in-progress | 1 | — Mac unreachable |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran

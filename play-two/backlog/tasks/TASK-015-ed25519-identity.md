@@ -2,8 +2,8 @@
 id: TASK-015
 title: Ed25519 accessory identity key with Keychain persistence
 feature: FEAT-002
-status: approved
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: []
 estimate: small
