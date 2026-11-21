@@ -21,8 +21,7 @@ the share sheet. Definition of done met pending human acceptance.
 
 ## Next action
 
-TASK-011 done at G4 (2026-11-20): TLV8 codec, suite 38/38 (`TLV8Tests` 5/5),
-R2 high-water 33 → 38, commit `play-two/TASK-011: TLV8 codec (encode and decode)`.
+TASK-011 done (2026-11-20): TLV8 codec, suite 38/38, R2 high-water 33 → 38.
 TASK-012 blocked at attempt 2: `SRP.swift` + `SRPTests.swift` written and
 typechecked, but the Mac has no `xcodegen` (Homebrew 3.6.4 present), so the
 project cannot generate and the suite cannot run. Human must run on the Mac:
