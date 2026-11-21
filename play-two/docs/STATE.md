@@ -3,7 +3,7 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** TASK-012 (in-progress, attempt 3 — suite running)
+**Active task:** TASK-012 (in-review, attempt 3 — suite 46/46, QA running)
 
 ## Status
 
@@ -22,10 +22,10 @@ the share sheet. Definition of done met pending human acceptance.
 ## Next action
 
 TASK-011 done (2026-11-20): TLV8 codec, suite 38/38, R2 high-water 33 → 38.
-TASK-012 attempt 3: `SRP.swift` + `SRPTests.swift` are written and typechecked;
-the missing `xcodegen` is staged at `<build-dir>/.tooling/xcodegen` (2.38.0, DEC-016)
-and `xcodegen generate` succeeds on the Mac. Dev now runs the suite. Decision
-(a): full 384-byte `v = g^x mod N`.
+TASK-012 attempt 3: suite 46/46 green (`SRPTests` 8/8) on `iPhone 14,OS=16.2`;
+xcodegen 2.38.0 staged (DEC-016). Decision (a): full 384-byte `v = g^x mod N`.
+Dev flags SRPTests at ~16-22 s per derivation in Debug; a DEC is needed before
+optimising (candidate: -O test config).
 Xcode 14.2: simulators are iOS 16.2 only (iPhone 14/14 Plus/14 Pro/SE 3rd gen);
 use `platform=iOS Simulator,name=iPhone 14,OS=16.2`. Agents run
 `opencode/deepseek-v4.1-flash-free#low`.
