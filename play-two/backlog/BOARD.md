@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
-· **Active task:** — (TASK-016 first; G3 for FEAT-003 at 2026-11-22; G4 per task)
+· **Active task:** TASK-017 (FEAT-003, in-progress, attempt 1)
 
 ## Features
 
@@ -12,7 +12,7 @@ reads it every cycle.
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
 | FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
-| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 6 |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 1 done, 5 proposed |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
@@ -41,7 +41,7 @@ files yet.
 | TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | done | 1 | PASS (qa/reports/TASK-013-review.md) |
 | TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | done | 1 | PASS (qa/reports/TASK-014-review.md) |
 | TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | done | 1 | PASS (qa/reports/TASK-015-review.md) |
-| TASK-016 | FEAT-003 | Serve `GET /info` on port 7000, replacing the fixed reply | proposed | 0 | |
+| TASK-016 | FEAT-003 | Serve `GET /info` on port 7000, replacing the fixed reply | done | 1 | PASS 2026-11-22 — qa/reports/TASK-016-review.md |
 | TASK-017 | FEAT-003 | Expose the pairing state in the pairing store | proposed | 0 | |
 | TASK-018 | FEAT-003 | Complete `POST /pair-setup` (SRP M1–M6) | proposed | 0 | |
 | TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | proposed | 0 | |
@@ -105,7 +105,7 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 1 done (FEAT-001), 2 approved (FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
-- tasks: 15 done (TASK-001..TASK-010, TASK-011..TASK-015) / 21 total; TASK-016..021 proposed, next
+- tasks: 16 done (TASK-001..TASK-010, TASK-011..TASK-016) / 21 total; TASK-017..021 proposed, next
 - blocked: 0 (profile expires 2026-11-23)
 
 ## Recent changes
