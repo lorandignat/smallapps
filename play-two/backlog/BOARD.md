@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** none (TASK-027/028 gated on human approval of DEC-015/QQ-010; no other FEAT-005 task ready)
+· **Active task:** TASK-027 (approved) — next; DEC-015 accepted 2026-11-22, QQ-010 unblocked
 
 ## Features
 
@@ -125,11 +125,15 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 3 done (FEAT-001, FEAT-002, FEAT-003) / 6 total; 1 approved (FEAT-005), 2 proposed (FEAT-004, FEAT-006)
-- tasks: 26 done (TASK-001..TASK-010, TASK-011..TASK-026) / 28 total; 2 approved (TASK-027..028, FEAT-005, gated on human approval of DEC-015); none in-progress
+- tasks: 26 done (TASK-001..TASK-010, TASK-011..TASK-026) / 28 total; 2 approved (TASK-027..028, FEAT-005, DEC-015 accepted); none in-progress
 - blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers; TASK-027/028 approved but gated on TASK-025 DEC + required human approval, not blocked)
 
 ## Recent changes
 
+- 2026-11-22 — Human approved DEC-015 (FairPlay key-table injection boundary,
+  QQ-010 unblocked). TASK-027/028 may proceed with synthetic/injected fixtures
+  only; no real DRM may be obtained/committed/bundled/uploaded/logged by agents.
+  Added `play-two/local-secrets/` to `.gitignore` as leak guard.
 - 2026-11-22 — TASK-025 BA decision (DEC-015 proposed): recorded FairPlay v3
   key-table supply/injection boundary in `play-two/docs/DECISIONS.md` (DEC-015,
   proposed, human approval required) and `play-two/docs/QUESTIONS.md` (QQ-010).

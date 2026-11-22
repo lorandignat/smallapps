@@ -281,7 +281,7 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
 ## DEC-015 — FairPlay v3 key-table supply and injection boundary
 
 - date: 2026-11-22
-- status: proposed (human approval required before TASK-027/TASK-028 start)
+- status: accepted (human approved 2026-11-22; "lets try, make sure not leakd")
 - owner: ba
 - context: FEAT-005/TASK-027/028 need FairPlay v3 key-table material to generate
   `Apple-Response` and decrypt the stream key (SPEC §4 increment 3, SPIKE-001).
@@ -322,10 +322,9 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
     implementation is in-project Swift using Foundation/CryptoKit as allowed by
     `docs/STACK.md`. If implementation later proves a dependency is needed, that
     requires a new DEC and human approval before TASK-027 starts.
-- consequences: TASK-027/TASK-028 can be implemented against an injected-byte
-  boundary with synthetic fixtures, but they **must not start** until a human
-  approves this DEC (DRM/credential-equivalent boundary, PROCESS §8). The human
-  supplies any real key table out-of-band on their own hardware; agents must not
-  request, search for, download, generate, or commit real FairPlay key material.
-  A future DEC is needed if the injection mechanism requires a new dependency or
-  if the real-table format forces an interface change.
+- consequences: Human approved 2026-11-22; TASK-027/TASK-028 may proceed against
+  the injected-byte boundary with synthetic fixtures only. The human supplies any
+  real key table out-of-band on their own hardware; agents must not request,
+  search for, download, generate, commit, bundle, upload, or log real FairPlay
+  key material. A future DEC is needed if the injection mechanism requires a new
+  dependency or if the real-table format forces an interface change.

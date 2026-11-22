@@ -7,3 +7,7 @@ build/
 # Info.plists written by `xcodegen generate` from project.yml; never committed
 src/Info.plist
 test/Info.plist
+
+# DEC-015: local FairPlay key material (owner-supplied, never commit/upload)
+local-secrets/
+**/local-secrets/
