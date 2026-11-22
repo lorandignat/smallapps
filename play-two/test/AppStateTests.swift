@@ -38,6 +38,8 @@ final class SpyAdvertiser: ServiceAdvertiserProtocol {
 final class AppStateTests: XCTestCase {
     private var spy: SpyAdvertiser!
     private var appState: AppState!
+    /// Keychain services seeded by the restart-survival test, deleted in teardown.
+    private var services: [String] = []
 
     override func setUp() {
         super.setUp()
@@ -46,9 +48,21 @@ final class AppStateTests: XCTestCase {
     }
 
     override func tearDown() {
+        for service in services {
+            HAPPairingStore(service: service).delete()
+        }
+        services.removeAll()
         spy = nil
         appState = nil
         super.tearDown()
+    }
+
+    /// A Keychain service unique to this test, tracked for teardown deletion so
+    /// the app's real pairing entry is never touched.
+    private func freshService() -> String {
+        let service = "com.lorand.playtwo.hap-pairing.task021.\(UUID().uuidString)"
+        services.append(service)
+        return service
     }
 
     // MARK: - Criterion 1
@@ -101,5 +115,40 @@ final class AppStateTests: XCTestCase {
             appState.status.statusText(name: AppInfo.displayName).hasPrefix("Error:"),
             "failed status must render as Error: …"
         )
+    }
+
+    // MARK: - Criterion 1 & 2 (TASK-021): restart survival
+    func testStatusIsPairedWhenThePairingIsStored() {
+        // The default (unpaired) store still reads .idle at launch.
+        let unpaired = AppState(
+            advertiser: SpyAdvertiser(),
+            pairingStore: HAPPairingStore(service: freshService())
+        )
+        XCTAssertEqual(unpaired.status, .idle, "an unpaired store must read .idle at launch")
+
+        // A stored pairing makes the relaunched app read .paired.
+        let service = freshService()
+        HAPPairingStore(service: service).save(record: HAPPairingStore.Record(
+            salt: Data(repeating: 0xC3, count: 16),
+            verifier: Data(repeating: 0xD4, count: 384),
+            paired: true
+        ))
+        let store = HAPPairingStore(service: service)
+        let pairedSpy = SpyAdvertiser()
+        let pairedState = AppState(advertiser: pairedSpy, pairingStore: store)
+
+        XCTAssertEqual(pairedState.status, .paired, "a stored pairing must make the app launch .paired")
+        XCTAssertEqual(
+            pairedState.status.statusText(name: AppInfo.displayName),
+            "Paired",
+            "the paired status must render as Paired"
+        )
+
+        // Advertising must not overwrite the paired status: map(.advertising)
+        // stays .paired while the store records paired: true.
+        pairedSpy.state = .stopped
+        pairedState.scenePhaseChanged(.active)
+        XCTAssertEqual(pairedSpy.startCount, 1, "the advertiser must report .advertising on .active")
+        XCTAssertEqual(pairedState.status, .paired, "advertising must not replace the paired status")
     }
 }

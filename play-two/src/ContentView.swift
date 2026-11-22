@@ -23,6 +23,8 @@ struct ContentView: View {
                 .font(.title2)
             Text(status.statusText(name: AppInfo.displayName))
                 .foregroundColor(.secondary)
+            Text("Setup code: \(HAPServer.setupCode)")
+                .foregroundColor(.secondary)
             if let exportError = exportError {
                 Text(exportError)
                     .foregroundColor(.red)

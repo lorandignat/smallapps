@@ -4,6 +4,7 @@ import SwiftUI
 enum ReceiverStatus: Equatable {
     case idle
     case advertising
+    case paired
     case failed(String)
     case stopped
 
@@ -13,6 +14,8 @@ enum ReceiverStatus: Equatable {
             return "Idle"
         case .advertising:
             return "Advertising as \(name)"
+        case .paired:
+            return "Paired"
         case .failed(let message):
             return "Error: \(message)"
         case .stopped:
@@ -55,14 +58,23 @@ final class AppState: ObservableObject {
 
     private let advertiser: ServiceAdvertiserProtocol
 
+    /// The store whose `paired` flag drives the launch and advertising status
+    /// (TASK-021). Injected so tests can simulate a stored pairing; the default
+    /// keeps existing callers (and the app) on the shared store.
+    private let pairingStore: HAPPairingStore
+
     /// The diagnostic log every advertisement event leaves a line in
     /// (TASK-007): the launch `Restart` marker, then the advertising,
     /// stopped and failure lines. Memory-only — TASK-008 exports it. Read by
     /// tests through `@testable`; the log itself writes nothing.
     let eventLog = EventLog()
 
-    init(advertiser: ServiceAdvertiserProtocol) {
+    init(advertiser: ServiceAdvertiserProtocol, pairingStore: HAPPairingStore = .shared) {
         self.advertiser = advertiser
+        self.pairingStore = pairingStore
+        // Restart survival (TASK-021): a stored pairing launches as .paired,
+        // not .idle, so the state screen reads "Paired" on relaunch.
+        status = pairingStore.paired ? .paired : .idle
         eventLog.record("Restart")
         advertiser.onStateChange = { [weak self] newState in
             self?.handleAdvertiserState(newState)
@@ -74,9 +86,9 @@ final class AppState: ObservableObject {
     /// advertising, a stop line when it is stopped, a failure line on any
     /// failure.
     private func handleAdvertiserState(_ newState: ServiceAdvertiser.State) {
-        let mapped = AppState.map(newState)
+        let mapped = map(newState)
         switch mapped {
-        case .advertising:
+        case .advertising, .paired:
             eventLog.record("Advertising as \(advertiser.name)")
         case .stopped:
             eventLog.record("Stopped")
@@ -120,12 +132,14 @@ final class AppState: ObservableObject {
         handleScenePhase(phase)
     }
 
-    private static func map(_ state: ServiceAdvertiser.State) -> ReceiverStatus {
+    private func map(_ state: ServiceAdvertiser.State) -> ReceiverStatus {
         switch state {
         case .idle:
             return .idle
         case .advertising:
-            return .advertising
+            // While paired, advertising must not replace the paired status
+            // (TASK-021); the advertiser state is still logged above.
+            return pairingStore.paired ? .paired : .advertising
         case .failed(let message):
             return .failed(message)
         case .stopped:

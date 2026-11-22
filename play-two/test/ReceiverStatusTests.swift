@@ -29,4 +29,11 @@ final class ReceiverStatusTests: XCTestCase {
             "Stopped"
         )
     }
+
+    func testPaired() {
+        XCTAssertEqual(
+            ReceiverStatus.paired.statusText(name: AppInfo.displayName),
+            "Paired"
+        )
+    }
 }
