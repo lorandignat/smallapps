@@ -29,6 +29,11 @@ final class HAPServer {
     /// The pair-setup exchange state machine (TASK-018).
     let pairSetup: HAPPairSetup
 
+    /// The pair-verify exchange state (TASK-019): the session request 1
+    /// starts, set when `POST /pair-verify` receives the client's
+    /// ephemeral public key.
+    var pairVerifySession: HAPPairVerify.Session?
+
     /// Creates a server reading the accessory facts and the pairing state
     /// from `pairingStore` (TASK-017); `pairSetup` on this server carries
     /// the exchange state from the first `POST /pair-setup` (TASK-018).
@@ -119,14 +124,22 @@ final class HAPServer {
     /// the accessory public value B (TLV type 3) and the salt (TLV type 6);
     /// request 2 (the client proof M4, TLV type 4) answers 200 with the
     /// accessory proof M5 (TLV type 5) and the session start M6 (TLV type
-    /// 7), or 400 when the proof does not verify; every other method or
-    /// path answers 404.
+    /// 7), or 400 when the proof does not verify; `POST /pair-verify`
+    /// (TASK-019) starts the encrypted session — request 1 (the client's
+    /// ephemeral public key A_e, TLV type 1) answers 200 with the accessory
+    /// ephemeral public key B_e (TLV type 2) and sets `pairVerifySession`;
+    /// request 2 (the client proof T, TLV type 4) answers 200 with the
+    /// server proof (TLV type 3) or 400 when the proof does not verify;
+    /// every other method or path answers 404.
     func route(_ request: Request) -> Response {
         if request.method == "GET", request.path == "/info" {
             return Response(status: 200, body: infoBody)
         }
         if request.method == "POST", request.path == "/pair-setup" {
             return pairSetupResponse(for: request)
+        }
+        if request.method == "POST", request.path == "/pair-verify" {
+            return pairVerifyResponse(for: request)
         }
         return Response(status: 404, body: Data("Not Found".utf8))
     }
@@ -160,6 +173,46 @@ final class HAPServer {
             body: TLV8.encode([
                 TLV8Entry(type: 3, value: result.B),
                 TLV8Entry(type: 6, value: result.salt),
+            ])
+        )
+    }
+
+    /// The `POST /pair-verify` route (TASK-019): dispatches on the exchange
+    /// state — request 1 while `pairVerifySession` is nil (the client's
+    /// ephemeral public key `A_e`, TLV type 1), request 2 after (the client
+    /// proof `T`, TLV type 4).
+    private func pairVerifyResponse(for request: Request) -> Response {
+        guard let entries = TLV8.decode(request.body) else {
+            return Response(status: 404, body: Data("Not Found".utf8))
+        }
+        if let session = pairVerifySession {
+            // Request 2: the client proof T.
+            guard let clientT = entries.first(where: { $0.type == 4 })?.value,
+                let salt = pairingStore.record?.salt,
+                let proof = session.verify(
+                    clientT: clientT,
+                    accessoryPublicKey: AccessoryIdentity.shared.publicKey,
+                    salt: salt
+                ) else {
+                return Response(status: 400, body: Data("Bad Request".utf8))
+            }
+            return Response(
+                status: 200,
+                body: TLV8.encode([
+                    TLV8Entry(type: 3, value: proof),
+                ])
+            )
+        }
+        // Request 1: the client's ephemeral public key A_e.
+        guard let clientA = entries.first(where: { $0.type == 1 })?.value else {
+            return Response(status: 400, body: Data("Bad Request".utf8))
+        }
+        let session = HAPPairVerify.Session(clientA: clientA)
+        pairVerifySession = session
+        return Response(
+            status: 200,
+            body: TLV8.encode([
+                TLV8Entry(type: 2, value: session.b),
             ])
         )
     }

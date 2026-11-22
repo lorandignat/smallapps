@@ -149,6 +149,37 @@ final class HAPServerTests: XCTestCase {
         XCTAssertFalse(store.paired, "the store must stay unpaired")
     }
 
+    // MARK: - TASK-019 — `POST /pair-verify` starts the encrypted session
+
+    /// TASK-019: `POST /pair-verify` request 1 — the client's ephemeral
+    /// public key `A_e` (TLV type 1) — answers 200 with the accessory
+    /// ephemeral public key `B_e` (TLV type 2, 32 bytes) and sets
+    /// `server.pairVerifySession`.
+    func testRoutePostPairVerifyReturnsTheAccessoryKey() throws {
+        let store = HAPPairingStore(service: freshPairingService())
+        store.save(record: HAPPairingStore.Record(
+            salt: Data(repeating: 9, count: 16),
+            verifier: Data(repeating: 4, count: 384),
+            paired: false
+        ))
+        let server = HAPServer(pairingStore: store)
+        let request = HAPServer.Request(
+            method: "POST",
+            path: "/pair-verify",
+            body: TLV8.encode([TLV8Entry(type: 1, value: Data(repeating: 0x22, count: 32))])
+        )
+        let response = server.route(request)
+        XCTAssertEqual(response.status, 200, "request 1 must start the exchange")
+        let entries = try XCTUnwrap(TLV8.decode(response.body))
+        let bE = try XCTUnwrap(
+            entries.first(where: { $0.type == 2 })?.value,
+            "the response must carry the accessory ephemeral public key (type 2)"
+        )
+        XCTAssertEqual(bE.count, 32, "the accessory ephemeral public key is 32 bytes")
+        XCTAssertNotNil(server.pairVerifySession, "request 1 must set `pairVerifySession`")
+        XCTAssertEqual(bE, server.pairVerifySession?.b, "the TLV key is the session's ephemeral public key")
+    }
+
     /// TASK-017: `GET /info` reports the pairing state read from the store
     /// the server was built with (`HAPPairingStore.shared` elsewhere).
     func testInfoReportsThePairedStateFromTheStore() {
