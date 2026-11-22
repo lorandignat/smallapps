@@ -2,8 +2,8 @@
 id: TASK-023
 title: Answer an RTSP OPTIONS request with 200 OK
 feature: FEAT-005
-status: approved
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-022]
 estimate: small
