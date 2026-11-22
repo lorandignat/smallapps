@@ -32,6 +32,11 @@ TASK-019 done (2026-11-22): G4 PASS, commit 4760239, HAPPairVerify Session
 key armed, seal/open via CryptoKit); routes POST /pair-verify (req 1 → 200 + TLV 2;
 req 2 → 200 + TLV 3, 400 on tamper). HAPPairVerifyTests 4/0, HAPServerTests 10/0,
 bundle 78/0, R2 high-water 78, `qa/reports/TASK-019-review.md`. FEAT-003: 4 of 6.
+TASK-020 done (2026-11-22): G4 PASS, commit ab7268c, AirPlayTXTRecord +
+ServiceAdvertiser (`sf` in the dictionary, always present; `statusFlags`,
+`statusFlagPaired`, `statusFlagString`); AirPlayTXTRecordTests 8/0,
+ServiceAdvertiserTests 4/0, bundle 79/0, R2 high-water 79,
+`qa/reports/TASK-020-review.md`. FEEST-003: 5 of 6.
 TASK-018 done (2026-11-22): G4 PASS, commit cb1429e, HAPPairSetup + POST
 /pair-setup route, HAPPairSetupTests 4/0, HAPServerTests 9/0, bundle 73/0,
 R2 high-water 73, `qa/reports/TASK-018-review.md`. FEAT-003: 3 of 6.
@@ -46,13 +51,16 @@ TASK-012 done (2026-11-21): G4 PASS, suite 46/46, R2 high-water 46,
 suite 11/11, R2 high-water 50 (`qa/reports/TASK-013-review.md`). TASK-014 done:
 SRP verify M1, full bundle 52/0, R2 high-water 52
 (`qa/reports/TASK-014-review.md`). DEC-017 (proposed) still pending for the
-watchdog/perf finding. Next: TASK-020 — Advertise the paired status in the AirPlay TXT record (`sf`
-bit 0 from `HAPPairingStore.shared.paired`; `AirPlayTXTRecord` gains the
-`paired` parameter + `statusFlagPaired`; the dictionary always has `"sf"`).
-`ServiceAdvertiser.start()` reads `HAPPairingStore.shared`. Destination
-`platform=iOS Simulator,name=iPhone 14,OS=16.2`. R4 reword at feature close
-(`qa/REGRESSION.md` row currently stale).
+watchdog/perf finding. Next: TASK-021 — Restart survival — show the setup code and paired state on the
+state screen. `ReceiverStatus.paired` case; `AppState(advertiser:pairingStore:)`
+starts as `.paired` and `AppState.map(.advertising)` returns `.paired` while
+`pairingStore.paired`; `ContentView` already displays `HAPServer.setupCode`
+(static, `00102003`, TASK-016's constant — the grep checks are in the task
+file). Destination `platform=iOS Simulator,name=iPhone 14,OS=16.2`. S2b
+(human observation at feature close): with pairing stored, the Home app shows
+no re-pair prompt and the state screen reads `Paired`. R4 reword at
+FEEST-003 close (`qa/REGRESSION.md` row currently stale).
 
 ## Approved gates
 
-G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for thirteen tasks (TASK-003 2 MINOR; TASK-008 crit. 4 → O6; TASK-016; TASK-018; TASK-019). QQ-003, QQ-009 closed.
+G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for fourteen tasks (TASK-003 2 MINOR; TASK-008 crit. 4 → O6; TASK-016; TASK-018; TASK-019; TASK-020). QQ-003, QQ-009 closed.
