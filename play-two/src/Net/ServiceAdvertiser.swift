@@ -8,8 +8,9 @@ import Network
 /// port a browser resolves is the port that answers (TASK-004, FEAT-001
 /// S1a/S1d, `DEC-012`). The advertiser owns that listener and translates its
 /// states; it wires the listener's ``ReceiverListener/connectionHandler`` to
-/// `HAPServer.handle` so the HAP server answers connections, and parses
-/// nothing itself.
+/// ``RTSPRouter/handle(_:)`` so RTSP requests are detected by request-line
+/// protocol token and HTTP/1.1 requests still reach ``HAPServer/handle(_:)``
+/// semantics unchanged.
 final class ServiceAdvertiser {
 
     /// The service type an AirPlay 2 receiver publishes.
@@ -122,10 +123,12 @@ final class ServiceAdvertiser {
             txtRecord: record.txtRecord
         )
         let listener = ReceiverListener(port: port, service: service)
-        // TASK-016: the HAP server is the server behind the socket — every
-        // connection the listener accepts reaches it.
+        // TASK-016/TASK-024: the HAP server answers HTTP; the router detects
+        // RTSP/1.0 on the request line and routes it before HTTP handling,
+        // while HTTP/1.1 still reaches the HAP server unchanged.
         let server = HAPServer()
-        listener.connectionHandler = server.handle
+        let router = RTSPRouter(server: server)
+        listener.connectionHandler = router.handle
         listener.onStateChange = { [weak self] state in
             self?.listenerChanged(state)
         }
