@@ -2,7 +2,7 @@
 id: TASK-026
 title: Parse the FairPlay fields of a SETUP request
 feature: FEAT-005
-status: in-progress
+status: done
 attempts: 2
 owner: null
 depends_on: [TASK-024]
@@ -74,6 +74,7 @@ grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/task-026-test.lo
 | Attempt | Date | Tester findings | Outcome |
 | --- | --- | --- | --- |
 | 1 | 2026-11-22 | MAJOR: criterion 1 fixture not a traceable recorded static fixture with named source/date (programmatically synthesized). MAJOR (BA-process, not dev defect): BA-owned board/task status edits present in worktree; dev must not revert them. MINOR: 4 tests vs 3 stated. | rework → attempt 2 |
+| 2 | 2026-11-22 | QA PASS (4/4 criteria, 93/0 bundle, R2 93). Minor: reference file/version not named; 4 tests vs 3 stated. | done |
 
 ## Notes
 
