@@ -2,10 +2,10 @@
 id: TASK-019
 title: Establish an encrypted session with `POST /pair-verify`
 feature: FEAT-003
-status: proposed
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
-depends_on: [TASK-016]
+depends_on: [TASK-018]
 estimate: small
 ---
 
