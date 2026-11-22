@@ -44,11 +44,11 @@ line and the log path, and say which step could not run.
 | --- | --- | --- | --- |
 | A1 | `xcodebuild -version` — expect a line matching `^Xcode [0-9]` | Xcode exists and runs on the build host | enabler for A2-A8 |
 | A2 | `xcodebuild build -scheme PlayTwo -sdk iphonesimulator` | the tree compiles for the simulator and produces `build/Build/Products/Debug-iphonesimulator/PlayTwo.app` | R1; TASK-001 c2 |
-| A3 | `xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 16e,OS=26.5' \| tee /tmp/opencode/feat-001-test.log` then `grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/feat-001-test.log` | every unit test green, and the count is at least the high-water mark: 1 after TASK-001, **8** after TASK-002, **33** after TASK-008; the current number lives in `qa/REGRESSION.md` R2 and rises with every task that adds tests | R2; every task's "Executed N tests" criterion |
-| A4 | `xcrun simctl boot "iPhone 16e" \|\| true; xcrun simctl bootstatus "iPhone 16e" -b; xcrun simctl install booted "play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app"` then `xcrun simctl launch booted <bundle-id>` | the app runs and is foreground — `simctl launch` prints `<bundle-id>: <pid>`; a pid is the evidence, a bare error means the app is not running and an empty browse proves nothing | prerequisite for A5-A8 |
+| A3 | `xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \| tee /tmp/opencode/feat-001-test.log` then `grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/feat-001-test.log` | every unit test green, and the count is at least the high-water mark: 1 after TASK-001, **8** after TASK-002, **33** after TASK-008; the current number lives in `qa/REGRESSION.md` R2 and rises with every task that adds tests | R2; every task's "Executed N tests" criterion |
+| A4 | `xcrun simctl boot "iPhone 14" \|\| true; xcrun simctl bootstatus "iPhone 14" -b; xcrun simctl install booted "play-two/build/Build/Products/Debug-iphonesimulator/PlayTwo.app"` then `xcrun simctl launch booted <bundle-id>` | the app runs and is foreground — `simctl launch` prints `<bundle-id>: <pid>`; a pid is the evidence, a bare error means the app is not running and an empty browse proves nothing | prerequisite for A5-A8 |
 | A5 | `dns-sd -B _airplay._tcp . > /tmp/ap2-b.txt 2>&1 & BP=$!; sleep 1; xcrun simctl terminate booted <bundle-id> 2>/dev/null; echo "T0 $(date -u +%H:%M:%S)"; xcrun simctl launch booted <bundle-id>; sleep 30; kill $BP 2>/dev/null; grep " Add " /tmp/ap2-b.txt \| sed -E "s/.*_airplay\._tcp\.[[:space:]]+//" \| sort -u` — expect exactly one line reading `PlayTwo`, and its first `Add` timestamp within 30 s of `T0` | **S1a**: the app registers the service over real mDNS, once, under the app's name, within the deadline. Count **by name**, not by type: the Apple TV and any HomePod publish `_airplay._tcp` too | S1a |
 | A6 | `dns-sd -L "PlayTwo" _airplay._tcp . > /tmp/ap2-l.txt 2>&1 & BP=$!; sleep 3; kill $BP 2>/dev/null; cat /tmp/ap2-l.txt` — expect `can be reached at <host>:7000` and the TXT keys `deviceid`, `features` (64-bit, bit 38 set), `model`, `srcvers`, `vv=2` | the instance resolves to a host and the TXT record from TASK-002 reached the wire intact | S1a; TASK-002 c2; TASK-004 c1-c2 at network level |
-| A7 | `nc -w 5 <host> 7000 \| xxd` twice in a row, `<host>` taken from A6 | **S1d**: a sender that found us gets exactly `RTSP/1.0 200 OK`, `Content-Length: 0`, an empty body, and the connection closes (the `nc` returns before its 5 s deadline); the second call answers identically (not single-use). On the simulator `<host>` is the Mac — that proves listener + registration linkage only; on the device it is the LAN path, which is the evidence that matters | S1d; TASK-003 c1-c2 |
+| A7 | `printf "GET /info HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n" \| nc -w 5 <host> 7000 \| xxd` twice in a row, `<host>` taken from A6 | **S1d**: a sender that found us gets `HTTP/1.1 200 OK`, a `Content-Length` matching the JSON body (`"name": "PlayTwo"`, `"category": "speaker"`, `"paired": …`), and the connection closes; the second call answers identically (not single-use). A bare `nc` with no request bytes gets no reply now — `HAPServer.handle` cancels an unparsable connection (`src/HAP/HAPServer.swift:245-248`) — so a request must be sent. The increment-1 fixed 38-byte reply was retired by `DEC-018`. On the simulator `<host>` is the Mac — that proves listener + registration linkage only; on the device it is the LAN path, which is the evidence that matters | S1d; TASK-003 c1-c2 |
 | A8 | From A5's running state: `xcrun simctl launch booted com.apple.Preferences` (backgrounds our app) then re-run A5's browse — expect **zero** lines reading `PlayTwo`; then `xcrun simctl launch booted <bundle-id>` and re-run A5 — expect exactly one, same name | S1c's app-controlled half per `DEC-004`: leaving the foreground withdraws the advertisement, returning republishes one, not two. Proxy evidence for the device step O3, not a substitute | S1c (app half); TASK-006 c1-c2 |
 | A9 | On this host: `grep -c 'packages:' play-two/project.yml` → `0`; `grep -n 'iOS: "15.0"' play-two/project.yml`; `grep -A1 '^schemes:' play-two/project.yml` → `PlayTwo:` (not the project `name:`); `grep -c 'DEVELOPMENT_TEAM' play-two/project.yml` → `0`; `grep -rnE 'XCTSkip\|\.skip' play-two/test \|\| echo 'no skips'`; `grep -nE 'xcodeproj\|build/' play-two/.gitignore` | no dependency, no signing team in the shared file, target still 15.0, the scheme still exists, no test silently skipped, generated project still ignored | R3, R5 |
 
@@ -100,7 +100,7 @@ Run at feature close, once; each catches a criterion met by accident.
 | --- | --- | --- |
 | P1 | Relaunch without terminating (A4 again on an advertising app) | still exactly one instance (A5), not two — a duplicate name is the S5 stale-entry bug arriving early |
 | P2 | A8 twice in a row: background → foreground → background → foreground, browsing after each | one instance while active, zero while background, never two; no flapping to zero while the app stays foreground (TASK-006 c3) |
-| P3 | Port 7000 after re-foregrounding (A7 again) | same fixed response — the listener comes back with the advertiser, it does not leak or stay closed |
+| P3 | Port 7000 after re-foregrounding (A7 again) | same `GET /info` HTTP 200 response — the listener comes back with the advertiser, it does not leak or stay closed |
 | P4 | Export with an empty log (fresh launch, export before anything else) | the file exists and is 0 bytes, the control stays enabled (TASK-008 c2), status text unchanged |
 
 ### Out of scope for verification (accepted, with reasons)
@@ -115,10 +115,11 @@ Run at feature close, once; each catches a criterion met by accident.
   simulator browse is not evidence for it.
 - **"Disappears within 30 s of a kill" as app behaviour.** No code runs after a
   kill; per `DEC-004` this is measured once (O4) and recorded, never pass/fail.
-- **iOS 15.0 runtime behaviour.** The test destination is `iPhone 16e`, an iOS
-  26.5 runtime (`DEC-005`): 15.0 is only a deployment-target promise checked at
-  compile time (A9) and in the built product's `MinimumOSVersion`. Device
-  behaviour is observed on the 6s, which is the real target.
+- **iOS 15.0 runtime behaviour.** The test destination is `iPhone 14`, an iOS
+  16.2 runtime on this host (see Environment above): 15.0 is only a
+  deployment-target promise checked at compile time (A9) and in the built
+  product's `MinimumOSVersion`. Device behaviour is observed on the 6s, which is
+  the real target.
 - **Signed `iphoneos` builds.** No signing team in `project.yml` (A9), by
   design; signing is the human's one-time Xcode step (O1).
 - **AirPlay discovery semantics beyond `_airplay._tcp`.** Whether the Apple TV
@@ -155,6 +156,124 @@ Run at feature close, once; each catches a criterion met by accident.
   the simulator build only. The human does O1 once. If that step is not done at
   feature close, O1-O5 stay `BLOCKED` and the feature cannot be closed — that is
   a scheduling gap for the BA, not a task defect.
+
+---
+
+## FEAT-003 — HAP pairing endpoints and persistence
+
+Traces to `product/SPEC.md` §6 (S2) and §4 increment 2, through
+`backlog/features/FEAT-003-hap-pairing.md` (S2a/S2b). This is the user-facing half
+of increment 2 (`DEC-002`); it depends on FEAT-002's crypto primitives.
+
+**Feature demo:** 1. On the iPhone 6s, foreground the app and read the setup code
+on the state screen. 2. In the Home app, tap "Add Accessory", enter that code and
+watch it complete; the phone appears as a speaker. 3. Kill the app and reopen it;
+the Home app still shows the phone as paired (no re-pair prompt) and the state
+screen reads `Paired`.
+
+### Environment
+
+Nothing iOS executes on this Linux host: no Swift, no Xcode, no simulator, no
+`dns-sd`. Every build and simulator run happens on a Mac that has Xcode, and
+every device observation is a human looking at the iPhone and the Apple TV
+(`docs/STACK.md`, "What cannot be verified on this host"). The commands below
+are the plain tools (`xcodegen`, `xcodebuild`, `ios-deploy`, `xcrun simctl`);
+copy the project to the Mac first, and regenerate the project with
+`xcodegen generate` after every copy — `.xcodeproj` is generated, gitignored,
+and therefore absent from a fresh copy.
+
+A `BLOCKED` verdict, never `PASS` and never `FAIL`, is what a tester returns when
+the Mac is unreachable or Xcode rejects the destination: record the exact error
+line and the log path, and say which step could not run.
+
+### Automated checks
+
+These ran once per task on the Mac; no suite was re-executed for this feature
+close beyond TASK-021's independent re-run. Cite the reports, not a new run.
+`<bundle-id>` is `com.lorand.playtwo` (`project.yml`).
+
+| # | Command | Proves | Covers |
+| --- | --- | --- | --- |
+| F1 | `xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \| tee /tmp/opencode/feat-003-test.log` then `grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/feat-003-test.log` — expect **≥ 81** | the whole bundle green at the high-water mark; 81/0 completed twice, so a new run must match | R2; TASK-016..021 |
+| F2 | `grep -nE "Test Suite '(HAPServerTests\|HAPPairSetupTests\|HAPPairVerifyTests\|HAPPairingStoreTests)' passed" /tmp/opencode/task-016-test.log /tmp/opencode/task-017-test.log /tmp/opencode/task-018-test.log /tmp/opencode/task-019-test.log` | HTTP routing (`GET /info`, both POSTs, 404 otherwise), SRP pair-setup M1-M6, pair-verify and the Keychain pairing store, at unit level | TASK-016 c1-5; TASK-017 c1-5; TASK-018 c1-5; TASK-019 c1-5 |
+| F3 | `grep -nE "Test Suite '(AirPlayTXTRecordTests\|ServiceAdvertiserTests)' passed" /tmp/opencode/task-020-test.log` | the `sf` TXT flag: unpaired `"0"`, paired `"1"`, bit set; advertiser publishes the key | TASK-020 c1-4 |
+| F4 | `grep -nE "Test Suite '(AppStateTests\|ReceiverStatusTests)' passed" 20261122T140413Z-test.log`; `grep -n 'static let setupCode = "00102003"' play-two/src/HAP/HAPServer.swift` | paired launch state and `Paired` rendering; setup-code constant present (the `Text` line is static-checked, not rendered) | TASK-021 c1-5 |
+| F5 | `sed -n '134,145p' play-two/src/HAP/HAPServer.swift`; `grep -n 'static let response' play-two/src/Net/ReceiverListener.swift \|\| echo 'gone'` | the reworded R4 contract: route answers `GET /info`, `POST /pair-setup`, `POST /pair-verify`, 404 otherwise; the fixed 38-byte reply is gone | R4 / `DEC-018` |
+| F6 | `grep -c 'packages:' play-two/project.yml` (0) · `grep -n 'iOS: "15.0"' play-two/project.yml` · `grep -A1 '^schemes:' play-two/project.yml` (`PlayTwo:`) · `grep -c 'DEVELOPMENT_TEAM' play-two/project.yml` (0) · `(grep -rnE 'XCTSkip\|\.skip' play-two/test \|\| echo 'no skips')` | contract unchanged, no skipped tests | R3, R5, R7 |
+
+Two independent 81/0 runs, quoted from the logs TASK-021 used:
+
+```text
+20261122T140413Z-test.log:528: Executed 81 tests, with 0 failures (0 unexpected) in 841.306 (841.354) seconds
+20261122T140413Z-test.log:538:** TEST SUCCEEDED **
+20261122T142159Z-test.log:330: Executed 81 tests, with 0 failures (0 unexpected) in 840.019 (840.067) seconds
+20261122T142159Z-test.log:340:** TEST SUCCEEDED **
+```
+
+Per-task counts grew 62 (TASK-016) → 68 (017) → 73 (018) → 78 (019) → 79 (020)
+→ 81 (021); each step is recorded in `qa/REGRESSION.md` R2 and the named review
+(`qa/reports/TASK-016-review.md` … `TASK-021-review.md`), all PASS.
+
+### Observational checks
+
+**No agent performed these.** The human does them on the iPhone 6s and reports
+one line each, exactly in this form. A missing report is pending, not a PASS.
+
+| # | Steps | Expected (report exactly this) |
+| --- | --- | --- |
+| S2a | 1. With the app foregrounded on the 6s, read the setup code on its state screen. 2. Open the Home app, tap "Add Accessory", enter that code. 3. Watch the result, then look for the phone in the Home app's speaker list. 4. Report the code shown and the exact outcome. | `S2a: PASS — setup code "<code>"; "Add Accessory" completed; phone listed as speaker` or `S2a: FAIL at <step>; Home app said "<message>"; phone screen read "<status text>"` |
+| S2b | 1. With the phone paired, force-quit the app (swipe up in the app switcher). 2. Relaunch it. 3. In the Home app, check the accessory for a re-pair prompt and that it is still listed as paired/speaker. 4. Read the app's state screen. | `S2b: PASS — after relaunch Home app still shows paired, no re-pair prompt; app screen read "Paired"` or `S2b: FAIL — Home app showed "<what it showed>"; app screen read "<status text>"` |
+
+These need O1 (a signed build installed on the 6s), already reported for FEAT-001
+2026-11-20; the provisioning profile expires 2026-11-23 (`play-two/docs/STATE.md`,
+`backlog/BOARD.md`) — re-sign before the observations if it has lapsed.
+
+### Out of scope for verification (accepted, with reasons)
+
+- **S2a and S2b themselves.** Human-only Home-app observations; no agent can
+  drive the Home app or see the 6s screen. Unit tests cover the pairing state
+  machine and the launch mapping, not Apple's Home app.
+- **Live HomeKit over-the-air pairing.** No Home-app reference exists on this
+  host; the wire shape is exercised by `HAPPairVerifyTests` and by S2a. Live HTTP
+  framing for the two POSTs is asserted nowhere (TASK-019 "Unverifiable"); the
+  only live-socket test is `GET /info` (TASK-016/017).
+- **The app-level port-7000 reply-twice check.** R4's unit half binds a free
+  ephemeral port; the full A7 browse-then-request-twice against the real host is
+  still a feature-close item (R4 app-level note, `DEC-010`/`DEC-011`).
+- **iOS 15.0 runtime behaviour.** Simulator is iOS 16.2; 15.0 is a compile-time
+  deployment target plus `MinimumOSVersion`. Device behaviour is the human's S2
+  observations.
+- **Signed `iphoneos` builds.** No signing team in `project.yml` (F6); signing
+  and installing is the human's one-time Xcode step (O1, TASK-009).
+- **RTSP, FairPlay, audio, volume control** — increment 3 or a non-goal
+  (`SPEC` §5); nothing in FEAT-003 claims them.
+
+### Exit criteria
+
+1. TASK-016..021 all `done` with `qa` PASS (`qa/reports/TASK-016-review.md` …
+   `TASK-021-review.md`) — met at close.
+2. F1-F6 green from quoted output, with the two 81/0 logs above — met at close.
+3. `qa/REGRESSION.md` R1-R15 green, with R4 reworded per `DEC-018`, not deleted —
+   met at close.
+4. S2a and S2b reported in the exact strings above. **Pending the human**: the
+   feature verdict is PASS at code/task level only and does not claim either.
+
+### Verification gaps handed to the BA / PM (do not paper over)
+
+- **S2a/S2b have no agent-observable substitute.** They stay pending until the
+  human reports them; the feature close file lists them as unverified.
+- **Live HTTP wire framing** for `/pair-setup` and `/pair-verify` is unasserted
+  (TASK-019); `HAPServer.sendResponse` phrases it, no test checks the bytes.
+- **No live-socket pair-verify test**; only `GET /info` uses a real socket.
+- **R4's app-level port-7000 half** (A7 twice) remains a feature-close item.
+- **FEAT-001's S5 `Restart` log line** still has no producer — carried gap, not
+  introduced here.
+- **Task-text cleanup for PM:** TASK-021's grep path `src/HAPServer.swift` →
+  `src/HAP/HAPServer.swift:22` and criterion 4's "four from TASK-020" → "four
+  existing AppStateTests (TASK-006)"; TASK-020's `ServiceAdvertiserTests` count
+  of 9 → 4. BOARD.md's "Mac offline"/"Tidepool Alpha" blocker rows are stale.
+- **Project `DEC-005` still names `iPhone 16e`/Xcode 26.6** — stale against this
+  host; QA documents the real destination, the BA owns the decision doc.
 
 ---
 

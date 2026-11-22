@@ -240,3 +240,19 @@ Format:
 - consequences: no code change to `SRP.swift` is authorised by this proposal;
   the test-harness change in (a) is permitted within `test/SRPTests.swift`.
   Pending human approval.
+
+## DEC-018 — Retire the fixed listener reply as FEAT-003 closes
+
+- date: 2026-11-22
+- status: accepted
+- owner: human (recorded by ba)
+- context: Increment 1 proved the port-7000 endpoint with a fixed 38-byte reply,
+  recorded as regression R4. TASK-016 replaced it with real `GET /info` handling;
+  the constant is gone and R4's old wording can never pass again. The human
+  answered 2026-11-21 that R4 is to be retired/updated as part of FEAT-003.
+- decision: QA rewords R4 in `play-two/qa/REGRESSION.md` at FEAT-003 close to
+  assert the HTTP handling that replaced the fixed reply (no row is deleted).
+  The unit-level free-port checks stay; the app-level port-7000 half keeps its
+  separate note.
+- consequences: the old fixed-reply assertion is not a regression requirement
+  from FEAT-003 on. The feature close cites this DEC in the reworded row.
