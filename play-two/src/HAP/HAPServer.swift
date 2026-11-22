@@ -21,13 +21,16 @@ final class HAPServer {
     /// The fixed setup code, generated earlier (`FEAT-003`'s fixed-code note).
     static let setupCode = "00102003"
 
-    /// Whether the accessory is paired, as reported by `GET /info`.
-    ///
-    /// There is no pairing store yet — `TASK-017` "Expose the pairing state
-    /// in the pairing store" owns it. Pre-pairing the accessory answers
-    /// `false`, so the Home app lists the phone as unpaired until the pairing
-    /// state lands.
-    static let paired = false
+    // MARK: - Pairing state
+
+    /// The store whose `paired` flag the info body reports (TASK-017).
+    let pairingStore: HAPPairingStore
+
+    /// Creates a server reading the accessory facts and the pairing state
+    /// from `pairingStore` (TASK-017).
+    init(pairingStore: HAPPairingStore = HAPPairingStore.shared) {
+        self.pairingStore = pairingStore
+    }
 
     // MARK: - Request and response
 
@@ -109,15 +112,16 @@ final class HAPServer {
     /// JSON; every other method or path answers 404.
     func route(_ request: Request) -> Response {
         if request.method == "GET", request.path == "/info" {
-            return Response(status: 200, body: Self.infoBody)
+            return Response(status: 200, body: infoBody)
         }
         return Response(status: 404, body: Data("Not Found".utf8))
     }
 
-    /// The `GET /info` body: the accessory info as JSON.
-    static var infoBody: Data {
+    /// The `GET /info` body: the accessory info as JSON, with the pairing
+    /// state read from the store (TASK-017).
+    var infoBody: Data {
         Data(
-            "{\"name\": \"\(Self.accessoryName)\", \"category\": \"\(Self.accessoryCategory)\", \"paired\": \(Self.paired)}"
+            "{\"name\": \"\(Self.accessoryName)\", \"category\": \"\(Self.accessoryCategory)\", \"paired\": \(pairingStore.paired)}"
                 .utf8
         )
     }

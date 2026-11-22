@@ -15,6 +15,26 @@ import XCTest
 /// `listener.port` reports, so there is no SDK difference to record.
 final class HAPServerTests: XCTestCase {
 
+    /// Services of the pairing stores the tests build; deleted in teardown so
+    /// the app's real entry is never touched.
+    private var pairingServices: [String] = []
+
+    override func tearDown() {
+        for service in pairingServices {
+            HAPPairingStore(service: service).delete()
+        }
+        pairingServices.removeAll()
+        super.tearDown()
+    }
+
+    /// A pairing-store service string unique to this test, recorded for
+    /// teardown deletion.
+    private func freshPairingService() -> String {
+        let service = "com.lorand.playtwo.hap-pairing.\(UUID().uuidString)"
+        pairingServices.append(service)
+        return service
+    }
+
     // MARK: - Criterion 1
 
     func testParseReturnsMethodPathAndBody() {
@@ -76,6 +96,24 @@ final class HAPServerTests: XCTestCase {
         XCTAssertEqual(
             server.route(HAPServer.Request(method: "POST", path: "/pair-setup", body: Data())).status,
             404
+        )
+    }
+
+    /// TASK-017: `GET /info` reports the pairing state read from the store
+    /// the server was built with (`HAPPairingStore.shared` elsewhere).
+    func testInfoReportsThePairedStateFromTheStore() {
+        let store = HAPPairingStore(service: freshPairingService())
+        store.save(record: HAPPairingStore.Record(
+            salt: Data(repeating: 1, count: 16),
+            verifier: Data(repeating: 2, count: 384),
+            paired: true
+        ))
+        let response = HAPServer(pairingStore: store)
+            .route(HAPServer.Request(method: "GET", path: "/info", body: Data()))
+        XCTAssertEqual(response.status, 200)
+        XCTAssertTrue(
+            String(decoding: response.body, as: UTF8.self).contains("\"paired\": true"),
+            "unexpected info body"
         )
     }
 

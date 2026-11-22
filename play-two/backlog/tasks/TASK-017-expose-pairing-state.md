@@ -2,8 +2,8 @@
 id: TASK-017
 title: Expose the pairing state in the pairing store
 feature: FEAT-003
-status: proposed
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-016]
 estimate: small
