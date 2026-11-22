@@ -2,8 +2,8 @@
 
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
-**Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** — (FEAT-002 complete; PM breaking down FEAT-003)
+**Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
+**Active task:** TASK-016 (FEAT-003, in-progress, attempt 1)
 
 ## Status
 
