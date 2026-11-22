@@ -1,20 +1,14 @@
 import Foundation
 import Network
 
-/// Accepts TCP connections on a port and answers each with one fixed reply,
-/// then closes the connection (TASK-003, FEAT-001 S1d).
+/// Accepts TCP connections on a port and hands each to ``connectionHandler``
+/// (TASK-016: `HAPServer.handle`).
 ///
-/// The listener parses nothing: every connection gets the same constant reply,
-/// because increment 1 only has to keep a sender that found the Bonjour service
-/// from hanging (FEAT-001 "In scope"). TASK-004 publishes the service that
-/// points here and is the first caller. Real RTSP handling is increment 3.
+/// The listener owns the socket and the port; it parses nothing — the handler
+/// is the whole server now. `ServiceAdvertiser` wires the handler, so in the
+/// app the HAP server answers every accepted connection. With no handler set,
+/// accepted connections are started and closed immediately.
 final class ReceiverListener {
-
-    /// The reply every accepted connection receives before it is closed.
-    ///
-    /// Fixed by TASK-003, byte for byte; the tests compare the received data
-    /// against this string, so no header may be added or removed here.
-    static let response = "RTSP/1.0 200 OK\r\nContent-Length: 0\r\n\r\n"
 
     /// The port this listener binds, 7000 unless the caller passed another.
     ///
@@ -28,9 +22,17 @@ final class ReceiverListener {
     /// listener.
     ///
     /// One `NWListener` carries both, so the advertised port and the answering
-    /// port cannot drift apart (TASK-004, `DEC-012`). TASK-003's tests pass no
-    /// service, and the reply is the same 38 bytes either way.
+    /// port cannot drift apart (TASK-004, `DEC-012`).
     let service: NWListener.Service?
+
+    /// Called on the listener's private queue for every accepted connection.
+    ///
+    /// The connection is not started or read here: the handler owns it, so it
+    /// can be served or closed as it sees fit. `ServiceAdvertiser` sets it to
+    /// `HAPServer.handle`, so in the app the HAP server receives every
+    /// accepted connection. With no handler, accepted connections are started
+    /// and closed immediately.
+    var connectionHandler: ((NWConnection) -> Void)?
 
     /// What the listener is doing. `failed` carries the `NWError` the system
     /// reported, so a caller can show it instead of guessing.
@@ -100,18 +102,16 @@ final class ReceiverListener {
         listener.cancel()
     }
 
-    /// Sends the fixed reply and closes the connection. The request is never
-    /// read: increment 1 has nothing to answer yet.
+    /// Delegates to ``connectionHandler``; the connection is never read by the
+    /// listener itself. With no handler, the connection is started and closed
+    /// immediately.
     private func answer(_ connection: NWConnection) {
-        connection.start(queue: queue)
-        connection.send(
-            content: Data(Self.response.utf8),
-            contentContext: .defaultMessage,
-            isComplete: true,
-            completion: .contentProcessed { _ in
-                connection.cancel()
-            }
-        )
+        if let connectionHandler = connectionHandler {
+            connectionHandler(connection)
+        } else {
+            connection.start(queue: queue)
+            connection.cancel()
+        }
     }
 
     private func report(_ state: NWListener.State) {

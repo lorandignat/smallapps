@@ -4,12 +4,12 @@ import Network
 import XCTest
 @testable import PlayTwo
 
-/// The reply contract and the stop/port-in-use paths (TASK-003, FEAT-001 S1d).
+/// The delegation contract and the stop/port-in-use paths (TASK-016).
 ///
 /// No test binds port 7000: macOS ControlCenter owns it on the test host, so
-/// every test asks the kernel for a free ephemeral port and drives the listener
-/// on that number (`DEC-011`). The 7000 default is asserted on its own, without
-/// binding it, in ``testDefaultPortIs7000()``.
+/// every test asks the kernel for a free ephemeral port and drives the
+/// listener on that number (`DEC-011`). The 7000 default is asserted on its
+/// own, without binding it, in ``testDefaultPortIs7000()``.
 final class ReceiverListenerTests: XCTestCase {
 
     /// Serial queue for client callbacks. One per test instance, like the
@@ -46,59 +46,40 @@ final class ReceiverListenerTests: XCTestCase {
         )
     }
 
-    // MARK: - Criterion 1
-
-    func testConnectionReceivesTheFixedResponseAndTheReceiveCompletes() throws {
-        let session = try startListener()
-
-        let responded = expectation(description: "received the fixed response")
-        let body = Box(Data())
-        let completed = Box(false)
-
-        let connection = receiveResponse(on: session.port) { data, isComplete in
-            body.value = data
-            completed.value = isComplete
-            responded.fulfill()
-        }
-        wait(for: [responded], timeout: 5)
-        connection.cancel()
-
-        XCTAssertEqual(
-            body.value,
-            Data(ReceiverListener.response.utf8),
-            "the reply must be exactly `RTSP/1.0 200 OK`, `Content-Length: 0` and an empty body"
-        )
-        XCTAssertTrue(completed.value, "the receive did not complete after the response")
-    }
-
     // MARK: - Criterion 2
 
-    func testTwoSequentialConnectionsBothReceiveTheFullResponse() throws {
+    func testTwoSequentialConnectionsAreDelegated() throws {
         let session = try startListener()
+        let delegated = Box<[NWConnection]>([])
 
-        let responded = expectation(description: "both connections answered")
-        responded.expectedFulfillmentCount = 2
-        let bodies = Box<[Data]>([])
-        let connections = Box<[NWConnection]>([])
-
-        func connectOnce() {
-            let connection = receiveResponse(on: session.port) { data, _ in
-                bodies.value.append(data)
-                responded.fulfill()
-                if bodies.value.count == 1 {
-                    connectOnce()
-                }
+        func connectOnce() throws {
+            let signal = DispatchSemaphore(value: 0)
+            session.listener.connectionHandler = { connection in
+                delegated.value.append(connection)
+                signal.signal()
             }
-            connections.value.append(connection)
+            let connection = NWConnection(host: "127.0.0.1", port: session.port, using: .tcp)
+            connection.start(queue: queue)
+            XCTAssertEqual(
+                connectToReceiver(on: session.port),
+                .connected,
+                "the listener must accept the connection"
+            )
+            XCTAssertEqual(
+                signal.wait(timeout: .now() + 5),
+                .success,
+                "the listener did not delegate the connection to connectionHandler"
+            )
+            connection.cancel()
         }
 
-        connectOnce()
-        wait(for: [responded], timeout: 10)
-
-        XCTAssertEqual(bodies.value.count, 2, "the listener answered only \(bodies.value.count) of 2 connections")
-        for (index, body) in bodies.value.enumerated() {
-            XCTAssertEqual(body, Data(ReceiverListener.response.utf8), "connection \(index + 1) got \(body)")
-        }
+        try connectOnce()
+        try connectOnce()
+        XCTAssertEqual(
+            delegated.value.count,
+            2,
+            "both sequential connections must reach connectionHandler"
+        )
     }
 
     // MARK: - Criterion 3
@@ -238,55 +219,6 @@ final class ReceiverListenerTests: XCTestCase {
     }
 
     // MARK: - Client helpers
-
-    /// Opens a client connection to `127.0.0.1` on `port` and collects
-    /// everything the listener sends until the receive completes. `completion`
-    /// runs once, on ``queue``, with the bytes received and whether the receive
-    /// completed.
-    private func receiveResponse(
-        on port: NWEndpoint.Port,
-        _ completion: @escaping (Data, Bool) -> Void
-    ) -> NWConnection {
-        let connection = NWConnection(host: "127.0.0.1", port: port, using: .tcp)
-        let received = Box(Data())
-        let finished = Box(false)
-
-        func finish(_ isComplete: Bool) {
-            guard !finished.value else { return }
-            finished.value = true
-            completion(received.value, isComplete)
-        }
-
-        func receiveMore() {
-            connection.receive(minimumIncompleteLength: 1, maximumLength: 65_536) { data, _, isComplete, _ in
-                if let data = data, !data.isEmpty {
-                    received.value.append(data)
-                }
-                if isComplete {
-                    finish(true)
-                } else if data == nil || data?.isEmpty == true {
-                    finish(false)
-                } else {
-                    receiveMore()
-                }
-            }
-        }
-
-        connection.stateUpdateHandler = { state in
-            switch state {
-            case .ready:
-                receiveMore()
-            case .failed, .cancelled:
-                // After a good response the test can cancel the connection; the
-                // guard in `finish` keeps that from reporting an empty body.
-                finish(false)
-            default:
-                break
-            }
-        }
-        connection.start(queue: queue)
-        return connection
-    }
 
     /// Connects to `127.0.0.1` on `port` with a blocking POSIX call, so
     /// "refused" is the syscall's answer rather than a state that may or may not

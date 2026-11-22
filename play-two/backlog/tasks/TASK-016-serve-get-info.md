@@ -2,8 +2,8 @@
 id: TASK-016
 title: Serve `GET /info` on port 7000, replacing the fixed reply
 feature: FEAT-003
-status: proposed
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: []
 estimate: small

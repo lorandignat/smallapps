@@ -7,7 +7,9 @@ import Network
 /// ``ReceiverListener`` and `NWListener` that answers the AirPlay port, so the
 /// port a browser resolves is the port that answers (TASK-004, FEAT-001
 /// S1a/S1d, `DEC-012`). The advertiser owns that listener and translates its
-/// states; it answers no connection itself and parses nothing.
+/// states; it wires the listener's ``ReceiverListener/connectionHandler`` to
+/// `HAPServer.handle` so the HAP server answers connections, and parses
+/// nothing itself.
 final class ServiceAdvertiser {
 
     /// The service type an AirPlay 2 receiver publishes.
@@ -117,6 +119,10 @@ final class ServiceAdvertiser {
             txtRecord: record.txtRecord
         )
         let listener = ReceiverListener(port: port, service: service)
+        // TASK-016: the HAP server is the server behind the socket — every
+        // connection the listener accepts reaches it.
+        let server = HAPServer()
+        listener.connectionHandler = server.handle
         listener.onStateChange = { [weak self] state in
             self?.listenerChanged(state)
         }
