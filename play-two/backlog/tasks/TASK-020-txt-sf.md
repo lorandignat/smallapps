@@ -2,8 +2,8 @@
 id: TASK-020
 title: Advertise the paired status in the AirPlay TXT record
 feature: FEAT-003
-status: proposed
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-017]
 estimate: small
