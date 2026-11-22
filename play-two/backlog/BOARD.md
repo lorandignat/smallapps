@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** TASK-026 (FEAT-005, in-progress, attempt 1); TASK-027/028 gated on human approval of DEC-015 (QQ-010), do not start
+· **Active task:** TASK-026 (FEAT-005, in-progress, attempt 2); TASK-027/028 gated on human approval of DEC-015 (QQ-010), do not start
 
 ## Features
 
@@ -55,7 +55,7 @@ this job; FEAT-004 remains proposed and is not broken down. Increment 4
 | TASK-023 | FEAT-005 | Answer an RTSP OPTIONS request with 200 OK | done | 1 | PASS 2026-11-22 — qa/reports/TASK-023-review.md |
 | TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | done | 1 | PASS 2026-11-22 — qa/reports/TASK-024-review.md |
 | TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | done | 1 | BA 2026-11-22 — DEC-015 proposed, human approval required before 027/028 |
-| TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | in-progress | 1 | — |
+| TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | in-progress | 2 | FAIL 2026-11-22 attempt 1 — qa/reports/TASK-026-review.md; rework |
 | TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | approved | 0 | — |
 | TASK-028 | FEAT-005 | Decrypt the stream key with FairPlay v3 and a test key table | approved | 0 | — |
 
