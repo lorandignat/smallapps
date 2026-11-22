@@ -1,7 +1,7 @@
 ---
 id: FEAT-003
 title: HAP pairing endpoints and persistence
-status: approved
+status: done
 slice: The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart.
 spec_ref: product/SPEC.md#6-success-criteria
 depends_on: [FEAT-002]
@@ -18,6 +18,14 @@ This is the user-facing half of increment 2 (`DEC-002`) and the owner of
 success criterion `S2`. It depends on `FEAT-002`: the crypto primitives must
 exist before the endpoints that use them.
 
+**Close (2026-11-22).** `status: done` records the code/task close only: all six
+tasks are `done` with QA `PASS` and the feature-close review is `PASS`
+(`qa/reports/FEAT-003-feature-review.md`). **S2a and S2b remain pending human
+observations on the iPhone 6s** and are not claimed as demonstrated here. The
+demo above is complete only once the human reports the exact `S2a:` / `S2b:`
+strings from `qa/TEST-PLAN.md`; until then this feature is closed at the
+code/task level and is not fully demonstrated.
+
 ## User value
 
 The owner wants the phone to show up as a real HomeKit speaker, not just an
@@ -27,16 +35,16 @@ every week.
 
 ## In scope
 
-- [ ] HTTP request handling on the AirPlay port (7000), replacing the fixed
+- [x] HTTP request handling on the AirPlay port (7000), replacing the fixed
       reply from increment 1.
-- [ ] `GET /info` returning HAP accessory info (name, category: speaker,
+- [x] `GET /info` returning HAP accessory info (name, category: speaker,
       pairing state).
-- [ ] `POST /pair-setup` (SRP M1–M6) using `FEAT-002`'s primitives.
-- [ ] `POST /pair-verify` establishing an encrypted session.
-- [ ] Pairing stored in the Keychain; advertised pairing state (status flags)
+- [x] `POST /pair-setup` (SRP M1–M6) using `FEAT-002`'s primitives.
+- [x] `POST /pair-verify` establishing an encrypted session.
+- [x] Pairing stored in the Keychain; advertised pairing state (status flags)
       in the AirPlay TXT record.
-- [ ] Restart survival: a paired accessory is still paired after relaunch.
-- [ ] Setup code displayed on the state screen.
+- [x] Restart survival: a paired accessory is still paired after relaunch.
+- [x] Setup code displayed on the state screen.
 
 ## Out of scope
 
@@ -47,17 +55,21 @@ every week.
 
 ## Acceptance criteria (feature level)
 
-- [ ] **S2a (human).** Given the app is foregrounded on the iPhone 6s, when
-      the human runs Home app "Add Accessory" and enters the setup code, then
-      it completes without error and the phone is listed as a speaker.
-- [ ] **S2b (human).** Given the phone is paired, when the app is killed and
-      relaunched, then the Home app still shows it as paired (no re-pair
-      prompt) and the app's state screen shows the paired state.
-- [ ] **Regression.** The increment-1 behaviours that still apply (discovery,
+- [ ] **S2a (human) — PENDING, not demonstrated.** Given the app is foregrounded
+      on the iPhone 6s, when the human runs Home app "Add Accessory" and enters
+      the setup code, then it completes without error and the phone is listed as
+      a speaker. Only the human on the iPhone 6s can observe this; no agent
+      verified it at feature close (`qa/reports/FEAT-003-feature-review.md`).
+- [ ] **S2b (human) — PENDING, not demonstrated.** Given the phone is paired,
+      when the app is killed and relaunched, then the Home app still shows it as
+      paired (no re-pair prompt) and the app's state screen shows the paired
+      state. Only the human on the iPhone 6s can observe this; no agent verified
+      it at feature close.
+- [x] **Regression.** The increment-1 behaviours that still apply (discovery,
       state screen, log export) keep passing; the fixed 38-byte reply on
       port 7000 is superseded by HTTP handling and `qa/REGRESSION.md` R4 is
-      retired/updated accordingly.
-- [ ] Every task in this feature is `done` with a `qa` verdict of `PASS`.
+      retired/updated accordingly (reworded per `DEC-018`, row retained).
+- [x] Every task in this feature is `done` with a `qa` verdict of `PASS`.
 
 ## Tasks
 
@@ -65,14 +77,14 @@ every week.
 shipped first, so the tasks are not held by `DEC-002`. The developer owns
 `test/`; `qa/` and journals other than `journal/<role>.md` stay out of scope.)
 
-- [ ] **TASK-016** — Serve `GET /info` on port 7000, replacing the fixed reply.
-- [ ] **TASK-017** — Expose the pairing state in the pairing store
+- [x] **TASK-016** — Serve `GET /info` on port 7000, replacing the fixed reply.
+- [x] **TASK-017** — Expose the pairing state in the pairing store
   (`HAPPairingStore`, `GET /info` reads it).
-- [ ] **TASK-018** — Complete `POST /pair-setup` (SRP M1–M6).
-- [ ] **TASK-019** — Establish an encrypted session with `POST /pair-verify`.
-- [ ] **TASK-020** — Advertise the paired status in the AirPlay TXT record
+- [x] **TASK-018** — Complete `POST /pair-setup` (SRP M1–M6).
+- [x] **TASK-019** — Establish an encrypted session with `POST /pair-verify`.
+- [x] **TASK-020** — Advertise the paired status in the AirPlay TXT record
   (`sf`).
-- [ ] **TASK-021** — Restart survival: show the setup code and the paired
+- [x] **TASK-021** — Restart survival: show the setup code and the paired
   state on the state screen.
 
 Each is `small` (one behaviour, one commit). Order is the dependency order:

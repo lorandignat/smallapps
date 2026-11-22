@@ -50,10 +50,10 @@ paired status with no re-pair prompt (restart survival, half 1).
        (also `XCTAssertEqual(Set(dictionary.keys), ["deviceid", "features",
        "model", "srcvers", "sf", "vv"])` in `testTXTRecordHasTheRequiredKeysAndValues`
        with `XCTAssertEqual(dictionary["sf"], "0")`).
-4. [ ] `ServiceAdvertiserTests` passes: `Executed 9 tests, with 0 failures` —
+4. [ ] `ServiceAdvertiserTests` passes: `Executed 4 tests, with 0 failures` —
        `testStartPublishesTheAirPlayServiceForAValidDeviceID` now asserts the
        dictionary with the extra `"sf": "0"` entry (`HAPPairingStore.shared`
-       has no record in the test run, so the value is `"0"`); the other eight
+       has no record in the test run, so the value is `"0"`); the other three
        unchanged.
 5. Regression: `R2` count ≥ 79 (expect ≈ 79 after the run; QA/BA update `qa/REGRESSION.md`).
 

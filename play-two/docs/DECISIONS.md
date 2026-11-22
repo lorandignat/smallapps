@@ -104,6 +104,11 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
 - consequences: PM updates the remaining task files; the simulator's iOS is 26.5,
   so passing there proves compilation and unit behaviour, never iOS 15 runtime
   behaviour. Only the 6s does that.
+- update (2026-11-22): the build host now runs Xcode 14.2 (14C18) with only an
+  iOS 16.2 simulator. Every verification command uses
+  `platform=iOS Simulator,name=iPhone 14,OS=16.2`; `iPhone 16e`/`OS 26.5` no
+  longer exists here. The deployment target is still iOS 15.0 and the 6s is
+  still the real target.
 
 ## DEC-006 — The app is called Relay (superseded by DEC-007)
 

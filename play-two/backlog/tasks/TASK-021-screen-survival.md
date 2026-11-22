@@ -44,10 +44,11 @@ pairing the status reads `Paired`, and while advertising it stays `Paired`
        runs (the advertiser reports `.advertising`), then `appState.status == .paired`.
 3. [ ] The state screen shows the setup code: `ContentView` displays
        `HAPServer.setupCode` — static: `grep -n 'Setup code' play-two/src/ContentView.swift`
-       → found; `grep -n 'static let setupCode = "00102003"' play-two/src/HAPServer.swift`
+       → found; `grep -n 'static let setupCode = "00102003"' play-two/src/HAP/HAPServer.swift`
        → found (TASK-016's constant; the pairing flow uses it via `HAPServer.setupCode`).
 4. [ ] `AppStateTests` passes: `Executed 5 tests, with 0 failures` — the four
-       from TASK-020 (default store reads `.idle`; `testStatusIsPairedWhenThePairingIsStored`).
+       existing AppStateTests (TASK-006): default store reads `.idle`;
+       `testStatusIsPairedWhenThePairingIsStored`.
 5. [ ] `ReceiverStatusTests` passes: `Executed 5 tests, with 0 failures` — the
        four from TASK-019 plus `testPaired`
        (`ReceiverStatus.paired.statusText(name: AppInfo.displayName) == "Paired"`).
@@ -64,7 +65,7 @@ xcodegen generate
 xcodebuild test -scheme PlayTwo -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' | tee /tmp/opencode/task-021-test.log
 grep -E "Test Suite '(AppStateTests|ReceiverStatusTests)' (passed|failed)" /tmp/opencode/task-021-test.log
 grep -c 'Setup code' play-two/src/ContentView.swift        # expect 1
-grep -n 'static let setupCode = "00102003"' play-two/src/HAPServer.swift
+grep -n 'static let setupCode = "00102003"' play-two/src/HAP/HAPServer.swift
 ```
 
 ## Definition of done

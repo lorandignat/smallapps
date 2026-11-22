@@ -3,8 +3,9 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-22 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
-· **Active task:** none — TASK-021 done; FEAT-003 task work complete
+**Updated:** 2026-11-22 · **Phase:** build · **Active feature:** none — FEAT-003 closed at code/task level
+(code/task PASS; S2a/S2b pending human observation on the iPhone 6s); FEAT-004 not yet broken down
+· **Active task:** none — all FEAT-003 tasks done
 
 ## Features
 
@@ -12,7 +13,7 @@ reads it every cycle.
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
 | FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
-| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 6 done |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | done | 6 done |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
@@ -72,11 +73,13 @@ loop ran one task at a time, BA → developer → qa per task.
   7000` succeeds; a second iPhone offers PlayTwo in its AirPlay picker. The
   simulator suite for the rework still needs a Mac run; the `policyDenied` unit
   test is in the tree. QA is the next step.
-- **Agents run on Tidepool Alpha.** The free pool is exhausted; all launches use
-  `opencode/tidepool-alpha-free` (`opencode.jsonc`, `.opencode/agents/ba.md`).
-- **The Mac is offline.** ssh to `<build-host>` and `/dev/tcp` probes to it
-  and to the Tailscale name `ro-w2kq9641jp.ts.net` time out since ~20:05. TASK-008
-  is `blocked` (`QQ-009`); nothing Mac-dependent runs until it is back.
+- **RESOLVED 2026-11-22 — Agents no longer run on Tidepool Alpha.** The free-pool
+  exhaustion no longer applies. (Previously all launches used
+  `opencode/tidepool-alpha-free`.)
+- **RESOLVED 2026-11-22 — The Mac is online.** The bridge is up (macOS 12.7.6 /
+  Xcode 14.2); the earlier ssh and `/dev/tcp` timeouts to `<build-host>` and
+  `ro-w2kq9641jp.ts.net` no longer apply. TASK-008 is `done`, not `blocked`.
+  All verification uses `platform=iOS Simulator,name=iPhone 14,OS=16.2`.
 
 - `QQ-005` resolved 2026-11-16: the bridge builds and tests on the Mac
   (Xcode 26.6, iOS 26.5 SDK).
@@ -103,12 +106,23 @@ G4. `Attempts` counts developer launches; three means escalate.
 
 ## Counts
 
-- features: 1 done (FEAT-001), 2 approved (FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
-- tasks: 21 done (TASK-001..TASK-010, TASK-011..TASK-021) / 21 total; none active; FEAT-003 feature close next
-- blocked: 0 (profile expires 2026-11-23)
+- features: 3 done (FEAT-001, FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
+- tasks: 21 done (TASK-001..TASK-010, TASK-011..TASK-021) / 21 total; none active; FEAT-003 closed at code/task level
+- blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers)
 
 ## Recent changes
 
+- 2026-11-22 — FEAT-003 closed at the code/task level: feature status `done`,
+  all six tasks `done` (QA PASS, attempt 1), feature-close review PASS
+  (`qa/reports/FEAT-003-feature-review.md`). **S2a/S2b remain pending human
+  observations on the iPhone 6s and are not represented as demonstrated**; feature
+  file checkboxes reflect the code/task close only. Board counts updated (3 features
+  done, 21 tasks done, none active). Stale "Agents run on Tidepool Alpha" and "The
+  Mac is offline" blocker rows marked RESOLVED (bridge up, Xcode 14.2; verification
+  uses `platform=iOS Simulator,name=iPhone 14,OS=16.2`). PM cleanup applied: TASK-020
+  `ServiceAdvertiserTests` count 9 → 4; TASK-021 grep path `src/HAPServer.swift` →
+  `src/HAP/HAPServer.swift` and "four from TASK-020" → "four existing AppStateTests
+  (TASK-006)". No new features or tasks; IDs unchanged.
 - 2026-11-22 — TASK-021 `done` on attempt 1 (QA PASS, 81/0, R2 high-water 81);
   commit `a453eb9`. All FEAT-003 tasks are done; feature close is next. Two LOW
   task-text typos (TASK-021 grep path and "four from TASK-020" label) plus the
