@@ -2,7 +2,7 @@
 id: TASK-027
 title: Generate Apple-Response from a challenge and test key table
 feature: FEAT-005
-status: in-progress
+status: blocked
 attempts: 1
 owner: null
 depends_on: [TASK-025, TASK-026]
@@ -91,3 +91,8 @@ grep -E "Executed [0-9]+ tests?, with 0 failures" /tmp/opencode/task-027-test.lo
   DEC.
 - Key table injection boundary must follow TASK-025's DEC. If the DEC is not
   present, this task is `BLOCKED`.
+- **BLOCKED 2026-11-22 (attempt 1, BA):** developer produced a transparent
+  synthetic XOR stand-in (not real FairPlay v3) with self-consistent fixtures.
+  BA rejected it as not meeting TASK-027/FEAT-005 intent (real Apple TV
+  handshake needs real FairPlay v3 behavior). Escalated as QQ-012; no fake
+  crypto committed.
