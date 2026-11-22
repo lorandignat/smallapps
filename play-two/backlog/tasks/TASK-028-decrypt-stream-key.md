@@ -2,7 +2,7 @@
 id: TASK-028
 title: Decrypt the stream key with FairPlay v3 and a test key table
 feature: FEAT-005
-status: proposed
+status: approved
 attempts: 0
 owner: null
 depends_on: [TASK-025, TASK-027]

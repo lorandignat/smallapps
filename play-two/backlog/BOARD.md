@@ -3,8 +3,8 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 proposed (increment 3, G2 pending; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** none — TASK-022..028 proposed, awaiting G2/G3 approval
+**Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
+· **Active task:** TASK-022 (approved) — next; TASK-027/028 remain approved but must not start until TASK-025 FairPlay key-table DEC is recorded and any required human approval is present
 
 ## Features
 
@@ -14,7 +14,7 @@ reads it every cycle.
 | FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
 | FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | done | 6 done |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
-| FEAT-005 | RTSP setup and FairPlay v3 key decryption | An Apple TV RTSP setup completes and FairPlay v3 yields the AES stream key; the phone speaker is still silent | proposed | 7 |
+| FEAT-005 | RTSP setup and FairPlay v3 key decryption | An Apple TV RTSP setup completes and FairPlay v3 yields the AES stream key; the phone speaker is still silent | approved | 7 |
 | FEAT-006 | Buffered ALAC playback on the phone speaker | With the AES key, a real Apple TV stream is buffered, ALAC-decoded and heard on the phone's own speaker for 10 minutes without dropping | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
@@ -51,13 +51,13 @@ this job; FEAT-004 remains proposed and is not broken down. Increment 4
 | TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | done | 1 | PASS 2026-11-22 — qa/reports/TASK-019-review.md |
 | TASK-020 | FEAT-003 | Advertise the paired status in the AirPlay TXT record | done | 1 | PASS 2026-11-22 — qa/reports/TASK-020-review.md |
 | TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | done | 1 | PASS 2026-11-22 — qa/reports/TASK-021-review.md |
-| TASK-022 | FEAT-005 | Parse an RTSP request line and headers | proposed | 0 | — |
-| TASK-023 | FEAT-005 | Answer an RTSP OPTIONS request with 200 OK | proposed | 0 | — |
-| TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | proposed | 0 | — |
-| TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | proposed | 0 | — |
-| TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | proposed | 0 | — |
-| TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | proposed | 0 | — |
-| TASK-028 | FEAT-005 | Decrypt the stream key with FairPlay v3 and a test key table | proposed | 0 | — |
+| TASK-022 | FEAT-005 | Parse an RTSP request line and headers | approved | 0 | — |
+| TASK-023 | FEAT-005 | Answer an RTSP OPTIONS request with 200 OK | approved | 0 | — |
+| TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | approved | 0 | — |
+| TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | approved | 0 | — |
+| TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | approved | 0 | — |
+| TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | approved | 0 | — |
+| TASK-028 | FEAT-005 | Decrypt the stream key with FairPlay v3 and a test key table | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
@@ -75,9 +75,10 @@ loop ran one task at a time, BA → developer → qa per task.
 Dependency order for FEAT-005: 022 → 023 → 024 → (025, 026) → 027 → 028.
 023 needs 022; 024 needs 023; 025 needs 024 (decision gate, BA-owned); 026
 needs 024 and can run in parallel with 025; 027 needs 025+026 and the
-TASK-025 DEC recorded; 028 needs 025+027 and the same DEC. TASK-027/028 must
-not start until the FairPlay key-table DEC is recorded and any required human
-approval is present. All seven are `proposed`, awaiting G2/G3.
+TASK-025 DEC recorded; 028 needs 025+027 and the same DEC. TASK-027/028 are
+approved in the backlog but **MUST NOT** be moved to `in-progress` until
+TASK-025's FairPlay key-table DEC is recorded and any required human approval
+is present. G2/G3 approved 2026-11-22 (BA); TASK-022 is next.
 
 ## Blockers
 
@@ -123,12 +124,20 @@ G4. `Attempts` counts developer launches; three means escalate.
 
 ## Counts
 
-- features: 3 done (FEAT-001, FEAT-002, FEAT-003) / 6 total; FEAT-004, FEAT-005, FEAT-006 proposed
-- tasks: 21 done (TASK-001..TASK-010, TASK-011..TASK-021) / 28 total; 7 proposed (TASK-022..028, FEAT-005, G2/G3 pending); none active
-- blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers; TASK-027/028 gated on TASK-025 DEC, not blocked)
+- features: 3 done (FEAT-001, FEAT-002, FEAT-003) / 6 total; 1 approved (FEAT-005), 2 proposed (FEAT-004, FEAT-006)
+- tasks: 21 done (TASK-001..TASK-010, TASK-011..TASK-021) / 28 total; 7 approved (TASK-022..028, FEAT-005, G2/G3 approved); none in-progress
+- blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers; TASK-027/028 approved but gated on TASK-025 DEC + required human approval, not blocked)
 
 ## Recent changes
 
+- 2026-11-22 — BA G2/G3 approval recorded (backlog only): FEAT-005 approved
+  (vertical slice, demoable, dependency-ordered after FEAT-003, traces to SPEC §4
+  increment 3 / §6 S3 path, not infra-only). TASK-022..028 approved (G3;
+  TASK-025 BA-owned decision task). TASK-022 is next; TASK-027/028 remain
+  approved in backlog but **MUST NOT** be moved to `in-progress` until TASK-025's
+  FairPlay key-table DEC is recorded and any required human approval is present.
+  FEAT-004 and FEAT-006 remain proposed. Carried caveat: FEAT-003 S2a/S2b pending
+  human observation on the iPhone 6s; human asked to proceed.
 - 2026-11-22 — PM increment 3 breakdown (G2/G3 pending): added FEAT-005 (RTSP
   setup and FairPlay v3 key decryption, 7 tasks TASK-022..028, proposed) and
   FEAT-006 (buffered ALAC playback on the phone speaker, feature-level only,

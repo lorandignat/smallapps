@@ -2,7 +2,7 @@
 id: TASK-024
 title: Route RTSP requests on the AirPlay port
 feature: FEAT-005
-status: proposed
+status: approved
 attempts: 0
 owner: null
 depends_on: [TASK-023]

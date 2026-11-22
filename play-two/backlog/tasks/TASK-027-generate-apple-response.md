@@ -2,7 +2,7 @@
 id: TASK-027
 title: Generate Apple-Response from a challenge and test key table
 feature: FEAT-005
-status: proposed
+status: approved
 attempts: 0
 owner: null
 depends_on: [TASK-025, TASK-026]

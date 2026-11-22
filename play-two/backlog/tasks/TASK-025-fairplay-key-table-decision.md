@@ -2,7 +2,7 @@
 id: TASK-025
 title: Decide how FairPlay key tables enter the app
 feature: FEAT-005
-status: proposed
+status: approved
 attempts: 0
 owner: ba
 depends_on: [TASK-024]
@@ -37,20 +37,24 @@ defined boundary without guessing or adding a dependency.
 
 ## Acceptance criteria
 
-1. [ ] A `DEC-###` entry exists in `play-two/docs/DECISIONS.md` with status
+1. [ ] Given TASK-025 is complete, when a reviewer reads
+       `play-two/docs/DECISIONS.md`, then a `DEC-###` entry exists with status
        `accepted` or `proposed` (if human approval is pending), recording: the
        source/format of the key table, the runtime injection boundary (how code
        receives it without hardcoding a repo path to real DRM material), how it
        is kept out of git, and the personal-use/sideload-only constraint.
-2. [ ] `play-two/docs/QUESTIONS.md` contains a `QQ-010` row (or equivalent)
+2. [ ] Given TASK-025 is complete, when a reviewer reads
+       `play-two/docs/QUESTIONS.md`, then a `QQ-010` row (or equivalent) exists
        that names the DEC and states whether it blocks TASK-027/TASK-028.
-3. [ ] The DEC states explicitly that no real Apple DRM key table is committed,
-       bundled in a distributable artifact, or uploaded; tests use only a
+3. [ ] Given TASK-025 is complete, when a reviewer reads the DEC, then it states
+       explicitly that no real Apple DRM key table is committed, bundled in a
+       distributable artifact, or uploaded, and that tests use only a
        synthetic/injected fixture.
-4. [ ] If the decision requires a new dependency, SDK, tool, or package not in
-       `docs/STACK.md`, the DEC marks it as needing human approval before
-       TASK-027 starts; TASK-027/TASK-028 remain `proposed` until that approval
-       is recorded.
+4. [ ] Given TASK-025 is complete and the decision requires a new dependency,
+       SDK, tool, or package not in `docs/STACK.md`, when a reviewer reads the
+       DEC and backlog task statuses, then the DEC marks it as needing human
+       approval before TASK-027 starts and TASK-027/TASK-028 remain `proposed`
+       until that approval is recorded.
 
 ## Verification commands
 

@@ -1,7 +1,7 @@
 ---
 id: FEAT-005
 title: RTSP setup and FairPlay v3 key decryption
-status: proposed
+status: approved
 slice: An Apple TV's RTSP setup completes against the phone and the FairPlay v3 handshake yields the AES stream key; the phone speaker is still silent.
 spec_ref: product/SPEC.md#4-scope-v1
 depends_on: [FEAT-003]
@@ -31,6 +31,10 @@ are still pending human observations on the iPhone 6s. The human has explicitly
 asked to proceed into increment 3. This breakdown therefore treats FEAT-003's
 code as the dependency and records the pending observations here and in
 `qa/TEST-PLAN.md`; they are not a gate on starting FEAT-005.
+
+**G2 approved 2026-11-22 (BA).** Vertical slice, demoable, dependency-ordered
+after FEAT-003, traces to SPEC §4 increment 3 / §6 S3 path, not infra-only;
+FEAT-006 remains proposed at feature level.
 
 ## User value
 

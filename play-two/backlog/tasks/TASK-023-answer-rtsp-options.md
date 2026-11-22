@@ -2,7 +2,7 @@
 id: TASK-023
 title: Answer an RTSP OPTIONS request with 200 OK
 feature: FEAT-005
-status: proposed
+status: approved
 attempts: 0
 owner: null
 depends_on: [TASK-022]
