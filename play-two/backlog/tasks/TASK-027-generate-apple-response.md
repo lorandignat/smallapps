@@ -2,8 +2,8 @@
 id: TASK-027
 title: Generate Apple-Response from a challenge and test key table
 feature: FEAT-005
-status: approved
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-025, TASK-026]
 estimate: small

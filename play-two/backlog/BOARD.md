@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** TASK-027 (approved) — next; DEC-015 accepted 2026-11-22, QQ-010 unblocked
+· **Active task:** TASK-027 (FEAT-005, in-progress, attempt 1); DEC-015 accepted, synthetic fixtures only
 
 ## Features
 
@@ -56,7 +56,7 @@ this job; FEAT-004 remains proposed and is not broken down. Increment 4
 | TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | done | 1 | PASS 2026-11-22 — qa/reports/TASK-024-review.md |
 | TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | done | 1 | BA 2026-11-22 — DEC-015 proposed, human approval required before 027/028 |
 | TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | done | 2 | PASS 2026-11-22 attempt 2 — qa/reports/TASK-026-review.md |
-| TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | approved | 0 | — |
+| TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | in-progress | 1 | — |
 | TASK-028 | FEAT-005 | Decrypt the stream key with FairPlay v3 and a test key table | approved | 0 | — |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
@@ -125,7 +125,7 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 3 done (FEAT-001, FEAT-002, FEAT-003) / 6 total; 1 approved (FEAT-005), 2 proposed (FEAT-004, FEAT-006)
-- tasks: 26 done (TASK-001..TASK-010, TASK-011..TASK-026) / 28 total; 2 approved (TASK-027..028, FEAT-005, DEC-015 accepted); none in-progress
+- tasks: 26 done (TASK-001..TASK-010, TASK-011..TASK-026) / 28 total; 1 approved (TASK-028, FEAT-005); 1 in-progress (TASK-027)
 - blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers; TASK-027/028 approved but gated on TASK-025 DEC + required human approval, not blocked)
 
 ## Recent changes
