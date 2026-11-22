@@ -3,25 +3,23 @@
 > Workspace-level only. Each project has its own `docs/STATE.md`. Under 40 lines.
 
 **Updated:** 2026-11-22 · **Active project:** `play-two`
-**Mode:** breakdown — increment 3 decomposed; awaiting G2/G3 human approval before build
+**Mode:** build — FEAT-005 G2/G3 approved; running increment 3 task loop
 **Shared toolchain:** git under `.tooling/`
 
 ## Status
 
 One project, in build. Increment 1 shipped/accepted. Increment 2: FEAT-002 done;
 FEAT-003 closed at code/task level (21 tasks total, bundle 81/0) — **S2a/S2b
-pending human observation** on iPhone 6s. PM has decomposed increment 3 into
-FEAT-005 (RTSP/FairPlay, 7 proposed tasks TASK-022..028) and FEAT-006 (ALAC
-playback, feature-level only); FEAT-004 stays proposed. No task is in-progress.
+pending human observation** on iPhone 6s. FEAT-005 (RTSP/FairPlay) G2/G3
+approved; TASK-022 in-progress (attempt 1). FEAT-006 feature-level only;
+FEAT-004 proposed.
 
 ## Next action
 
-Human/BA approve G2 (FEAT-005) and G3 (TASK-022..028). Record the FairPlay
-key-table injection DEC (TASK-025, BA-owned) before TASK-027/028 can start;
-ALAC decode route needs a DEC before FEAT-006 G3. After G3, resume build loop
-one task at a time (022→023→024→(025,026)→027→028). All Mac tests:
-`platform=iOS Simulator,name=iPhone 14,OS=16.2`. After each PASS: commit, then
-rebuild/push scrubbed `public-history` (DEC-014).
+Run TASK-022 dev→QA→G4 (FEAT-005). After 024, handle TASK-025 (BA DEC, QQ-010,
+gates 027/028) and TASK-026. All Mac tests: `platform=iOS Simulator,name=iPhone
+14,OS=16.2`. After each PASS: commit, then rebuild/push scrubbed
+`public-history` (DEC-014).
 
 ## Open questions and blockers
 

@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** TASK-022 (approved) — next; TASK-027/028 remain approved but must not start until TASK-025 FairPlay key-table DEC is recorded and any required human approval is present
+· **Active task:** TASK-022 (FEAT-005, in-progress, attempt 1); TASK-027/028 gated on TASK-025 DEC + required human approval
 
 ## Features
 
@@ -51,7 +51,7 @@ this job; FEAT-004 remains proposed and is not broken down. Increment 4
 | TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | done | 1 | PASS 2026-11-22 — qa/reports/TASK-019-review.md |
 | TASK-020 | FEAT-003 | Advertise the paired status in the AirPlay TXT record | done | 1 | PASS 2026-11-22 — qa/reports/TASK-020-review.md |
 | TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | done | 1 | PASS 2026-11-22 — qa/reports/TASK-021-review.md |
-| TASK-022 | FEAT-005 | Parse an RTSP request line and headers | approved | 0 | — |
+| TASK-022 | FEAT-005 | Parse an RTSP request line and headers | in-progress | 1 | — |
 | TASK-023 | FEAT-005 | Answer an RTSP OPTIONS request with 200 OK | approved | 0 | — |
 | TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | approved | 0 | — |
 | TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | approved | 0 | — |
