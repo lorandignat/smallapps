@@ -2,7 +2,7 @@
 id: TASK-022
 title: Parse an RTSP request line and headers
 feature: FEAT-005
-status: in-progress
+status: done
 attempts: 1
 owner: null
 depends_on: []
