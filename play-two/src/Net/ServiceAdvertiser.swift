@@ -108,7 +108,10 @@ final class ServiceAdvertiser {
             ))
             return
         }
-        guard let record = AirPlayTXTRecord(deviceID: deviceID) else {
+        guard let record = AirPlayTXTRecord(
+            deviceID: deviceID,
+            paired: HAPPairingStore.shared.paired
+        ) else {
             report(.failed("the device id \(deviceID) cannot make a TXT record"))
             return
         }

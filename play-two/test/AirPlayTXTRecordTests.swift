@@ -42,8 +42,10 @@ final class AirPlayTXTRecordTests: XCTestCase {
         XCTAssertEqual(persisted[DeviceIdentity.storageKey] as? String, first)
     }
 
-    /// Criterion 2: exactly the five required keys, `deviceid` unchanged, `vv`
-    /// `2`, and a 64-bit `features` value with bit 38 set.
+    /// Criterion 2: exactly the six required keys — `deviceid`, `features`,
+    /// `model`, `srcvers`, `sf` and `vv` — with `deviceid` unchanged, `vv` `2`,
+    /// a 64-bit `features` value with bit 38 set, and the unpaired record
+    /// publishing `sf == "0"` (TASK-020).
     func testTXTRecordHasTheRequiredKeysAndValues() throws {
         let deviceID = "0A:1B:2C:3D:4E:5F"
         let record = try XCTUnwrap(AirPlayTXTRecord(deviceID: deviceID))
@@ -51,12 +53,13 @@ final class AirPlayTXTRecordTests: XCTestCase {
 
         XCTAssertEqual(
             Set(dictionary.keys),
-            ["deviceid", "features", "model", "srcvers", "vv"]
+            ["deviceid", "features", "model", "srcvers", "sf", "vv"]
         )
         XCTAssertEqual(dictionary["deviceid"], deviceID)
         XCTAssertEqual(dictionary["vv"], "2")
         XCTAssertEqual(dictionary["model"], AirPlayTXTRecord.model)
         XCTAssertEqual(dictionary["srcvers"], AirPlayTXTRecord.srcvers)
+        XCTAssertEqual(dictionary["sf"], "0")
 
         let features = try XCTUnwrap(dictionary["features"])
         XCTAssertTrue(features.hasPrefix("0x"), features)
@@ -74,6 +77,25 @@ final class AirPlayTXTRecordTests: XCTestCase {
         XCTAssertEqual(Set(decoded.keys), Set(record.dictionary.keys))
         XCTAssertEqual(decoded["deviceid"], "0A:1B:2C:3D:4E:5F")
         XCTAssertEqual(decoded["features"], record.dictionary["features"])
+    }
+
+    /// TASK-020: the paired flag reaches the TXT record as the `sf` status
+    /// flag — `"0"` unpaired (the default), `"1"` paired — and is readable
+    /// through `statusFlags`.
+    func testPairedStatusAppearsInTheSFFlag() throws {
+        let deviceID = "0A:1B:2C:3D:4E:5F"
+
+        let unpaired = try XCTUnwrap(AirPlayTXTRecord(deviceID: deviceID, paired: false))
+        XCTAssertEqual(unpaired.dictionary["sf"], "0")
+        XCTAssertEqual(unpaired.statusFlags, 0)
+
+        // The default is the unpaired flag.
+        let defaulted = try XCTUnwrap(AirPlayTXTRecord(deviceID: deviceID))
+        XCTAssertEqual(defaulted.dictionary["sf"], "0")
+
+        let paired = try XCTUnwrap(AirPlayTXTRecord(deviceID: deviceID, paired: true))
+        XCTAssertEqual(paired.dictionary["sf"], "1")
+        XCTAssertNotEqual(paired.statusFlags & AirPlayTXTRecord.statusFlagPaired, 0)
     }
 
     /// Criterion 4: an empty or malformed device id produces no record.

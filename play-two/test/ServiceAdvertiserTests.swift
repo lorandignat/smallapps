@@ -63,9 +63,10 @@ final class ServiceAdvertiserTests: XCTestCase {
                 "features": "0x3C356BD04A7FCA00",
                 "model": "AudioAccessory1,1",
                 "srcvers": "366.0",
+                "sf": "0",
                 "vv": "2",
             ],
-            "the registered TXT values must be the TASK-002 record, unchanged"
+            "the registered TXT values are the TASK-002 record plus the TASK-020 `sf` flag"
         )
         XCTAssertEqual(advertiser.state, .advertising)
     }
