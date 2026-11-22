@@ -3,23 +3,24 @@
 Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
-**Updated:** 2026-11-20 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-· **Active task:** none (TASK-012 done; next TASK-013)
+**Updated:** 2026-11-22 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
+· **Active task:** — (TASK-016 first; G3 for FEAT-003 at 2026-11-22; G4 per task)
 
 ## Features
 
 | ID | Title | Slice (demoable outcome) | Status | Tasks |
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
-| FEAT-002 | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
-| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | proposed | 0 |
+| FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 6 |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
 screen listed under "Also in v1" (`SPEC` §4), assigned to increment 2 by
 `DEC-003`. FEAT-003 depends on FEAT-002; FEAT-004 depends on FEAT-001. Only
-FEAT-002 is broken down into tasks; the rest stay at feature level until their
-turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
+FEAT-002 and FEAT-003 are broken down into tasks; the rest stay at feature
+level until their turn. Increments 3 (audible) and 4 (useful) have no feature
+files yet.
 
 ## Tasks
 
@@ -40,6 +41,12 @@ turn. Increments 3 (audible) and 4 (useful) have no feature files yet.
 | TASK-013 | FEAT-002 | SRP-3072 server generates salt and ephemeral B | done | 1 | PASS (qa/reports/TASK-013-review.md) |
 | TASK-014 | FEAT-002 | SRP-3072 server verifies client proof and derives session key | done | 1 | PASS (qa/reports/TASK-014-review.md) |
 | TASK-015 | FEAT-002 | Ed25519 accessory identity key with Keychain persistence | done | 1 | PASS (qa/reports/TASK-015-review.md) |
+| TASK-016 | FEAT-003 | Serve `GET /info` on port 7000, replacing the fixed reply | proposed | 0 | |
+| TASK-017 | FEAT-003 | Expose the pairing state in the pairing store | proposed | 0 | |
+| TASK-018 | FEAT-003 | Complete `POST /pair-setup` (SRP M1–M6) | proposed | 0 | |
+| TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | proposed | 0 | |
+| TASK-020 | FEAT-003 | Advertise the paired status in the AirPlay TXT record | proposed | 0 | |
+| TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | proposed | 0 | |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
@@ -48,6 +55,12 @@ TASK-002 (`done`, `PASS` 2026-11-16), and TASK-003 is `done` (`PASS` 2026-11-18)
 TASK-004 is next and is the first task with a visible outcome. TASK-009 is
 last because it needs the whole tree and the
 exported log for the S5 observation.
+
+Dependency order for FEAT-003: 016 → 017 → 018 → 019 → 020 → 021
+(017 needs 016; 018 needs 016+017; 020 needs 017; 021 needs 018+020). All six
+are `proposed` until the BA approves them at G3 — already done at 2026-11-22 —
+and `attempts` is 0: the build loop runs one task at a time, BA → developer →
+qa per task.
 
 ## Blockers
 
@@ -91,12 +104,16 @@ G4. `Attempts` counts developer launches; three means escalate.
 
 ## Counts
 
-- features: 1 done (FEAT-001) / 4 total; FEAT-002 approved (5 tasks); FEAT-003/004 proposed
-- tasks: 10 done (TASK-001..TASK-009, TASK-010; `PASS`) / 15 total; TASK-011..015 approved, next
+- features: 1 done (FEAT-001), 2 approved (FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
+- tasks: 15 done (TASK-001..TASK-010, TASK-011..TASK-015) / 21 total; TASK-016..021 proposed, next
 - blocked: 0 (profile expires 2026-11-23)
 
 ## Recent changes
 
+- 2026-11-22 — PM breakdown of FEAT-003: six tasks added (TASK-016..021,
+  `proposed`); FEAT-003 approved (G3 done); feature file updated (Tasks
+  section, R4 note names TASK-016). R2 high-water expectations: 62 → 68 → 73 →
+  78 → 79 → 81 after TASK-016..021; QA/BA record the actuals.
 - 2026-11-18 — TASK-003 `done` on attempt 3 (`PASS` 6/6, 2 MINOR), so FEAT-001
   S1d stays open: nothing constructed the listener yet. TASK-004 is `approved`
   and its scope now includes `src/PlayTwoApp.swift`, which starts the advertiser

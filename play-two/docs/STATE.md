@@ -3,7 +3,7 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-21 · **Phase:** build · **Active feature:** FEAT-002 (HAP crypto primitives)
-**Active task:** none (FEAT-002 complete)
+**Active task:** — (FEAT-002 complete; PM breaking down FEAT-003)
 
 ## Status
 

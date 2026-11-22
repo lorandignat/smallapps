@@ -1,7 +1,7 @@
 ---
 id: FEAT-003
 title: HAP pairing endpoints and persistence
-status: proposed
+status: approved
 slice: The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart.
 spec_ref: product/SPEC.md#6-success-criteria
 depends_on: [FEAT-002]
@@ -61,15 +61,32 @@ every week.
 
 ## Tasks
 
-Not broken down yet. `FEAT-002` must ship first (`DEC-002`).
+(G3 at 2026-11-22; broken down per the `pm-atomic` checklist. `FEAT-002`
+shipped first, so the tasks are not held by `DEC-002`. The developer owns
+`test/`; `qa/` and journals other than `journal/<role>.md` stay out of scope.)
+
+- [ ] **TASK-016** — Serve `GET /info` on port 7000, replacing the fixed reply.
+- [ ] **TASK-017** — Expose the pairing state in the pairing store
+  (`HAPPairingStore`, `GET /info` reads it).
+- [ ] **TASK-018** — Complete `POST /pair-setup` (SRP M1–M6).
+- [ ] **TASK-019** — Establish an encrypted session with `POST /pair-verify`.
+- [ ] **TASK-020** — Advertise the paired status in the AirPlay TXT record
+  (`sf`).
+- [ ] **TASK-021** — Restart survival: show the setup code and the paired
+  state on the state screen.
+
+Each is `small` (one behaviour, one commit). Order is the dependency order:
+017 needs 016, 018 needs 016+017, 020 needs 017, 021 needs 018+020.
 
 ## Notes
 
 **Regression note.** Increment 2 replaces the fixed reply on port 7000 with
-HTTP handling. `qa/REGRESSION.md` R4 (fixed 38-byte reply) no longer applies
-as written and should be retired or reworded by QA with a `DEC-###` reference
-once HTTP handling lands. PM flags this now so it is not a surprise at feature
-close.
+HTTP handling: TASK-016 does the replacement. `qa/REGRESSION.md` R4 (fixed
+38-byte reply) is therefore obsolete from TASK-016 on; it is retired or
+reworded by QA/BA with a `DEC-###` reference — the BA note of 2026-11-21 says
+exactly this, so the expectation at feature close is a reworded R4 row, not a
+deleted one. The `ReceiverListener.response` constant goes away with the
+replacement.
 
 **Status flags.** The AirPlay TXT record gains a `sf` (status flags) field
 reflecting paired/unpaired state. `FEAT-002` does not touch the TXT record;
