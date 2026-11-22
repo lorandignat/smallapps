@@ -26,10 +26,15 @@ final class HAPServer {
     /// The store whose `paired` flag the info body reports (TASK-017).
     let pairingStore: HAPPairingStore
 
+    /// The pair-setup exchange state machine (TASK-018).
+    let pairSetup: HAPPairSetup
+
     /// Creates a server reading the accessory facts and the pairing state
-    /// from `pairingStore` (TASK-017).
+    /// from `pairingStore` (TASK-017); `pairSetup` on this server carries
+    /// the exchange state from the first `POST /pair-setup` (TASK-018).
     init(pairingStore: HAPPairingStore = HAPPairingStore.shared) {
         self.pairingStore = pairingStore
+        self.pairSetup = HAPPairSetup(store: pairingStore)
     }
 
     // MARK: - Request and response
@@ -109,12 +114,54 @@ final class HAPServer {
     // MARK: - Routing
 
     /// Routes a request: `GET /info` answers 200 with the accessory info as
-    /// JSON; every other method or path answers 404.
+    /// JSON; `POST /pair-setup` starts or completes the SRP exchange —
+    /// request 1 (the client's public value A, TLV type 4) answers 200 with
+    /// the accessory public value B (TLV type 3) and the salt (TLV type 6);
+    /// request 2 (the client proof M4, TLV type 4) answers 200 with the
+    /// accessory proof M5 (TLV type 5) and the session start M6 (TLV type
+    /// 7), or 400 when the proof does not verify; every other method or
+    /// path answers 404.
     func route(_ request: Request) -> Response {
         if request.method == "GET", request.path == "/info" {
             return Response(status: 200, body: infoBody)
         }
+        if request.method == "POST", request.path == "/pair-setup" {
+            return pairSetupResponse(for: request)
+        }
         return Response(status: 404, body: Data("Not Found".utf8))
+    }
+
+    /// The `POST /pair-setup` route (TASK-018): dispatches on the exchange
+    /// state — request 1 while `pairSetup` is not started, request 2 after.
+    private func pairSetupResponse(for request: Request) -> Response {
+        guard let entries = TLV8.decode(request.body) else {
+            return Response(status: 404, body: Data("Not Found".utf8))
+        }
+        let a = entries.first(where: { $0.type == 4 })
+        if pairSetup.isStarted {
+            guard let clientM4 = a?.value,
+                  let result = pairSetup.complete(clientM4: clientM4) else {
+                return Response(status: 400, body: Data("Bad Request".utf8))
+            }
+            return Response(
+                status: 200,
+                body: TLV8.encode([
+                    TLV8Entry(type: 5, value: result.M5),
+                    TLV8Entry(type: 7, value: result.M6),
+                ])
+            )
+        }
+        guard let a, a.value.count == 32,
+              let result = pairSetup.start(clientA: a.value) else {
+            return Response(status: 404, body: Data("Not Found".utf8))
+        }
+        return Response(
+            status: 200,
+            body: TLV8.encode([
+                TLV8Entry(type: 3, value: result.B),
+                TLV8Entry(type: 6, value: result.salt),
+            ])
+        )
     }
 
     /// The `GET /info` body: the accessory info as JSON, with the pairing
@@ -156,7 +203,7 @@ final class HAPServer {
 
     private func sendResponse(for request: Request, on connection: NWConnection) {
         let response = route(request)
-        let phrase = response.status == 200 ? "OK" : "Not Found"
+        let phrase = response.status == 200 ? "OK" : response.status == 400 ? "Bad Request" : "Not Found"
         var head = "HTTP/1.1 \(response.status) \(phrase)\r\n"
         head += "Content-Length: \(response.body.count)\r\n\r\n"
         var payload = Data(head.utf8)

@@ -99,6 +99,56 @@ final class HAPServerTests: XCTestCase {
         )
     }
 
+    // MARK: - TASK-018 — `POST /pair-setup` starts the exchange
+
+    /// `POST /pair-setup` starts the SRP exchange: request 1 — the client's
+    /// public value A (TLV type 4) — answers 200 with the accessory public
+    /// value (TLV type 3, `SRP.nByteCount`) and the salt (TLV type 6,
+    /// ≥ 16 bytes); request 2 — the client proof in TLV type 4 — answers
+    /// 400 when it does not verify and leaves the store unpaired.
+    func testRoutePostPairSetupStartsTheExchange() {
+        let store = HAPPairingStore(service: freshPairingService())
+        let server = HAPServer(pairingStore: store)
+
+        // Request 1: the client's public value, 32 bytes.
+        let request1 = HAPServer.Request(
+            method: "POST",
+            path: "/pair-setup",
+            body: TLV8.encode([TLV8Entry(type: 4, value: Data(repeating: 0x42, count: 32))])
+        )
+        var response1: HAPServer.Response?
+        let exp1 = expectation(description: "pair-setup request 1")
+        DispatchQueue.global().async {
+            response1 = server.route(request1)
+            exp1.fulfill()
+        }
+        wait(for: [exp1], timeout: 300)
+        XCTAssertEqual(response1?.status, 200, "request 1 must start the exchange")
+        let entries1 = response1.flatMap { TLV8.decode($0.body) }
+        XCTAssertNotNil(
+            entries1?.first(where: { $0.type == 3 && $0.value.count == SRP.nByteCount }),
+            "the response must carry the accessory key (type 3)")
+        XCTAssertNotNil(
+            entries1?.first(where: { $0.type == 6 && $0.value.count >= 16 }),
+            "the response must carry the salt (type 6)")
+
+        // Request 2: a mismatched proof — it does not verify.
+        let request2 = HAPServer.Request(
+            method: "POST",
+            path: "/pair-setup",
+            body: TLV8.encode([TLV8Entry(type: 4, value: Data(repeating: 0x00, count: 64))])
+        )
+        var response2: HAPServer.Response?
+        let exp2 = expectation(description: "pair-setup request 2")
+        DispatchQueue.global().async {
+            response2 = server.route(request2)
+            exp2.fulfill()
+        }
+        wait(for: [exp2], timeout: 300)
+        XCTAssertEqual(response2?.status, 400, "a non-verifying proof must answer 400")
+        XCTAssertFalse(store.paired, "the store must stay unpaired")
+    }
+
     /// TASK-017: `GET /info` reports the pairing state read from the store
     /// the server was built with (`HAPPairingStore.shared` elsewhere).
     func testInfoReportsThePairedStateFromTheStore() {
