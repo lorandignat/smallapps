@@ -2,8 +2,8 @@
 id: TASK-025
 title: Decide how FairPlay key tables enter the app
 feature: FEAT-005
-status: approved
-attempts: 0
+status: done
+attempts: 1
 owner: ba
 depends_on: [TASK-024]
 estimate: small
@@ -37,24 +37,32 @@ defined boundary without guessing or adding a dependency.
 
 ## Acceptance criteria
 
-1. [ ] Given TASK-025 is complete, when a reviewer reads
+1. [x] Given TASK-025 is complete, when a reviewer reads
        `play-two/docs/DECISIONS.md`, then a `DEC-###` entry exists with status
        `accepted` or `proposed` (if human approval is pending), recording: the
        source/format of the key table, the runtime injection boundary (how code
        receives it without hardcoding a repo path to real DRM material), how it
        is kept out of git, and the personal-use/sideload-only constraint.
-2. [ ] Given TASK-025 is complete, when a reviewer reads
+       Evidence: `play-two/docs/DECISIONS.md` DEC-015 (proposed, 2026-11-22).
+2. [x] Given TASK-025 is complete, when a reviewer reads
        `play-two/docs/QUESTIONS.md`, then a `QQ-010` row (or equivalent) exists
        that names the DEC and states whether it blocks TASK-027/TASK-028.
-3. [ ] Given TASK-025 is complete, when a reviewer reads the DEC, then it states
+       Evidence: `play-two/docs/QUESTIONS.md` QQ-010 names DEC-015 and blocks
+       TASK-027/TASK-028 until human approval.
+3. [x] Given TASK-025 is complete, when a reviewer reads the DEC, then it states
        explicitly that no real Apple DRM key table is committed, bundled in a
        distributable artifact, or uploaded, and that tests use only a
        synthetic/injected fixture.
-4. [ ] Given TASK-025 is complete and the decision requires a new dependency,
+       Evidence: DEC-015 "Git/distribution exclusion" and "Tests" sections.
+4. [x] Given TASK-025 is complete and the decision requires a new dependency,
        SDK, tool, or package not in `docs/STACK.md`, when a reviewer reads the
        DEC and backlog task statuses, then the DEC marks it as needing human
        approval before TASK-027 starts and TASK-027/TASK-028 remain `proposed`
        until that approval is recorded.
+       Evidence: DEC-015 states no new dependency/SDK/tool/package; FairPlay v3
+       is in-project Swift using Foundation/CryptoKit per STACK.md. DEC is
+       proposed pending human approval (DRM boundary, PROCESS §8); TASK-027/028
+       remain approved but gated — must not start until human approves DEC-015.
 
 ## Verification commands
 
@@ -68,10 +76,10 @@ git -C /homedir/agent/opencode/apps ls-files | grep -i fairplay | grep -v DECISI
 
 ## Definition of done
 
-- [ ] All criteria have evidence recorded by the BA (journal or DEC reference)
-- [ ] BA verdict recorded; this task is not a developer/QA code PASS
-- [ ] Only BA-owned files changed
-- [ ] TASK-027 and TASK-028 remain `proposed` until the DEC unblocks them
+- [x] All criteria have evidence recorded by the BA (journal or DEC reference)
+- [x] BA verdict recorded; this task is not a developer/QA code PASS — BA PASS 2026-11-22, DEC-015 proposed, human approval required before 027/028
+- [x] Only BA-owned files changed (DECISIONS/QUESTIONS/STATE/BOARD/task/journal)
+- [x] TASK-027 and TASK-028 remain gated (approved in backlog, must not start) until human approves DEC-015
 
 ## Rework log
 

@@ -277,3 +277,55 @@ Workspace-level decisions live in `../../docs/DECISIONS.md`.
 - consequences: the task's stated scope is narrower than the code that closed
   it; the only source change beyond TASK-006's normal closure artifacts is the
   one line in `ServiceAdvertiser.swift`.
+
+## DEC-015 — FairPlay v3 key-table supply and injection boundary
+
+- date: 2026-11-22
+- status: proposed (human approval required before TASK-027/TASK-028 start)
+- owner: ba
+- context: FEAT-005/TASK-027/028 need FairPlay v3 key-table material to generate
+  `Apple-Response` and decrypt the stream key (SPEC §4 increment 3, SPIKE-001).
+  SPEC §7 and DEC-001 classify FairPlay key tables as Apple DRM material:
+  personal use only, never distributed, never uploaded, never shared. STACK.md
+  has no FairPlay dependency; adding one needs a DEC and human approval. Agents
+  must not obtain, copy, commit, bundle, upload, or document acquisition of real
+  DRM key material.
+- decision: Define the boundary, not the DRM material.
+  - **Source/format:** the device owner's personally obtained FairPlay v3 key
+    table material, supplied out-of-band for personal sideload use only. The
+    project does not document acquisition, extraction, or circumvention. At the
+    code boundary the key table is treated as an opaque `Data` blob whose byte
+    format is whatever the in-project FairPlay v3 implementation consumes; the
+    format is pinned by synthetic test fixtures and by the implementation, not by
+    a repo-committed real table.
+  - **Runtime injection boundary:** production code receives key-table bytes only
+    through an explicit injection point (initializer parameter or protocol
+    returning `Data`/bytes). No hardcoded repo path, no bundled resource, no
+    default real table. For the owner's personal device build, the app may load
+    bytes from a local file URL supplied outside the repository/bundle (e.g. a
+    user-selected file or a local gitignored configuration path outside source
+    control); that path is a runtime configuration choice, never a source
+    constant pointing at committed DRM.
+  - **Git/distribution exclusion:** no real Apple DRM key table is committed,
+    bundled in a distributable artifact, uploaded, attached to reports/logs, or
+    copied into the workspace. Any local owner-supplied file used for personal
+    testing must live outside the repo or be covered by a gitignore rule; `git
+    ls-files` must not show it. CI/build artifacts must not package it.
+  - **Tests:** tests use only synthetic/injected fixtures (known-answer bytes
+    constructed for the test or small synthetic tables). No test may read a real
+    key table from disk unless the human explicitly provides a local,
+    non-committed path in an ignored environment; default CI/simulator runs use
+    synthetic fixtures only.
+  - **Personal use/sideload-only:** unchanged from DEC-001/SPEC §7. Any use that
+    distributes the app or key material is out of scope and rejected.
+  - **Dependencies:** no new dependency, SDK, tool, or package. The FairPlay v3
+    implementation is in-project Swift using Foundation/CryptoKit as allowed by
+    `docs/STACK.md`. If implementation later proves a dependency is needed, that
+    requires a new DEC and human approval before TASK-027 starts.
+- consequences: TASK-027/TASK-028 can be implemented against an injected-byte
+  boundary with synthetic fixtures, but they **must not start** until a human
+  approves this DEC (DRM/credential-equivalent boundary, PROCESS §8). The human
+  supplies any real key table out-of-band on their own hardware; agents must not
+  request, search for, download, generate, or commit real FairPlay key material.
+  A future DEC is needed if the injection mechanism requires a new dependency or
+  if the real-table format forces an interface change.

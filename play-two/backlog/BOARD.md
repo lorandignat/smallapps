@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** breakdown · **Active feature:** FEAT-005 approved (increment 3, first slice; FEAT-003 S2a/S2b still pending human observation on the iPhone 6s); FEAT-004, FEAT-006 proposed
-· **Active task:** TASK-025 (BA DEC, approved) / TASK-026 (approved) — next per deps; TASK-027/028 gated on TASK-025 DEC + required human approval
+· **Active task:** TASK-026 (approved) — next dev task; TASK-027/028 gated on human approval of DEC-015 (QQ-010), do not start
 
 ## Features
 
@@ -54,7 +54,7 @@ this job; FEAT-004 remains proposed and is not broken down. Increment 4
 | TASK-022 | FEAT-005 | Parse an RTSP request line and headers | done | 1 | PASS 2026-11-22 — qa/reports/TASK-022-review.md |
 | TASK-023 | FEAT-005 | Answer an RTSP OPTIONS request with 200 OK | done | 1 | PASS 2026-11-22 — qa/reports/TASK-023-review.md |
 | TASK-024 | FEAT-005 | Route RTSP requests on the AirPlay port | done | 1 | PASS 2026-11-22 — qa/reports/TASK-024-review.md |
-| TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | approved | 0 | — |
+| TASK-025 | FEAT-005 | Decide how FairPlay key tables enter the app | done | 1 | BA 2026-11-22 — DEC-015 proposed, human approval required before 027/028 |
 | TASK-026 | FEAT-005 | Parse the FairPlay fields of a SETUP request | approved | 0 | — |
 | TASK-027 | FEAT-005 | Generate Apple-Response from a challenge and test key table | approved | 0 | — |
 | TASK-028 | FEAT-005 | Decrypt the stream key with FairPlay v3 and a test key table | approved | 0 | — |
@@ -125,17 +125,24 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 3 done (FEAT-001, FEAT-002, FEAT-003) / 6 total; 1 approved (FEAT-005), 2 proposed (FEAT-004, FEAT-006)
-- tasks: 24 done (TASK-001..TASK-010, TASK-011..TASK-024) / 28 total; 4 approved (TASK-025..028, FEAT-005); none in-progress
+- tasks: 25 done (TASK-001..TASK-010, TASK-011..TASK-025) / 28 total; 3 approved (TASK-026..028, FEAT-005); none in-progress
 - blocked: 0 (profile expires 2026-11-23; S2a/S2b pending human observation, not blockers; TASK-027/028 approved but gated on TASK-025 DEC + required human approval, not blocked)
 
 ## Recent changes
 
+- 2026-11-22 — TASK-025 BA decision (DEC-015 proposed): recorded FairPlay v3
+  key-table supply/injection boundary in `play-two/docs/DECISIONS.md` (DEC-015,
+  proposed, human approval required) and `play-two/docs/QUESTIONS.md` (QQ-010).
+  No real DRM key table committed/bundled/uploaded; tests synthetic/injected
+  only; no new dependency. TASK-027/028 remain approved but **MUST NOT** start
+  until a human approves DEC-015. TASK-026 is next dev task.
 - 2026-11-22 — BA G2/G3 approval recorded (backlog only): FEAT-005 approved
   (vertical slice, demoable, dependency-ordered after FEAT-003, traces to SPEC §4
   increment 3 / §6 S3 path, not infra-only). TASK-022..028 approved (G3;
   TASK-025 BA-owned decision task). TASK-022 is next; TASK-027/028 remain
   approved in backlog but **MUST NOT** be moved to `in-progress` until TASK-025's
-  FairPlay key-table DEC is recorded and any required human approval is present.
+  FairPlay key-table DEC is recorded and any required human approval is present
+  (now recorded as DEC-015 proposed; human approval still required).
   FEAT-004 and FEAT-006 remain proposed. Carried caveat: FEAT-003 S2a/S2b pending
   human observation on the iPhone 6s; human asked to proceed.
 - 2026-11-22 — PM increment 3 breakdown (G2/G3 pending): added FEAT-005 (RTSP
