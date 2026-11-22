@@ -3,16 +3,15 @@
 > Resume point; history belongs in the role journals. Keep under 40 lines.
 
 **Updated:** 2026-11-22 · **Phase:** build (increment 3) · **Active feature:** FEAT-005 (approved)
-**Active task:** TASK-026 — Parse the FairPlay fields of a SETUP request (approved, next)
+**Active task:** TASK-026 — Parse the FairPlay fields of a SETUP request (in-progress, attempt 1)
 
 ## Status
 
 FEAT-003 closed at code/task level (S2a/S2b pending human observation). FEAT-005
-G2/G3 approved. TASK-022 PASS (`dea4043`, 84/0), TASK-023 PASS (`6105719`,
-87/0), TASK-024 PASS (`d7b169c`, 89/0), R2 high-water 89. TASK-025 BA decision
-done 2026-11-22: DEC-015 proposed (FairPlay key-table injection boundary, QQ-010).
-No real DRM committed/bundled/uploaded; tests synthetic/injected only; no new
-dependency. TASK-027/028 gated until human approves DEC-015 (PROCESS §8).
+G2/G3 approved. TASK-022..024 PASS (84/87/89, R2 89). TASK-025 BA done: DEC-015
+proposed (FairPlay key-table injection boundary, QQ-010). No real DRM
+committed/bundled/uploaded; tests synthetic/injected only. TASK-027/028 gated
+until human approves DEC-015. Public history at `d71b7b6`.
 
 ## Next action
 

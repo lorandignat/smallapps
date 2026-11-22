@@ -2,8 +2,8 @@
 id: TASK-026
 title: Parse the FairPlay fields of a SETUP request
 feature: FEAT-005
-status: approved
-attempts: 0
+status: in-progress
+attempts: 1
 owner: null
 depends_on: [TASK-024]
 estimate: small
