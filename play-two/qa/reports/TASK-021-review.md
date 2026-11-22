@@ -63,9 +63,18 @@ $ grep -nE '\*\* TEST SUCCEEDED \*\*|Executed 81 tests|Test Suite .(AppStateTest
 468:Test Suite 'ReceiverStatusTests' passed at 2026-11-22 16:10:40.619.
 528:	 Executed 81 tests, with 0 failures (0 unexpected) in 841.306 (841.354) seconds
 538:** TEST SUCCEEDED **
+
+# QA's own independent re-run (sync -> xcodegen generate -> same test destination), exit 0
+$ grep -nE "testStatusIsPairedWhenThePairingIsStored.*passed|ReceiverStatusTests testPaired.*passed|Test Suite '(AppStateTests|ReceiverStatusTests)' passed|Executed 81 tests|\*\* TEST SUCCEEDED \*\*" 20261122T142159Z-test.log
+153:Test Case '-[PlayTwoTests.AppStateTests testStatusIsPairedWhenThePairingIsStored]' passed (0.014 seconds).
+156:Test Suite 'AppStateTests' passed at 2026-11-22 16:22:05.894.
+267:Test Case '-[PlayTwoTests.ReceiverStatusTests testPaired]' passed (0.001 seconds).
+270:Test Suite 'ReceiverStatusTests' passed at 2026-11-22 16:28:26.864.
+330:	 Executed 81 tests, with 0 failures (0 unexpected) in 840.019 (840.067) seconds
+340:** TEST SUCCEEDED **
 ```
 
-The independent re-run launched by QA (`rsync -a <project> <build-host>:<build-dir>/` → `xcodegen generate` → same `xcodebuild test` destination) was **still in flight** at finalisation — mirror `20261122T142159Z-test.log` was partial (31 KB). It is not cited as evidence. The criteria rest on the completed developer run plus independent static inspection of the changed code.
+QA re-ran the full suite independently from a fresh `sync` + `xcodegen generate` on the same destination; it completed with `** TEST SUCCEEDED **`, AppStateTests 5/0 (`:156-157`), ReceiverStatusTests 5/0 (`:270-271`), and bundle `Executed 81 tests, with 0 failures` (`:330,332`). This independently reproduces the developer's run — the criteria rest on two independent green runs plus static inspection of the changed code.
 
 ## Findings
 
@@ -87,7 +96,7 @@ From `qa/REGRESSION.md` R1–R15: all green in the 81/0 bundle (`20261122T140413
 
 ## Verdict
 
-All 6 criteria have evidence, the full suite is green at 81/0, scope is respected, and the regression list passes. Two LOW task-text typos are recorded for the BA but fail no criterion.
+All 6 criteria have evidence, the full suite is green at 81/0 in two independent runs (developer's and QA's own re-run), scope is respected, and the regression list passes. Two LOW task-text typos are recorded for the BA but fail no criterion.
 
 **Verdict:** PASS
 

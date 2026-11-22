@@ -26,8 +26,7 @@ commit, then rebuild and push the scrubbed `public-history` ref (DEC-014).
 DEC-017 (SRP derivation perf / FrontBoard watchdog) is proposed, needs human
 approval. QQ-003 (personal use) still carries its default. No active blockers;
 the iPhone 6s provisioning profile expires 2026-11-23 — rebuild/reinstall if
-launch fails after that date. `f1-stream-proxy` is out of scope; it must stay
-absent from public history (0 occurrences on `origin/main`).
+launch fails after that date. Public history must stay scrubbed (DEC-014).
 
 ## Recent
 
