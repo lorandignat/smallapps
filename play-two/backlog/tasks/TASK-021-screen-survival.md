@@ -2,7 +2,7 @@
 id: TASK-021
 title: Restart survival — show the setup code and paired state on the state screen
 feature: FEAT-003
-status: in-progress
+status: done
 attempts: 1
 owner: null
 depends_on: [TASK-020]

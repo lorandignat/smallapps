@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
-· **Active task:** TASK-021 (FEEST-003, in-progress, attempt 1)
+· **Active task:** none — TASK-021 done; FEAT-003 task work complete
 
 ## Features
 
@@ -12,7 +12,7 @@ reads it every cycle.
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
 | FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
-| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 5 done, 1 proposed |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 6 done |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
@@ -46,7 +46,7 @@ files yet.
 | TASK-018 | FEAT-003 | Complete `POST /pair-setup` (SRP M1–M6) using the SRP primitives | done | 1 | PASS 2026-11-22 — qa/reports/TASK-018-review.md |
 | TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | done | 1 | PASS 2026-11-22 — qa/reports/TASK-019-review.md |
 | TASK-020 | FEAT-003 | Advertise the paired status in the AirPlay TXT record | done | 1 | PASS 2026-11-22 — qa/reports/TASK-020-review.md |
-| TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | proposed | 0 | |
+| TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | done | 1 | PASS 2026-11-22 — qa/reports/TASK-021-review.md |
 
 Dependency order for the build loop: 001 → 010 → 002 → 003 → 004 → 005 → 006 →
 007 → 008 → 009. Tasks 002, 003 and 010 all depended only on 001; TASK-010 ran
@@ -58,9 +58,8 @@ exported log for the S5 observation.
 
 Dependency order for FEAT-003: 016 → 017 → 018 → 019 → 020 → 021
 (017 needs 016; 018 needs 016+017; 020 needs 017; 021 needs 018+020). All six
-are `proposed` until the BA approves them at G3 — already done at 2026-11-22 —
-and `attempts` is 0: the build loop runs one task at a time, BA → developer →
-qa per task.
+are `done` on attempt 1 with QA PASS; G3 was recorded 2026-11-22 and the build
+loop ran one task at a time, BA → developer → qa per task.
 
 ## Blockers
 
@@ -105,11 +104,16 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 1 done (FEAT-001), 2 approved (FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
-- tasks: 20 done (TASK-001..TASK-010, TASK-011..TASK-019, TASK-020) / 21 total; TASK-021 proposed, next
+- tasks: 21 done (TASK-001..TASK-010, TASK-011..TASK-021) / 21 total; none active; FEAT-003 feature close next
 - blocked: 0 (profile expires 2026-11-23)
 
 ## Recent changes
 
+- 2026-11-22 — TASK-021 `done` on attempt 1 (QA PASS, 81/0, R2 high-water 81);
+  commit `a453eb9`. All FEAT-003 tasks are done; feature close is next. Two LOW
+  task-text typos (TASK-021 grep path and "four from TASK-020" label) plus the
+  stale TASK-020 `ServiceAdvertiserTests` count and the stale blocker rows above
+  (Mac offline / Tidepool Alpha) need a PM cleanup pass.
 - 2026-11-22 — PM breakdown of FEAT-003: six tasks added (TASK-016..021,
   `proposed`); FEAT-003 approved (G3 done); feature file updated (Tasks
   section, R4 note names TASK-016). R2 high-water expectations: 62 → 68 → 73 →
