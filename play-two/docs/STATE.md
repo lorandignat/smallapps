@@ -27,6 +27,11 @@ the share sheet. Definition of done met pending human acceptance.
 
 ## Next action
 
+TASK-019 done (2026-11-22): G4 PASS, commit 4760239, HAPPairVerify Session
+(ephemeral keypair, proof = SRP.sha512(A_e ‖ B_e ‖ accessoryIdentityPublicKey ‖ T),
+key armed, seal/open via CryptoKit); routes POST /pair-verify (req 1 → 200 + TLV 2;
+req 2 → 200 + TLV 3, 400 on tamper). HAPPairVerifyTests 4/0, HAPServerTests 10/0,
+bundle 78/0, R2 high-water 78, `qa/reports/TASK-019-review.md`. FEAT-003: 4 of 6.
 TASK-018 done (2026-11-22): G4 PASS, commit cb1429e, HAPPairSetup + POST
 /pair-setup route, HAPPairSetupTests 4/0, HAPServerTests 9/0, bundle 73/0,
 R2 high-water 73, `qa/reports/TASK-018-review.md`. FEAT-003: 3 of 6.
@@ -41,21 +46,13 @@ TASK-012 done (2026-11-21): G4 PASS, suite 46/46, R2 high-water 46,
 suite 11/11, R2 high-water 50 (`qa/reports/TASK-013-review.md`). TASK-014 done:
 SRP verify M1, full bundle 52/0, R2 high-water 52
 (`qa/reports/TASK-014-review.md`). DEC-017 (proposed) still pending for the
-watchdog/perf finding. Next: TASK-019 — Establish an encrypted session with `POST /pair-verify`.
-Wire shape is an assumption (no Home app on this host; exercised by
-HAPPairVerifyTests and the S2a feature-close observation). Interfaces:
-`AccessoryIdentity.shared.publicKey` (the accessory public key), the pairing
-`salt` from `HAPPairingStore`, `SRP.sha512`, `TLV8`/`TLV8Entry`.
-`HAPPairVerify.Session` — request 1 → 200 + TLV type 2 (accessory ephemeral
-public key, 32 bytes), `HAPServer.pairVerifySession` set; request 2 with TLV
-type 4 = T (client computes H(A_e ‖ B_e ‖ accessoryIdentityPublicKey ‖
-pairingSalt) — `Session.proof` is the contract) → 200 + TLV type 3 (server
-proof), `Session.key != nil`; tampered T → 400. The session can seal/open
-(`testTheSealedSessionRoundTrips`, `testSealFailsBeforeVerify`). TASK-020
-advertises `sf` in the TXT record from the store. Destination `platform=
-iOS Simulator,name=iPhone 14,OS=16.2`. R4 reword at feature close
+watchdog/perf finding. Next: TASK-020 — Advertise the paired status in the AirPlay TXT record (`sf`
+bit 0 from `HAPPairingStore.shared.paired`; `AirPlayTXTRecord` gains the
+`paired` parameter + `statusFlagPaired`; the dictionary always has `"sf"`).
+`ServiceAdvertiser.start()` reads `HAPPairingStore.shared`. Destination
+`platform=iOS Simulator,name=iPhone 14,OS=16.2`. R4 reword at feature close
 (`qa/REGRESSION.md` row currently stale).
 
 ## Approved gates
 
-G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for twelve tasks (TASK-003 2 MINOR; TASK-008 crit. 4 → O6; TASK-016; TASK-018). QQ-003, QQ-009 closed.
+G1 (2026-11-15) · G2 (2026-11-15) · G3 (2026-11-16) · G4 for thirteen tasks (TASK-003 2 MINOR; TASK-008 crit. 4 → O6; TASK-016; TASK-018; TASK-019). QQ-003, QQ-009 closed.

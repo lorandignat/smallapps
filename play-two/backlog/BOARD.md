@@ -4,7 +4,7 @@ Owner: `pm`. The single place to see what is happening in this project. The BA
 reads it every cycle.
 
 **Updated:** 2026-11-22 · **Phase:** build · **Active feature:** FEAT-003 (HAP pairing endpoints)
-· **Active task:** TASK-019 (FEAT-003, in-progress, attempt 1)
+· **Active task:** TASK-020 (FEAT-003, in-progress, attempt 1)
 
 ## Features
 
@@ -12,7 +12,7 @@ reads it every cycle.
 | --- | --- | --- | --- | --- |
 | FEAT-001 | Discoverable AirPlay 2 receiver | Launch the app: the Apple TV offers the phone as a speaker under the app's name, and port 7000 answers | approved | 10 |
 | FEAT-002 (done) | HAP crypto primitives | An SRP-3072 handshake completes between the accessory and a test client and both sides agree on a session key; TLV8 round-trips; an Ed25519 identity key persists across launches | approved | 5 |
-| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 3 done, 3 proposed |
+| FEAT-003 | HAP pairing endpoints and persistence | The Home app completes "Add Accessory" with the phone and lists it as a speaker, and the pairing survives an app restart | approved | 4 done, 2 proposed |
 | FEAT-004 | Configurable advertised name | The owner sets the advertised name in the app, and the Apple TV and Home app show that name instead of the default | proposed | 0 |
 
 FEAT-002/003 are increment 2 (`DEC-002`, pairable); FEAT-004 is the settings
@@ -44,7 +44,7 @@ files yet.
 | TASK-016 | FEAT-003 | Serve `GET /info` on port 7000, replacing the fixed reply | done | 1 | PASS 2026-11-22 — qa/reports/TASK-016-review.md |
 | TASK-017 | FEAT-003 | Expose the pairing state in the pairing store | done | 1 | PASS 2026-11-22 — qa/reports/TASK-017-review.md |
 | TASK-018 | FEAT-003 | Complete `POST /pair-setup` (SRP M1–M6) using the SRP primitives | done | 1 | PASS 2026-11-22 — qa/reports/TASK-018-review.md |
-| TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | proposed | 0 | |
+| TASK-019 | FEAT-003 | Establish an encrypted session with `POST /pair-verify` | done | 1 | PASS 2026-11-22 — qa/reports/TASK-019-review.md |
 | TASK-020 | FEAT-003 | Advertise the paired status in the AirPlay TXT record | proposed | 0 | |
 | TASK-021 | FEAT-003 | Restart survival — show the setup code and paired state on the state screen | proposed | 0 | |
 
@@ -105,7 +105,7 @@ G4. `Attempts` counts developer launches; three means escalate.
 ## Counts
 
 - features: 1 done (FEAT-001), 2 approved (FEAT-002, FEAT-003); 4 total; FEAT-004 proposed
-- tasks: 18 done (TASK-001..TASK-010, TASK-011..TASK-018) / 21 total; TASK-019..021 proposed, next
+- tasks: 19 done (TASK-001..TASK-010, TASK-011..TASK-019) / 21 total; TASK-020..021 proposed, next
 - blocked: 0 (profile expires 2026-11-23)
 
 ## Recent changes
